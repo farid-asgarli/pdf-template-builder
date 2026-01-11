@@ -603,6 +603,12 @@ export interface GenerateHtmlOptions {
   includePrintStyles?: boolean;
   /** If true, inlines all CSS styles (useful for email compatibility) */
   inlineStyles?: boolean;
+  /** Whether to include Google Fonts links. Defaults to true */
+  includeFontLinks?: boolean;
+  /** Additional font families to include from Google Fonts */
+  fontFamilies?: string[];
+  /** Whether to auto-detect fonts used in the document. Defaults to true */
+  autoDetectFonts?: boolean;
 }
 
 /**
@@ -621,6 +627,9 @@ export async function generateHtml(documentId: string, options?: GenerateHtmlOpt
       asDownload: options?.asDownload ?? false,
       includePrintStyles: options?.includePrintStyles ?? true,
       inlineStyles: options?.inlineStyles ?? false,
+      includeFontLinks: options?.includeFontLinks ?? true,
+      fontFamilies: options?.fontFamilies,
+      autoDetectFonts: options?.autoDetectFonts ?? true,
     }),
   });
 
@@ -653,6 +662,9 @@ export async function generateHtmlDownload(documentId: string, options?: Generat
       asDownload: true,
       includePrintStyles: options?.includePrintStyles ?? true,
       inlineStyles: options?.inlineStyles ?? false,
+      includeFontLinks: options?.includeFontLinks ?? true,
+      fontFamilies: options?.fontFamilies,
+      autoDetectFonts: options?.autoDetectFonts ?? true,
     }),
   });
 
@@ -679,6 +691,9 @@ export async function generateHtmlPreview(
     variables?: Record<string, unknown>;
     includePrintStyles?: boolean;
     inlineStyles?: boolean;
+    includeFontLinks?: boolean;
+    fontFamilies?: string[];
+    autoDetectFonts?: boolean;
   }
 ): Promise<string> {
   const url = `${API_BASE_URL}/api/generate-html-preview`;
@@ -694,6 +709,9 @@ export async function generateHtmlPreview(
       variables: options?.variables,
       includePrintStyles: options?.includePrintStyles ?? true,
       inlineStyles: options?.inlineStyles ?? false,
+      includeFontLinks: options?.includeFontLinks ?? true,
+      fontFamilies: options?.fontFamilies,
+      autoDetectFonts: options?.autoDetectFonts ?? true,
     }),
   });
 

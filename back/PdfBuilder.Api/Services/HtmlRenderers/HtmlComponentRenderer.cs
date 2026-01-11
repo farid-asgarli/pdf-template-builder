@@ -86,7 +86,14 @@ public static class HtmlComponentRenderer
                 HtmlImageRenderer.Render(sb, component.Properties);
                 break;
             case "barcode":
-                HtmlBarcodeRenderer.Render(sb, component.Properties);
+                HtmlBarcodeRenderer.Render(
+                    sb,
+                    component.Properties,
+                    pageNumber,
+                    totalPages,
+                    variables,
+                    complexVariables
+                );
                 break;
             case "placeholder":
                 RenderPlaceholder(sb, component.Properties);

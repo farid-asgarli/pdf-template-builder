@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Web;
+using PdfBuilder.Api.Services.Renderers;
 using ZXing;
 using ZXing.Common;
 using ZXing.Rendering;
@@ -37,9 +38,28 @@ public static class HtmlBarcodeRenderer
         ["pdf-417"] = BarcodeFormat.PDF_417,
     };
 
-    public static void Render(StringBuilder sb, Dictionary<string, JsonElement> properties)
+    /// <summary>
+    /// Renders a barcode with variable substitution support.
+    /// </summary>
+    public static void Render(
+        StringBuilder sb,
+        Dictionary<string, JsonElement> properties,
+        int pageNumber,
+        int totalPages,
+        Dictionary<string, string> variables,
+        Dictionary<string, JsonElement>? complexVariables
+    )
     {
-        var value = HtmlPropertyHelpers.GetString(properties, "value", "");
+        // Get the value and process variable substitutions
+        var rawValue = HtmlPropertyHelpers.GetString(properties, "value", "");
+        var value = TextHelpers.SubstituteVariables(
+            rawValue,
+            pageNumber,
+            totalPages,
+            variables,
+            complexVariables
+        );
+
         var barcodeType = HtmlPropertyHelpers.GetString(properties, "barcodeType", "qr-code");
         var showValue = HtmlPropertyHelpers.GetBool(properties, "showValue", true);
         var foregroundColor = HtmlPropertyHelpers.GetString(

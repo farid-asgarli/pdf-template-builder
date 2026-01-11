@@ -49,7 +49,7 @@ public static class HtmlCheckboxRenderer
         var boxSize = SizePresets.GetValueOrDefault(size.ToLowerInvariant(), 14);
 
         sb.AppendLine(
-            "<div class=\"checkbox-component\" style=\"display: flex; align-items: center; gap: {spacing}pt;\">"
+            $"<div class=\"checkbox-component\" style=\"display: flex; align-items: center; gap: {spacing}pt;\">"
         );
 
         // Checkbox box

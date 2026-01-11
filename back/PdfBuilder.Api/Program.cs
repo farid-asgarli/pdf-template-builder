@@ -559,7 +559,15 @@ app.MapPost(
                     Title = document.Title,
                     IncludePrintStyles = request?.IncludePrintStyles ?? true,
                     InlineStyles = request?.InlineStyles ?? false,
+                    IncludeFontLinks = request?.IncludeFontLinks ?? true,
+                    AutoDetectFonts = request?.AutoDetectFonts ?? true,
                 };
+
+                // Add custom font families if provided
+                if (request?.FontFamilies != null && request.FontFamilies.Count > 0)
+                {
+                    settings.FontFamilies = request.FontFamilies;
+                }
 
                 var htmlContent = HtmlGenerator.Generate(
                     document.Content,
@@ -597,7 +605,15 @@ app.MapPost(
                     Title = request.Title ?? "Preview",
                     IncludePrintStyles = request.IncludePrintStyles ?? true,
                     InlineStyles = request.InlineStyles ?? false,
+                    IncludeFontLinks = request.IncludeFontLinks ?? true,
+                    AutoDetectFonts = request.AutoDetectFonts ?? true,
                 };
+
+                // Add custom font families if provided
+                if (request.FontFamilies != null && request.FontFamilies.Count > 0)
+                {
+                    settings.FontFamilies = request.FontFamilies;
+                }
 
                 var htmlContent = HtmlGenerator.Generate(
                     request.Content,

@@ -113,7 +113,19 @@ public static class HtmlGenerator
         sb.AppendLine(
             "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
         );
-        sb.AppendLine($"  <title>{settings?.Title ?? "Document"}</title>");
+        sb.AppendLine(
+            $"  <title>{System.Web.HttpUtility.HtmlEncode(settings?.Title ?? "Document")}</title>"
+        );
+
+        // Include Google Fonts
+        if (settings?.IncludeFontLinks ?? true)
+        {
+            var fontLinks = GenerateFontLinks(data, settings);
+            if (!string.IsNullOrEmpty(fontLinks))
+            {
+                sb.AppendLine(fontLinks);
+            }
+        }
 
         // Include embedded styles
         sb.AppendLine(GenerateBaseStyles());
@@ -538,6 +550,174 @@ public static class HtmlGenerator
   </style>";
     }
 
+    #region Font Generation
+
+    /// <summary>
+    /// Google Fonts that support variable weights (wght axis).
+    /// These fonts use the format: family=Font+Name:wght@100..900
+    /// </summary>
+    private static readonly HashSet<string> VariableFonts = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Inter",
+        "Roboto",
+        "Open Sans",
+        "Lato",
+        "Montserrat",
+        "Poppins",
+        "Source Sans Pro",
+        "Nunito",
+        "Raleway",
+        "Ubuntu",
+        "Oswald",
+        "Merriweather",
+        "Playfair Display",
+        "Rubik",
+        "Work Sans",
+        "Barlow",
+        "Quicksand",
+        "Mulish",
+        "Karla",
+        "Josefin Sans",
+        "Libre Franklin",
+        "IBM Plex Sans",
+        "DM Sans",
+        "Manrope",
+        "Outfit",
+        "Plus Jakarta Sans",
+        "Space Grotesk",
+        "Sora",
+    };
+
+    /// <summary>
+    /// Generates Google Fonts link tags for the specified fonts.
+    /// </summary>
+    private static string GenerateFontLinks(DocumentData data, HtmlGenerationSettings? settings)
+    {
+        var fonts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // Add fonts from settings
+        if (settings?.FontFamilies != null)
+        {
+            foreach (var font in settings.FontFamilies)
+            {
+                if (!string.IsNullOrWhiteSpace(font))
+                {
+                    fonts.Add(font.Trim());
+                }
+            }
+        }
+
+        // Auto-detect fonts from document if enabled
+        if (settings?.AutoDetectFonts ?? true)
+        {
+            ExtractFontsFromDocument(data, fonts);
+        }
+
+        // If no fonts, return empty
+        if (fonts.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var sb = new StringBuilder();
+        sb.AppendLine("  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">");
+        sb.AppendLine("  <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>");
+
+        // Build font family parameters
+        var fontParams = new List<string>();
+        var weights = settings?.FontWeights ?? [100, 200, 300, 400, 500, 600, 700, 800, 900];
+        var weightStr = string.Join(";", weights);
+
+        foreach (var font in fonts.OrderBy(f => f))
+        {
+            var encodedFont = Uri.EscapeDataString(font).Replace("%20", "+");
+
+            if (VariableFonts.Contains(font))
+            {
+                // Variable font - use weight range
+                fontParams.Add($"family={encodedFont}:wght@{weights.Min()}..{weights.Max()}");
+            }
+            else
+            {
+                // Static font - list individual weights
+                fontParams.Add($"family={encodedFont}:wght@{weightStr}");
+            }
+        }
+
+        var fontUrl =
+            $"https://fonts.googleapis.com/css2?{string.Join("&", fontParams)}&display=swap";
+        sb.Append($"  <link href=\"{fontUrl}\" rel=\"stylesheet\">");
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Extracts font families used in the document by scanning component properties.
+    /// </summary>
+    private static void ExtractFontsFromDocument(DocumentData data, HashSet<string> fonts)
+    {
+        // Extract from pages
+        foreach (var page in data.Pages)
+        {
+            ExtractFontsFromComponents(page.Components, fonts);
+        }
+
+        // Extract from header/footer
+        if (data.HeaderFooter != null)
+        {
+            if (data.HeaderFooter.DefaultHeader?.Components != null)
+                ExtractFontsFromComponents(data.HeaderFooter.DefaultHeader.Components, fonts);
+            if (data.HeaderFooter.DefaultFooter?.Components != null)
+                ExtractFontsFromComponents(data.HeaderFooter.DefaultFooter.Components, fonts);
+            if (data.HeaderFooter.FirstPageHeader?.Components != null)
+                ExtractFontsFromComponents(data.HeaderFooter.FirstPageHeader.Components, fonts);
+            if (data.HeaderFooter.FirstPageFooter?.Components != null)
+                ExtractFontsFromComponents(data.HeaderFooter.FirstPageFooter.Components, fonts);
+            if (data.HeaderFooter.CompactHeader?.Components != null)
+                ExtractFontsFromComponents(data.HeaderFooter.CompactHeader.Components, fonts);
+            if (data.HeaderFooter.CompactFooter?.Components != null)
+                ExtractFontsFromComponents(data.HeaderFooter.CompactFooter.Components, fonts);
+        }
+    }
+
+    /// <summary>
+    /// Extracts font families from a list of components.
+    /// </summary>
+    private static void ExtractFontsFromComponents(
+        List<ComponentData> components,
+        HashSet<string> fonts
+    )
+    {
+        foreach (var component in components)
+        {
+            // Check common font property names
+            var fontPropertyNames = new[] { "fontFamily", "valueFontFamily", "labelFontFamily" };
+
+            foreach (var propName in fontPropertyNames)
+            {
+                if (
+                    component.Properties.TryGetValue(propName, out var fontElement)
+                    && fontElement.ValueKind == JsonValueKind.String
+                )
+                {
+                    var fontFamily = fontElement.GetString();
+                    if (
+                        !string.IsNullOrWhiteSpace(fontFamily)
+                        && !fontFamily.Equals("inherit", StringComparison.OrdinalIgnoreCase)
+                        && !fontFamily.Equals("sans-serif", StringComparison.OrdinalIgnoreCase)
+                        && !fontFamily.Equals("serif", StringComparison.OrdinalIgnoreCase)
+                        && !fontFamily.Equals("monospace", StringComparison.OrdinalIgnoreCase)
+                    )
+                    {
+                        fonts.Add(fontFamily);
+                    }
+                }
+            }
+        }
+    }
+
+    #endregion
+
     #region Parsing
 
     private static DocumentData? ParseDocumentData(string jsonContent)
@@ -660,16 +840,39 @@ public class HtmlGenerationSettings
 
     /// <summary>
     /// Whether to include print-optimized styles.
+    /// Defaults to true.
     /// </summary>
     public bool IncludePrintStyles { get; set; } = true;
 
     /// <summary>
     /// Whether to inline all styles (for email compatibility).
+    /// NOTE: Not yet implemented. CSS inlining requires additional processing.
+    /// Defaults to false.
     /// </summary>
     public bool InlineStyles { get; set; } = false;
 
     /// <summary>
-    /// Whether to include external font links.
+    /// Whether to include external font links (Google Fonts).
+    /// Defaults to true.
     /// </summary>
     public bool IncludeFontLinks { get; set; } = true;
+
+    /// <summary>
+    /// Additional font families to include from Google Fonts.
+    /// These are combined with fonts auto-detected from the document.
+    /// Common options: "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins", "Source Sans Pro", "Nunito", etc.
+    /// </summary>
+    public List<string> FontFamilies { get; set; } = ["Inter"];
+
+    /// <summary>
+    /// Whether to auto-detect fonts used in the document and include them.
+    /// Defaults to true.
+    /// </summary>
+    public bool AutoDetectFonts { get; set; } = true;
+
+    /// <summary>
+    /// Font weights to include for each font family.
+    /// Defaults to common weights: 100-900.
+    /// </summary>
+    public List<int> FontWeights { get; set; } = [100, 200, 300, 400, 500, 600, 700, 800, 900];
 }

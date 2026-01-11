@@ -246,7 +246,20 @@ public record GenerateHtmlWithVariablesRequest(
     /// <summary>
     /// If true, inlines all CSS styles (useful for email compatibility).
     /// </summary>
-    bool InlineStyles = false
+    bool InlineStyles = false,
+    /// <summary>
+    /// Whether to include Google Fonts links. Defaults to true.
+    /// </summary>
+    bool IncludeFontLinks = true,
+    /// <summary>
+    /// Additional font families to include from Google Fonts.
+    /// Example: ["Inter", "Roboto", "Open Sans"]
+    /// </summary>
+    List<string>? FontFamilies = null,
+    /// <summary>
+    /// Whether to auto-detect fonts used in the document. Defaults to true.
+    /// </summary>
+    bool AutoDetectFonts = true
 );
 
 /// <summary>
@@ -272,5 +285,17 @@ public record GenerateHtmlPreviewRequest(
     /// <summary>
     /// If true, inlines all CSS styles.
     /// </summary>
-    bool? InlineStyles = false
+    bool? InlineStyles = false,
+    /// <summary>
+    /// Whether to include Google Fonts links. Defaults to true.
+    /// </summary>
+    bool? IncludeFontLinks = true,
+    /// <summary>
+    /// Additional font families to include from Google Fonts.
+    /// </summary>
+    List<string>? FontFamilies = null,
+    /// <summary>
+    /// Whether to auto-detect fonts used in the document. Defaults to true.
+    /// </summary>
+    bool? AutoDetectFonts = true
 );
