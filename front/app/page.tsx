@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FileText, Plus, Files, Clock, Trash2, MoreVertical, Loader2 } from 'lucide-react';
+import { FileText, Plus, Files, Clock, Trash2, MoreVertical } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -16,7 +16,6 @@ import {
   EmptyState,
   Menu,
   MenuItem,
-  MenuSeparator,
   Dialog,
   DialogContent,
   DialogHeader,
