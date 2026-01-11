@@ -1,8 +1,8 @@
 // Blank Template
 // A completely empty document template for starting from scratch
 
+import { generateTemplateId } from '@/lib/templates/utils';
 import type { Template } from '@/lib/types/document.types';
-import { generateTemplateId } from './utils';
 
 export const BLANK_TEMPLATE: Template = {
   id: 'blank',
