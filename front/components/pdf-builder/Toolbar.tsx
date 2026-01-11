@@ -26,6 +26,7 @@ import {
   FileCode,
 } from 'lucide-react';
 import type { PreviewMode } from '@/lib/hooks';
+import { ThemeSelector } from '@/components/ThemeSelector';
 
 const PREVIEW_MODE_OPTIONS = [
   { value: 'side-by-side', label: 'Side Panel' },
@@ -193,6 +194,10 @@ export function Toolbar({
 
       {/* Right section - Actions */}
       <div className="flex items-center gap-2">
+        {/* Theme selector */}
+        <ThemeSelector />
+        <div className="h-6 w-px bg-outline-variant/30" />
+
         {/* Preview mode selector */}
         <div className="flex items-center rounded-full bg-surface-container/60 p-0.5">
           <Tooltip content={isPreviewVisible ? 'Hide preview' : getPreviewLabel()}>

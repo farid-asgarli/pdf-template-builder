@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FileText, Plus, Shield, Scale, Briefcase, Heart, DollarSign, Search, Loader2, ChevronRight, Files, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardTitle, Button, Input, Badge, PageLoading, EmptyState } from '@/app/ui/primitives';
+import { ThemeSelector } from '@/components/ThemeSelector';
 import type { Template, TemplateCategory } from '@/lib/types/document.types';
 import { BUILT_IN_TEMPLATES, TEMPLATE_CATEGORIES, cloneTemplateContent } from '@/lib/templates';
 import { fetchTemplates, parseTemplateResponse, createDocument, updateDocument } from '@/lib/utils/api';
@@ -258,11 +259,15 @@ export default function TemplatesPage() {
                 <p className="text-sm text-on-surface-variant">Choose a template to start your document</p>
               </div>
             </div>
-            <Link href="/">
-              <Button variant="outline" size="sm">
-                Back to Home
-              </Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <ThemeSelector />
+              <div className="h-6 w-px bg-outline-variant/30" />
+              <Link href="/">
+                <Button variant="outline" size="sm">
+                  Back to Home
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>

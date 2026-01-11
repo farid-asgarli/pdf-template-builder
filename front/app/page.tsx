@@ -24,6 +24,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/app/ui/primitives';
+import { ThemeSelector } from '@/components/ThemeSelector';
 import type { DocumentResponse } from '@/lib/types/document.types';
 import { fetchDocuments, deleteDocument } from '@/lib/utils/api';
 
@@ -59,7 +60,7 @@ interface DocumentCardProps {
 
 function DocumentCard({ document, onDelete }: DocumentCardProps) {
   return (
-    <Card variant="interactive" padding="none" className="group">
+    <Card variant="interactive" padding="none" className="group overflow-hidden">
       <Link href={`/builder/${document.id}`} className="block">
         {/* Document Preview */}
         <div className="relative h-32 bg-linear-to-br from-surface-container to-surface-container-high flex items-center justify-center overflow-hidden">
@@ -178,6 +179,8 @@ export default function Home() {
             </div>
 
             <div className="flex items-center gap-3">
+              <ThemeSelector />
+              <div className="h-6 w-px bg-outline-variant/30" />
               <Link href="/templates">
                 <Button variant="outline" size="default">
                   <Files className="h-4 w-4 mr-2" />
