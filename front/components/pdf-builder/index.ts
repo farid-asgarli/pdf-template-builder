@@ -16,6 +16,8 @@ export { VariableInputForm } from './VariableInputForm';
 export { GeneratePdfDialog } from './GeneratePdfDialog';
 export { GenerateHtmlDialog } from './GenerateHtmlDialog';
 export { VariableHistoryPanel } from './VariableHistoryPanel';
+export { VariableManagerPanel } from './VariableManagerPanel';
+export { VariableTextEditor, VariableInput } from './VariableTextEditor';
 
 // Component Renderers
 export * from './components';

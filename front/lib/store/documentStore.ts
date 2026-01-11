@@ -16,6 +16,7 @@ import {
   getDefaultProperties,
   DEFAULT_COMPONENT_SIZES,
 } from '@/lib/types/document.types';
+import type { VariableDefinition } from '@/lib/types/variable.types';
 
 // State that should be tracked for undo/redo (only document content)
 interface TrackedState {
@@ -59,6 +60,13 @@ interface DocumentStoreActions {
   // Header/Footer actions
   updateHeader: (type: 'default' | 'firstPage' | 'compact', content: HeaderFooterContent) => void;
   updateFooter: (type: 'default' | 'firstPage' | 'compact', content: HeaderFooterContent) => void;
+
+  // Variable definition actions
+  addVariableDefinition: (variable: VariableDefinition) => void;
+  updateVariableDefinition: (name: string, updates: Partial<VariableDefinition>) => void;
+  deleteVariableDefinition: (name: string) => void;
+  reorderVariableDefinitions: (fromIndex: number, toIndex: number) => void;
+  getVariableDefinitions: () => VariableDefinition[];
 
   // Utility
   getCurrentPage: () => Page | null;
@@ -529,6 +537,88 @@ export const useDocumentStore = create<DocumentStore>()(
               isDirty: true,
             };
           }),
+
+        // Variable definition actions
+        addVariableDefinition: (variable) =>
+          set((state) => {
+            if (!state.document) return state;
+
+            // Check if variable with same name already exists
+            const existingVars = state.document.variableDefinitions || [];
+            if (existingVars.some((v) => v.name === variable.name)) {
+              return state; // Don't add duplicate
+            }
+
+            return {
+              document: {
+                ...state.document,
+                variableDefinitions: [...existingVars, { ...variable, order: existingVars.length }],
+                updatedAt: new Date().toISOString(),
+              },
+              isDirty: true,
+            };
+          }),
+
+        updateVariableDefinition: (name, updates) =>
+          set((state) => {
+            if (!state.document) return state;
+
+            const existingVars = state.document.variableDefinitions || [];
+            const updatedVars = existingVars.map((v) => (v.name === name ? { ...v, ...updates } : v));
+
+            return {
+              document: {
+                ...state.document,
+                variableDefinitions: updatedVars,
+                updatedAt: new Date().toISOString(),
+              },
+              isDirty: true,
+            };
+          }),
+
+        deleteVariableDefinition: (name) =>
+          set((state) => {
+            if (!state.document) return state;
+
+            const existingVars = state.document.variableDefinitions || [];
+            const filteredVars = existingVars.filter((v) => v.name !== name);
+            // Reorder remaining variables
+            const reorderedVars = filteredVars.map((v, index) => ({ ...v, order: index }));
+
+            return {
+              document: {
+                ...state.document,
+                variableDefinitions: reorderedVars,
+                updatedAt: new Date().toISOString(),
+              },
+              isDirty: true,
+            };
+          }),
+
+        reorderVariableDefinitions: (fromIndex, toIndex) =>
+          set((state) => {
+            if (!state.document) return state;
+
+            const existingVars = [...(state.document.variableDefinitions || [])];
+            const [removed] = existingVars.splice(fromIndex, 1);
+            existingVars.splice(toIndex, 0, removed);
+            // Update order values
+            const reorderedVars = existingVars.map((v, index) => ({ ...v, order: index }));
+
+            return {
+              document: {
+                ...state.document,
+                variableDefinitions: reorderedVars,
+                updatedAt: new Date().toISOString(),
+              },
+              isDirty: true,
+            };
+          }),
+
+        getVariableDefinitions: () => {
+          const state = get();
+          return state.document?.variableDefinitions || [];
+        },
 
         // Utility
         getCurrentPage: () => {

@@ -12,8 +12,8 @@ using PdfBuilder.Api.Data;
 namespace PdfBuilder.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260111191801_AddVariableHistory")]
-    partial class AddVariableHistory
+    [Migration("20260111204856_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

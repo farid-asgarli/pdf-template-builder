@@ -19,6 +19,14 @@ export function ComponentPalette({ isCollapsed = false, onToggleCollapse }: Comp
         <Tooltip content="Show components" side="right">
           <IconButton variant="ghost" size="sm" aria-label="Show components" onClick={onToggleCollapse} icon={<PanelLeft className="h-4 w-4" />} />
         </Tooltip>
+        <div className="mt-4 flex flex-1 flex-col items-center">
+          <span
+            className="text-xs font-semibold tracking-wider text-on-surface-variant"
+            style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
+          >
+            Components
+          </span>
+        </div>
       </aside>
     );
   }

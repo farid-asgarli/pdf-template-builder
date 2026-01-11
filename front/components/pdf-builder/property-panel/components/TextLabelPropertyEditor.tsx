@@ -1,5 +1,6 @@
-import { Input, NumberStepper, Select, Checkbox, ColorPicker } from '@/app/ui/primitives';
+import { NumberStepper, Select, Checkbox, ColorPicker } from '@/app/ui/primitives';
 import { FieldRow } from '@/components/pdf-builder/property-panel/components/FieldRow';
+import { VariableTextEditor } from '@/components/pdf-builder/VariableTextEditor';
 import {
   FONT_OPTIONS,
   FONT_WEIGHT_OPTIONS,
@@ -20,15 +21,16 @@ export function TextLabelPropertyEditor({
 
   return (
     <div className="space-y-4">
-      {/* Content */}
+      {/* Content with Variable Support */}
       <div>
-        <Input
-          label="Content"
+        <label className="mb-1.5 block text-sm font-medium text-on-surface">Content</label>
+        <VariableTextEditor
           value={properties.content}
-          onChange={(e) => onChange('content', e.target.value)}
-          placeholder="Enter text..."
-          size="sm"
-          variant="filled"
+          onChange={(v) => onChange('content', v)}
+          placeholder="Enter text or use {{variables}}..."
+          singleLine
+          minHeight={36}
+          maxHeight={36}
         />
       </div>
 

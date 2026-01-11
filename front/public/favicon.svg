@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Background rounded rectangle -->
+  <rect width="32" height="32" rx="6" fill="#6750A4"/>
+  
+  <!-- PDF document icon -->
+  <path d="M9 6h8l6 6v14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" fill="white" fill-opacity="0.95"/>
+  
+  <!-- Document fold -->
+  <path d="M17 6v6h6" fill="none" stroke="#6750A4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- PDF text/lines representation -->
+  <rect x="10" y="15" width="8" height="1.5" rx="0.75" fill="#6750A4" fill-opacity="0.7"/>
+  <rect x="10" y="18.5" width="10" height="1.5" rx="0.75" fill="#6750A4" fill-opacity="0.5"/>
+  <rect x="10" y="22" width="6" height="1.5" rx="0.75" fill="#6750A4" fill-opacity="0.3"/>
+  
+  <!-- Builder gear accent -->
+  <circle cx="22" cy="22" r="5" fill="#EADDFF"/>
+  <path d="M22 19.5v1m0 3v1m-2.5-2.5h1m3 0h1m-4.25-1.75l.7.7m2.4 2.4l.7.7m0-3.8l-.7.7m-2.4 2.4l-.7.7" stroke="#6750A4" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="22" cy="22" r="1.5" fill="#6750A4"/>
+</svg>

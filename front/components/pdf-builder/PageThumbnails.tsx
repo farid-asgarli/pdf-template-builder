@@ -67,16 +67,21 @@ export function PageThumbnails({ onAddPage, isCollapsed = false, onToggleCollaps
   const pages = document.pages;
   const canDelete = pages.length > 1;
 
-  // Collapsed state - show only toggle button
+  // Collapsed state - show only toggle button and vertical "Pages" text
   if (isCollapsed) {
     return (
       <aside className="flex w-12 flex-col items-center border-r border-outline-variant/25 bg-surface py-3">
         <Tooltip content="Show pages" side="right">
           <IconButton variant="ghost" size="sm" aria-label="Show pages" onClick={onToggleCollapse} icon={<PanelLeft className="h-4 w-4" />} />
         </Tooltip>
-        <div className="mt-3 flex flex-col items-center gap-1">
-          <span className="text-[10px] font-medium text-on-surface-variant">{pages.length}</span>
-          <FileText className="h-4 w-4 text-on-surface-variant" />
+        <div className="mt-4 flex flex-1 flex-col items-center">
+          <span
+            className="text-xs font-semibold tracking-wider text-on-surface-variant"
+            style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
+          >
+            Pages
+          </span>
+          <span className="mt-2 text-[10px] font-medium text-on-surface-variant/70">({pages.length})</span>
         </div>
       </aside>
     );

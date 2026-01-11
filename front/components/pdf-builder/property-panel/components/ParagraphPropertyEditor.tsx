@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { AlignLeft, AlignCenter, AlignRight, AlignJustify, ChevronDown, Type, Palette, Pilcrow, Settings2 } from 'lucide-react';
-import { Textarea, NumberStepper, Select, Checkbox, ColorPicker, SegmentedButtonGroup, SegmentedButton } from '@/app/ui/primitives';
+import { NumberStepper, Select, Checkbox, ColorPicker, SegmentedButtonGroup, SegmentedButton } from '@/app/ui/primitives';
+import { VariableTextEditor } from '@/components/pdf-builder/VariableTextEditor';
 import {
   FONT_OPTIONS,
   FONT_WEIGHT_OPTIONS,
@@ -79,15 +80,15 @@ export function ParagraphPropertyEditor({
   return (
     <div className="flex flex-col">
       {/* ─────────────────────────────────────────────────────────────────────
-          Content (Always visible)
+          Content (Always visible) with Variable Support
       ───────────────────────────────────────────────────────────────────── */}
       <div className="border-b border-outline/10 p-4">
-        <Textarea
+        <VariableTextEditor
           value={properties.content}
-          onChange={(e) => onChange('content', e.target.value)}
-          placeholder="Enter paragraph text..."
-          rows={3}
-          variant="filled"
+          onChange={(v) => onChange('content', v)}
+          placeholder="Enter paragraph text with {{variables}}..."
+          minHeight={80}
+          maxHeight={200}
         />
       </div>
 

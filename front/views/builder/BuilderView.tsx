@@ -18,6 +18,7 @@ import {
   GeneratePdfDialog,
   GenerateHtmlDialog,
   VariableHistoryPanel,
+  VariableManagerPanel,
 } from '@/components/pdf-builder';
 import { pxToMm, snapToGrid, CANVAS_WIDTH_PX, CANVAS_HEIGHT_PX } from '@/lib/utils/coordinates';
 import {
@@ -103,6 +104,9 @@ export function BuilderView({ documentId }: BuilderViewProps) {
 
   // Variable history panel state
   const [isHistoryVisible, setIsHistoryVisible] = useState(false);
+
+  // Variable manager panel state
+  const [isVariableManagerVisible, setIsVariableManagerVisible] = useState(false);
 
   // Panel collapse states
   const [isPagesCollapsed, setIsPagesCollapsed] = useState(false);
@@ -437,14 +441,17 @@ export function BuilderView({ documentId }: BuilderViewProps) {
           isGeneratingPdf={isGeneratingPdf}
           isPreviewVisible={isPreviewVisible || isDialogOpen}
           isHistoryVisible={isHistoryVisible}
+          isVariableManagerVisible={isVariableManagerVisible}
           previewMode={previewMode}
           showGrid={showGrid}
+          variableCount={document.variableDefinitions?.length || 0}
           onSave={handleSave}
           onGeneratePdf={handleGeneratePdf}
           onGenerateWithVariables={() => setGeneratePdfDialogOpen(true)}
           onGenerateHtml={() => setGenerateHtmlDialogOpen(true)}
           onTogglePreview={togglePreview}
           onToggleHistory={() => setIsHistoryVisible(!isHistoryVisible)}
+          onToggleVariableManager={() => setIsVariableManagerVisible(!isVariableManagerVisible)}
           onPreviewModeChange={setPreviewMode}
           onToggleGrid={() => setShowGrid(!showGrid)}
           onEditHeader={handleEditHeader}
@@ -529,6 +536,9 @@ export function BuilderView({ documentId }: BuilderViewProps) {
         document={document}
         onSuccess={handleSaveAsTemplateSuccess}
       />
+
+      {/* Variable Manager Panel */}
+      <VariableManagerPanel open={isVariableManagerVisible} onClose={() => setIsVariableManagerVisible(false)} />
 
       {/* Drag Overlay for visual feedback */}
       <DragOverlay dropAnimation={null}>{activeDrag && <DragOverlayContent activeDrag={activeDrag} />}</DragOverlay>

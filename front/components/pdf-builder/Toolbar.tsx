@@ -40,15 +40,18 @@ interface ToolbarProps {
   isGeneratingPdf?: boolean;
   isPreviewVisible?: boolean;
   isHistoryVisible?: boolean;
+  isVariableManagerVisible?: boolean;
   previewMode?: PreviewMode;
   zoom?: number;
   showGrid?: boolean;
+  variableCount?: number;
   onSave?: () => void;
   onGeneratePdf?: () => void;
   onGenerateWithVariables?: () => void;
   onGenerateHtml?: () => void;
   onTogglePreview?: () => void;
   onToggleHistory?: () => void;
+  onToggleVariableManager?: () => void;
   onPreviewModeChange?: (mode: PreviewMode) => void;
   onUndo?: () => void;
   onRedo?: () => void;
@@ -69,15 +72,18 @@ export function Toolbar({
   isGeneratingPdf = false,
   isPreviewVisible = false,
   isHistoryVisible = false,
+  isVariableManagerVisible = false,
   previewMode = 'side-by-side',
   showGrid = true,
   zoom = 100,
+  variableCount = 0,
   onSave,
   onGeneratePdf,
   onGenerateWithVariables,
   onGenerateHtml,
   onTogglePreview,
   onToggleHistory,
+  onToggleVariableManager,
   onPreviewModeChange,
   onUndo,
   onRedo,
@@ -152,6 +158,19 @@ export function Toolbar({
         </Tooltip>
         <Tooltip content="Edit footer">
           <IconButton variant="ghost" size="sm" aria-label="Edit footer" onClick={onEditFooter} icon={<PanelBottom className="h-4 w-4" />} />
+        </Tooltip>
+        <div className="mx-2 h-6 w-px bg-outline-variant/30" />
+        {/* Variables Manager Button */}
+        <Tooltip content={isVariableManagerVisible ? 'Hide Variables' : 'Manage Variables'}>
+          <Button variant={isVariableManagerVisible ? 'tonal' : 'text'} size="sm" onClick={onToggleVariableManager} className="relative">
+            <Variable className="h-4 w-4" />
+            Variables
+            {variableCount > 0 && (
+              <span className="ml-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1 text-xs font-medium text-primary">
+                {variableCount}
+              </span>
+            )}
+          </Button>
         </Tooltip>
         <div className="mx-2 h-6 w-px bg-outline-variant/30" />
         <Tooltip content="Zoom out">
