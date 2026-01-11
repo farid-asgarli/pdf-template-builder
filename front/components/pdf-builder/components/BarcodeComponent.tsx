@@ -80,7 +80,7 @@ export function BarcodeComponent({ component }: BarcodeComponentProps) {
       {is1D ? (
         // 1D Barcode preview - vertical bars pattern
         <div className="flex h-full w-full flex-col items-center justify-center">
-          <div className="flex h-3/4 w-full items-end justify-center gap-[1px]">
+          <div className="flex h-3/4 w-full items-end justify-center gap-px">
             {/* Generate a simple bar pattern to simulate barcode */}
             {Array.from({ length: Math.min(40, Math.max(20, props.value.length * 3)) }).map((_, i) => {
               // Create a pseudo-random width based on index and value

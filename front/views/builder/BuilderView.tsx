@@ -16,6 +16,7 @@ import {
   PdfPreviewPanel,
   PdfPreviewDialog,
   GeneratePdfDialog,
+  GenerateHtmlDialog,
   VariableHistoryPanel,
 } from '@/components/pdf-builder';
 import { pxToMm, snapToGrid, CANVAS_WIDTH_PX, CANVAS_HEIGHT_PX } from '@/lib/utils/coordinates';
@@ -96,6 +97,9 @@ export function BuilderView({ documentId }: BuilderViewProps) {
 
   // Generate PDF dialog state (with variables)
   const [generatePdfDialogOpen, setGeneratePdfDialogOpen] = useState(false);
+
+  // Generate HTML dialog state
+  const [generateHtmlDialogOpen, setGenerateHtmlDialogOpen] = useState(false);
 
   // Variable history panel state
   const [isHistoryVisible, setIsHistoryVisible] = useState(false);
@@ -438,6 +442,7 @@ export function BuilderView({ documentId }: BuilderViewProps) {
           onSave={handleSave}
           onGeneratePdf={handleGeneratePdf}
           onGenerateWithVariables={() => setGeneratePdfDialogOpen(true)}
+          onGenerateHtml={() => setGenerateHtmlDialogOpen(true)}
           onTogglePreview={togglePreview}
           onToggleHistory={() => setIsHistoryVisible(!isHistoryVisible)}
           onPreviewModeChange={setPreviewMode}
@@ -498,6 +503,14 @@ export function BuilderView({ documentId }: BuilderViewProps) {
       <GeneratePdfDialog
         open={generatePdfDialogOpen}
         onOpenChange={setGeneratePdfDialogOpen}
+        documentId={document.id}
+        documentTitle={document.title}
+      />
+
+      {/* Generate HTML Dialog - With variables */}
+      <GenerateHtmlDialog
+        open={generateHtmlDialogOpen}
+        onOpenChange={setGenerateHtmlDialogOpen}
         documentId={document.id}
         documentTitle={document.title}
       />

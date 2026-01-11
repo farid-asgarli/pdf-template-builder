@@ -516,6 +516,106 @@ app.MapGet(
     .WithOpenApi();
 
 // ========================
+// HTML Generation Endpoints
+// ========================
+
+// POST /api/documents/{id}/generate-html - Generate HTML from document with optional runtime variables
+app.MapPost(
+        "/api/documents/{id:guid}/generate-html",
+        async (Guid id, GenerateHtmlWithVariablesRequest? request, AppDbContext db) =>
+        {
+            var document = await db.Documents.FindAsync(id);
+            if (document == null)
+                return Results.NotFound(new { error = "Document not found" });
+
+            try
+            {
+                // Get variable definitions for validation
+                var definitions = VariableService.GetVariableDefinitions(document.Content);
+
+                // Validate provided variables
+                if (definitions.Count > 0)
+                {
+                    var validationResult = VariableService.ValidateVariables(
+                        definitions,
+                        request?.Variables
+                    );
+
+                    if (!validationResult.IsValid)
+                    {
+                        return Results.BadRequest(
+                            new
+                            {
+                                error = "Variable validation failed",
+                                validationErrors = validationResult.Errors,
+                            }
+                        );
+                    }
+                }
+
+                // Generate HTML with runtime variables
+                var settings = new HtmlGenerationSettings
+                {
+                    Title = document.Title,
+                    IncludePrintStyles = request?.IncludePrintStyles ?? true,
+                    InlineStyles = request?.InlineStyles ?? false,
+                };
+
+                var htmlContent = HtmlGenerator.Generate(
+                    document.Content,
+                    settings,
+                    request?.Variables
+                );
+
+                // Return as HTML file download or inline based on request
+                if (request?.AsDownload == true)
+                {
+                    var bytes = System.Text.Encoding.UTF8.GetBytes(htmlContent);
+                    return Results.File(bytes, "text/html", $"{document.Title}.html");
+                }
+
+                return Results.Content(htmlContent, "text/html");
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem($"Error generating HTML: {ex.Message}");
+            }
+        }
+    )
+    .WithName("GenerateHtml")
+    .WithOpenApi();
+
+// POST /api/generate-html-preview - Generate HTML from JSON content (for previews without saving)
+app.MapPost(
+        "/api/generate-html-preview",
+        (GenerateHtmlPreviewRequest request) =>
+        {
+            try
+            {
+                var settings = new HtmlGenerationSettings
+                {
+                    Title = request.Title ?? "Preview",
+                    IncludePrintStyles = request.IncludePrintStyles ?? true,
+                    InlineStyles = request.InlineStyles ?? false,
+                };
+
+                var htmlContent = HtmlGenerator.Generate(
+                    request.Content,
+                    settings,
+                    request.Variables
+                );
+                return Results.Content(htmlContent, "text/html");
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem($"Error generating HTML: {ex.Message}");
+            }
+        }
+    )
+    .WithName("GenerateHtmlPreview")
+    .WithOpenApi();
+
+// ========================
 // Bulk Generation Endpoints
 // ========================
 

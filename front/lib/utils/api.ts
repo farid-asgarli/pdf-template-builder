@@ -586,3 +586,134 @@ export async function previewBulkData(documentId: string, file: File): Promise<B
 
   return response.json();
 }
+
+// ============================================================================
+// HTML Generation Functions
+// ============================================================================
+
+/**
+ * Request options for HTML generation
+ */
+export interface GenerateHtmlOptions {
+  /** Variable values to substitute in the document */
+  variables?: Record<string, unknown>;
+  /** If true, return HTML as a file download. Otherwise returns inline content */
+  asDownload?: boolean;
+  /** If true, includes print-optimized CSS styles */
+  includePrintStyles?: boolean;
+  /** If true, inlines all CSS styles (useful for email compatibility) */
+  inlineStyles?: boolean;
+}
+
+/**
+ * Generate HTML from a saved document
+ */
+export async function generateHtml(documentId: string, options?: GenerateHtmlOptions): Promise<string> {
+  const url = `${API_BASE_URL}/api/documents/${documentId}/generate-html`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      variables: options?.variables,
+      asDownload: options?.asDownload ?? false,
+      includePrintStyles: options?.includePrintStyles ?? true,
+      inlineStyles: options?.inlineStyles ?? false,
+    }),
+  });
+
+  if (!response.ok) {
+    let errorData: unknown;
+    try {
+      errorData = await response.json();
+    } catch {
+      errorData = await response.text();
+    }
+    throw new ApiError(response.status, `HTML Generation Error: ${response.statusText}`, errorData);
+  }
+
+  return response.text();
+}
+
+/**
+ * Generate HTML from a saved document and download as file
+ */
+export async function generateHtmlDownload(documentId: string, options?: GenerateHtmlOptions): Promise<Blob> {
+  const url = `${API_BASE_URL}/api/documents/${documentId}/generate-html`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      variables: options?.variables,
+      asDownload: true,
+      includePrintStyles: options?.includePrintStyles ?? true,
+      inlineStyles: options?.inlineStyles ?? false,
+    }),
+  });
+
+  if (!response.ok) {
+    let errorData: unknown;
+    try {
+      errorData = await response.json();
+    } catch {
+      errorData = await response.text();
+    }
+    throw new ApiError(response.status, `HTML Generation Error: ${response.statusText}`, errorData);
+  }
+
+  return response.blob();
+}
+
+/**
+ * Generate HTML preview from document content (without saving)
+ */
+export async function generateHtmlPreview(
+  content: string,
+  options?: {
+    title?: string;
+    variables?: Record<string, unknown>;
+    includePrintStyles?: boolean;
+    inlineStyles?: boolean;
+  }
+): Promise<string> {
+  const url = `${API_BASE_URL}/api/generate-html-preview`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      content,
+      title: options?.title,
+      variables: options?.variables,
+      includePrintStyles: options?.includePrintStyles ?? true,
+      inlineStyles: options?.inlineStyles ?? false,
+    }),
+  });
+
+  if (!response.ok) {
+    let errorData: unknown;
+    try {
+      errorData = await response.json();
+    } catch {
+      errorData = await response.text();
+    }
+    throw new ApiError(response.status, `HTML Preview Error: ${response.statusText}`, errorData);
+  }
+
+  return response.text();
+}
+
+/**
+ * Download HTML string as a file
+ */
+export function downloadHtml(htmlContent: string, filename: string): void {
+  const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+  downloadBlob(blob, filename);
+}

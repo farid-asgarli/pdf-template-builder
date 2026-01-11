@@ -14,6 +14,7 @@ export { PdfPreviewDialog } from './PdfPreviewDialog';
 // Variable System Components
 export { VariableInputForm } from './VariableInputForm';
 export { GeneratePdfDialog } from './GeneratePdfDialog';
+export { GenerateHtmlDialog } from './GenerateHtmlDialog';
 export { VariableHistoryPanel } from './VariableHistoryPanel';
 
 // Component Renderers

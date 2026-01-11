@@ -23,6 +23,7 @@ import {
   ExternalLink,
   History,
   Variable,
+  FileCode,
 } from 'lucide-react';
 import type { PreviewMode } from '@/lib/hooks';
 
@@ -45,6 +46,7 @@ interface ToolbarProps {
   onSave?: () => void;
   onGeneratePdf?: () => void;
   onGenerateWithVariables?: () => void;
+  onGenerateHtml?: () => void;
   onTogglePreview?: () => void;
   onToggleHistory?: () => void;
   onPreviewModeChange?: (mode: PreviewMode) => void;
@@ -73,6 +75,7 @@ export function Toolbar({
   onSave,
   onGeneratePdf,
   onGenerateWithVariables,
+  onGenerateHtml,
   onTogglePreview,
   onToggleHistory,
   onPreviewModeChange,
@@ -211,8 +214,14 @@ export function Toolbar({
           {isSaving ? 'Saving...' : 'Save'}
         </Button>
 
-        {/* Generate PDF with dropdown for quick vs advanced */}
-        <div className="flex items-center">
+        {/* Export buttons */}
+        <div className="flex items-center gap-1">
+          <Tooltip content="Export as HTML">
+            <Button variant="outline" size="sm" onClick={onGenerateHtml}>
+              <FileCode className="h-4 w-4" />
+              HTML
+            </Button>
+          </Tooltip>
           <Button variant="filled" size="sm" onClick={onGenerateWithVariables} disabled={isGeneratingPdf}>
             {isGeneratingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <Variable className="h-4 w-4" />}
             {isGeneratingPdf ? 'Generating...' : 'Generate PDF'}
