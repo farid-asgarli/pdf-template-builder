@@ -1,0 +1,2051 @@
+@import 'tailwindcss';
+
+/* Include shared packages for Tailwind class scanning */
+@source "../../../packages/ui-primitives/src/**/*.{ts,tsx}";
+@source "../../../packages/ui/src/**/*.{ts,tsx}";
+
+/* Airbnb Cereal Font */
+@font-face {
+  font-family: 'Cereal';
+  src: url('/fonts/Cereal/CerealVF_W_Wght.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cereal';
+  src: url('/fonts/Cereal/CerealVF_Italics_W_Wght.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Cyrillic support */
+@font-face {
+  font-family: 'Cereal';
+  src: url('/fonts/Cereal/CerealVF_Cyril_W_Wght.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0400-04FF, U+0500-052F;
+}
+
+/* Greek support */
+@font-face {
+  font-family: 'Cereal';
+  src: url('/fonts/Cereal/CerealVF_Greek_W_Wght.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0370-03FF, U+1F00-1FFF;
+}
+
+/* ================================== */
+/* SURVEY THEME FONTS                 */
+/* ================================== */
+
+/* Inter - Professional, highly readable */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter/inter-v20-cyrillic_cyrillic-ext_latin_latin-ext-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter/inter-v20-cyrillic_cyrillic-ext_latin_latin-ext-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter/inter-v20-cyrillic_cyrillic-ext_latin_latin-ext-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter/inter-v20-cyrillic_cyrillic-ext_latin_latin-ext-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Roboto - Material Design classic */
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto/roboto-v50-latin-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto/roboto-v50-latin-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto/roboto-v50-latin-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto/roboto-v50-latin-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Lato - Clean and professional */
+@font-face {
+  font-family: 'Lato';
+  src: url('/fonts/Lato/lato-v25-latin_latin-ext-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: url('/fonts/Lato/lato-v25-latin_latin-ext-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* DM Sans - Geometric and modern */
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/DMSans/dm-sans-v17-latin_latin-ext-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/DMSans/dm-sans-v17-latin_latin-ext-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/DMSans/dm-sans-v17-latin_latin-ext-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/DMSans/dm-sans-v17-latin_latin-ext-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Merriweather - Classic serif */
+@font-face {
+  font-family: 'Merriweather';
+  src: url('/fonts/Merrieweather/merriweather-v33-cyrillic_cyrillic-ext_latin_latin-ext-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Merriweather';
+  src: url('/fonts/Merrieweather/merriweather-v33-cyrillic_cyrillic-ext_latin_latin-ext-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Merriweather';
+  src: url('/fonts/Merrieweather/merriweather-v33-cyrillic_cyrillic-ext_latin_latin-ext-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Merriweather';
+  src: url('/fonts/Merrieweather/merriweather-v33-cyrillic_cyrillic-ext_latin_latin-ext-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Montserrat - Versatile geometric */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat/montserrat-v31-cyrillic_cyrillic-ext_latin_latin-ext-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat/montserrat-v31-cyrillic_cyrillic-ext_latin_latin-ext-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat/montserrat-v31-cyrillic_cyrillic-ext_latin_latin-ext-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat/montserrat-v31-cyrillic_cyrillic-ext_latin_latin-ext-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Open Sans - Friendly and readable */
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/fonts/OpenSans/open-sans-v44-cyrillic_cyrillic-ext_latin_latin-ext-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/fonts/OpenSans/open-sans-v44-cyrillic_cyrillic-ext_latin_latin-ext-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/fonts/OpenSans/open-sans-v44-cyrillic_cyrillic-ext_latin_latin-ext-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/fonts/OpenSans/open-sans-v44-cyrillic_cyrillic-ext_latin_latin-ext-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Outfit - Rounded and modern */
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/Outfit/outfit-v15-latin_latin-ext-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/Outfit/outfit-v15-latin_latin-ext-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/Outfit/outfit-v15-latin_latin-ext-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/Outfit/outfit-v15-latin_latin-ext-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Playfair Display - Elegant serif */
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('/fonts/PlayfairDisplay/playfair-display-v40-cyrillic_latin_latin-ext-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('/fonts/PlayfairDisplay/playfair-display-v40-cyrillic_latin_latin-ext-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('/fonts/PlayfairDisplay/playfair-display-v40-cyrillic_latin_latin-ext-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('/fonts/PlayfairDisplay/playfair-display-v40-cyrillic_latin_latin-ext-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Plus Jakarta Sans - Contemporary and clean */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/PlusJakartaSans/plus-jakarta-sans-v12-cyrillic-ext_latin_latin-ext-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/PlusJakartaSans/plus-jakarta-sans-v12-cyrillic-ext_latin_latin-ext-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/PlusJakartaSans/plus-jakarta-sans-v12-cyrillic-ext_latin_latin-ext-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/PlusJakartaSans/plus-jakarta-sans-v12-cyrillic-ext_latin_latin-ext-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: 'Cereal', ui-sans-serif, system-ui, sans-serif;
+
+  /* ================================== */
+  /* M3 EXPRESSIVE - Enhanced Radii     */
+  /* ================================== */
+  --radius-xs: 0.5rem;
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 1.75rem;
+  --radius-3xl: 2rem;
+  --radius-4xl: 2.5rem;
+  --radius-5xl: 3rem;
+  --radius-full: 9999px;
+
+  /* ================================== */
+  /* M3 EXPRESSIVE - Border Widths      */
+  /* ================================== */
+  --border-thin: 1px;
+  --border-medium: 1.5px;
+  --border-thick: 2px;
+
+  /* ================================== */
+  /* SIMPLE SHADOWS                     */
+  /* ================================== */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 2px 4px -1px rgb(0 0 0 / 0.06);
+  --shadow-lg: 0 4px 6px -2px rgb(0 0 0 / 0.05);
+
+  /* ================================== */
+  /* MATERIAL DESIGN 3 - VIOLET THEME   */
+  /* Official Baseline Color System     */
+  /* ================================== */
+
+  /* PRIMARY COLORS */
+  --color-primary: #6750a4;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #eaddff;
+  --color-on-primary-container: #21005d;
+
+  /* SECONDARY COLORS */
+  --color-secondary: #625b71;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #e8def8;
+  --color-on-secondary-container: #1d192b;
+
+  /* TERTIARY COLORS */
+  --color-tertiary: #7d5260;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #ffd8e4;
+  --color-on-tertiary-container: #31111d;
+
+  /* ERROR COLORS */
+  --color-error: #b3261e;
+  --color-on-error: #ffffff;
+  --color-error-container: #f9dedc;
+  --color-on-error-container: #410e0b;
+
+  /* WARNING COLORS (Custom Extension) */
+  --color-warning: #d09000;
+  --color-warning-container: #fff6dc;
+  --color-on-warning: #ffffff;
+  --color-on-warning-container: #261a00;
+
+  /* SUCCESS COLORS (Custom Extension) */
+  --color-success: #2aa86a;
+  --color-success-container: #dcfce8;
+  --color-on-success: #ffffff;
+  --color-on-success-container: #002913;
+
+  /* INFO COLORS (Custom Extension) */
+  --color-info: #5090ff;
+  --color-info-container: #e8f1ff;
+  --color-on-info: #ffffff;
+  --color-on-info-container: #001d3d;
+
+  /* SURFACE COLORS */
+  --color-surface: #fef7ff;
+  --color-surface-dim: #ded8e1;
+  --color-surface-bright: #fef7ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f7f2fa;
+  --color-surface-container: #f3edf7;
+  --color-surface-container-high: #ece6f0;
+  --color-surface-container-highest: #e6e0e9;
+  --color-on-surface: #1d1b20;
+  --color-on-surface-variant: #49454f;
+
+  /* UTILITY COLORS */
+  --color-outline: #79747e;
+  --color-outline-variant: #cac4d0;
+  --color-scrim: #000000;
+  --color-shadow: #000000;
+  --color-inverse-surface: #322f35;
+  --color-inverse-on-surface: #f5eff7;
+  --color-inverse-primary: #d0bcff;
+
+  /* M3 EXPRESSIVE - Card Colors */
+  --color-card-idle: #f8f1f6;
+  --color-card-focus: #dcdaf5;
+  --color-card-border: rgba(202, 196, 208, 0.3);
+  --color-card-border-hover: rgba(103, 80, 164, 0.25);
+
+  /* TOAST COLORS - LIGHT MODE */
+  --toast-bg: #ffffff;
+  --toast-text: #3c4043;
+  --toast-action: #1a73e8;
+  --toast-hover: rgba(0, 0, 0, 0.05);
+  --toast-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.1), 0 6px 10px 0 rgba(0, 0, 0, 0.07), 0 1px 18px 0 rgba(0, 0, 0, 0.06);
+  --toast-icon-success: #1e8e3e;
+  --toast-icon-error: #d93025;
+  --toast-icon-warning: #f9ab00;
+  --toast-icon-info: #1a73e8;
+}
+
+/* ================================== */
+/* DARK MODE - VIOLET THEME           */
+/* ================================== */
+:root[data-theme='dark'] {
+  /* PRIMARY COLORS */
+  --color-primary: #d0bcff;
+  --color-on-primary: #381e72;
+  --color-primary-container: #4f378b;
+  --color-on-primary-container: #eaddff;
+
+  /* SECONDARY COLORS */
+  --color-secondary: #ccc2dc;
+  --color-on-secondary: #332d41;
+  --color-secondary-container: #4a4458;
+  --color-on-secondary-container: #e8def8;
+
+  /* TERTIARY COLORS */
+  --color-tertiary: #efb8c8;
+  --color-on-tertiary: #492532;
+  --color-tertiary-container: #633b48;
+  --color-on-tertiary-container: #ffd8e4;
+
+  /* ERROR COLORS */
+  --color-error: #f2b8b5;
+  --color-on-error: #601410;
+  --color-error-container: #8c1d18;
+  --color-on-error-container: #f9dedc;
+
+  /* WARNING COLORS */
+  --color-warning: #ffd180;
+  --color-warning-container: #7a5000;
+  --color-on-warning: #3d2700;
+  --color-on-warning-container: #fff3d6;
+
+  /* SUCCESS COLORS */
+  --color-success: #80e8a8;
+  --color-success-container: #1d7d4d;
+  --color-on-success: #003d1c;
+  --color-on-success-container: #d9fbe8;
+
+  /* INFO COLORS */
+  --color-info: #a3c9ff;
+  --color-info-container: #0066cc;
+  --color-on-info: #002b5c;
+  --color-on-info-container: #e6f0ff;
+
+  /* SURFACE COLORS */
+  --color-surface: #141218;
+  --color-surface-dim: #141218;
+  --color-surface-bright: #3b383e;
+  --color-surface-container-lowest: #0f0d13;
+  --color-surface-container-low: #1d1b20;
+  --color-surface-container: #211f26;
+  --color-surface-container-high: #2b2930;
+  --color-surface-container-highest: #36343b;
+  --color-on-surface: #e6e0e9;
+  --color-on-surface-variant: #cac4d0;
+
+  /* UTILITY COLORS */
+  --color-outline: #938f99;
+  --color-outline-variant: #49454f;
+  --color-scrim: #000000;
+  --color-shadow: #000000;
+  --color-inverse-surface: #e6e0e9;
+  --color-inverse-on-surface: #322f35;
+  --color-inverse-primary: #6750a4;
+
+  /* ENHANCED SHADOWS FOR DARK MODE */
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.25), 0 1px 2px -1px rgb(0 0 0 / 0.25);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.35), 0 4px 6px -4px rgb(0 0 0 / 0.35);
+
+  /* M3 EXPRESSIVE - Card Colors */
+  --color-card-idle: #2b2930;
+  --color-card-focus: #3d3a4a;
+  --color-card-border: rgba(73, 69, 79, 0.4);
+  --color-card-border-hover: rgba(208, 188, 255, 0.25);
+
+  /* TOAST COLORS - DARK MODE */
+  --toast-bg: #323232;
+  --toast-text: #e8e8e8;
+  --toast-action: #8ab4f8;
+  --toast-hover: rgba(255, 255, 255, 0.1);
+  --toast-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
+  --toast-icon-success: #81c995;
+  --toast-icon-error: #f28b82;
+  --toast-icon-warning: #fdd663;
+  --toast-icon-info: #8ab4f8;
+}
+
+/* ================================== */
+/* BLUE PALETTE                       */
+/* ================================== */
+:root[data-palette='blue'] {
+  --color-primary: #1976d2;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #d1e4ff;
+  --color-on-primary-container: #001d36;
+
+  --color-secondary: #535f70;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d7e3f7;
+  --color-on-secondary-container: #101c2b;
+
+  --color-tertiary: #6b5778;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #f3daff;
+  --color-on-tertiary-container: #251431;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+
+  --color-surface: #f8f9ff;
+  --color-surface-dim: #d8dae0;
+  --color-surface-bright: #f8f9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f3f9;
+  --color-surface-container: #ecedf3;
+  --color-surface-container-high: #e6e7ed;
+  --color-surface-container-highest: #e1e2e8;
+  --color-on-surface: #191c20;
+  --color-on-surface-variant: #42474e;
+
+  --color-outline: #72777f;
+  --color-outline-variant: #c2c7cf;
+  --color-inverse-surface: #2e3135;
+  --color-inverse-on-surface: #f0f1f6;
+  --color-inverse-primary: #a0c9ff;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #f1f5fc;
+  --color-card-focus: #d8e4f8;
+  --color-card-border: rgba(194, 199, 207, 0.3);
+  --color-card-border-hover: rgba(25, 118, 210, 0.25);
+}
+
+:root[data-palette='blue'][data-theme='dark'] {
+  --color-primary: #a0c9ff;
+  --color-on-primary: #003258;
+  --color-primary-container: #00497d;
+  --color-on-primary-container: #d1e4ff;
+
+  --color-secondary: #bbc7db;
+  --color-on-secondary: #253140;
+  --color-secondary-container: #3c4858;
+  --color-on-secondary-container: #d7e3f7;
+
+  --color-tertiary: #d6bee4;
+  --color-on-tertiary: #3b2948;
+  --color-tertiary-container: #523f5f;
+  --color-on-tertiary-container: #f3daff;
+
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  --color-surface: #111318;
+  --color-surface-dim: #111318;
+  --color-surface-bright: #37393e;
+  --color-surface-container-lowest: #0c0e13;
+  --color-surface-container-low: #191c20;
+  --color-surface-container: #1d2024;
+  --color-surface-container-high: #282a2f;
+  --color-surface-container-highest: #32353a;
+  --color-on-surface: #e1e2e8;
+  --color-on-surface-variant: #c2c7cf;
+
+  --color-outline: #8c9199;
+  --color-outline-variant: #42474e;
+  --color-inverse-surface: #e1e2e8;
+  --color-inverse-on-surface: #2e3135;
+  --color-inverse-primary: #1976d2;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #282a2f;
+  --color-card-focus: #353a45;
+  --color-card-border: rgba(66, 71, 78, 0.4);
+  --color-card-border-hover: rgba(160, 201, 255, 0.25);
+}
+
+/* ================================== */
+/* GREEN PALETTE                      */
+/* ================================== */
+:root[data-palette='green'] {
+  --color-primary: #2e7d32;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #c8e6c9;
+  --color-on-primary-container: #002204;
+
+  --color-secondary: #52634f;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d5e8cf;
+  --color-on-secondary-container: #101f10;
+
+  --color-tertiary: #38656a;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #bbebf0;
+  --color-on-tertiary-container: #001f23;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+
+  --color-surface: #f7fbf6;
+  --color-surface-dim: #d7dbd6;
+  --color-surface-bright: #f7fbf6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f1f5f0;
+  --color-surface-container: #ebefea;
+  --color-surface-container-high: #e5e9e4;
+  --color-surface-container-highest: #e0e3df;
+  --color-on-surface: #181d18;
+  --color-on-surface-variant: #404943;
+
+  --color-outline: #707973;
+  --color-outline-variant: #c0c9c1;
+  --color-inverse-surface: #2d322d;
+  --color-inverse-on-surface: #eef2ed;
+  --color-inverse-primary: #a5d6a7;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #f1f7f1;
+  --color-card-focus: #d8eed9;
+  --color-card-border: rgba(192, 201, 193, 0.3);
+  --color-card-border-hover: rgba(46, 125, 50, 0.25);
+}
+
+:root[data-palette='green'][data-theme='dark'] {
+  --color-primary: #a5d6a7;
+  --color-on-primary: #00390a;
+  --color-primary-container: #00531e;
+  --color-on-primary-container: #c8e6c9;
+
+  --color-secondary: #b9ccb4;
+  --color-on-secondary: #253423;
+  --color-secondary-container: #3b4b38;
+  --color-on-secondary-container: #d5e8cf;
+
+  --color-tertiary: #a0cfd4;
+  --color-on-tertiary: #00363b;
+  --color-tertiary-container: #1e4d52;
+  --color-on-tertiary-container: #bbebf0;
+
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  --color-surface: #101410;
+  --color-surface-dim: #101410;
+  --color-surface-bright: #363a36;
+  --color-surface-container-lowest: #0b0f0b;
+  --color-surface-container-low: #181d18;
+  --color-surface-container: #1c211c;
+  --color-surface-container-high: #272b26;
+  --color-surface-container-highest: #313631;
+  --color-on-surface: #e0e3df;
+  --color-on-surface-variant: #c0c9c1;
+
+  --color-outline: #8a938c;
+  --color-outline-variant: #404943;
+  --color-inverse-surface: #e0e3df;
+  --color-inverse-on-surface: #2d322d;
+  --color-inverse-primary: #2e7d32;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #272b26;
+  --color-card-focus: #343a33;
+  --color-card-border: rgba(64, 73, 67, 0.4);
+  --color-card-border-hover: rgba(165, 214, 167, 0.25);
+}
+
+/* ================================== */
+/* ORANGE PALETTE                     */
+/* ================================== */
+:root[data-palette='orange'] {
+  --color-primary: #e65100;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #ffcc80;
+  --color-on-primary-container: #311300;
+
+  --color-secondary: #77574a;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #ffdcc7;
+  --color-on-secondary-container: #2c160c;
+
+  --color-tertiary: #616032;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #e7e5ab;
+  --color-on-tertiary-container: #1d1d00;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+
+  --color-surface: #fff8f6;
+  --color-surface-dim: #e0d9d6;
+  --color-surface-bright: #fff8f6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #faf3f0;
+  --color-surface-container: #f4edea;
+  --color-surface-container-high: #efe7e4;
+  --color-surface-container-highest: #e9e2df;
+  --color-on-surface: #201a18;
+  --color-on-surface-variant: #52443c;
+
+  --color-outline: #84746b;
+  --color-outline-variant: #d7c2b8;
+  --color-inverse-surface: #35302c;
+  --color-inverse-on-surface: #fbeeea;
+  --color-inverse-primary: #ffb874;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #fff5f0;
+  --color-card-focus: #ffe8da;
+  --color-card-border: rgba(215, 194, 184, 0.3);
+  --color-card-border-hover: rgba(230, 81, 0, 0.25);
+}
+
+:root[data-palette='orange'][data-theme='dark'] {
+  --color-primary: #ffb874;
+  --color-on-primary: #512300;
+  --color-primary-container: #723600;
+  --color-on-primary-container: #ffcc80;
+
+  --color-secondary: #e6beac;
+  --color-on-secondary: #43261e;
+  --color-secondary-container: #5d3d33;
+  --color-on-secondary-container: #ffdcc7;
+
+  --color-tertiary: #cac992;
+  --color-on-tertiary: #323209;
+  --color-tertiary-container: #49491d;
+  --color-on-tertiary-container: #e7e5ab;
+
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  --color-surface: #181210;
+  --color-surface-dim: #181210;
+  --color-surface-bright: #3f3835;
+  --color-surface-container-lowest: #120d0b;
+  --color-surface-container-low: #201a18;
+  --color-surface-container: #241e1c;
+  --color-surface-container-high: #2f2926;
+  --color-surface-container-highest: #3a3331;
+  --color-on-surface: #e9e2df;
+  --color-on-surface-variant: #d7c2b8;
+
+  --color-outline: #9f8d84;
+  --color-outline-variant: #52443c;
+  --color-inverse-surface: #e9e2df;
+  --color-inverse-on-surface: #35302c;
+  --color-inverse-primary: #e65100;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #2f2926;
+  --color-card-focus: #3e3530;
+  --color-card-border: rgba(82, 68, 60, 0.4);
+  --color-card-border-hover: rgba(255, 184, 116, 0.25);
+}
+
+/* ================================== */
+/* PINK PALETTE                       */
+/* ================================== */
+:root[data-palette='pink'] {
+  --color-primary: #c2185b;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #ffd8e7;
+  --color-on-primary-container: #3e001d;
+
+  --color-secondary: #74565f;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #ffd8e2;
+  --color-on-secondary-container: #2b151c;
+
+  --color-tertiary: #7c5635;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #ffdcc2;
+  --color-on-tertiary-container: #2e1500;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+
+  --color-surface: #fff8f8;
+  --color-surface-dim: #e0d9da;
+  --color-surface-bright: #fff8f8;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #faf2f3;
+  --color-surface-container: #f4eced;
+  --color-surface-container-high: #efe6e8;
+  --color-surface-container-highest: #e9e1e2;
+  --color-on-surface: #201a1b;
+  --color-on-surface-variant: #514347;
+
+  --color-outline: #837377;
+  --color-outline-variant: #d6c2c6;
+  --color-inverse-surface: #352f30;
+  --color-inverse-on-surface: #faeeef;
+  --color-inverse-primary: #ffb0d1;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #fef1f5;
+  --color-card-focus: #fcdae7;
+  --color-card-border: rgba(214, 194, 198, 0.3);
+  --color-card-border-hover: rgba(194, 24, 91, 0.25);
+}
+
+:root[data-palette='pink'][data-theme='dark'] {
+  --color-primary: #ffb0d1;
+  --color-on-primary: #650033;
+  --color-primary-container: #8e0048;
+  --color-on-primary-container: #ffd8e7;
+
+  --color-secondary: #e3bdc7;
+  --color-on-secondary: #422931;
+  --color-secondary-container: #5a3f47;
+  --color-on-secondary-container: #ffd8e2;
+
+  --color-tertiary: #eebf9d;
+  --color-on-tertiary: #48290c;
+  --color-tertiary-container: #623f20;
+  --color-on-tertiary-container: #ffdcc2;
+
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  --color-surface: #181113;
+  --color-surface-dim: #181113;
+  --color-surface-bright: #3f3738;
+  --color-surface-container-lowest: #130c0d;
+  --color-surface-container-low: #201a1b;
+  --color-surface-container: #241e1f;
+  --color-surface-container-high: #2f282a;
+  --color-surface-container-highest: #3a3334;
+  --color-on-surface: #e9e1e2;
+  --color-on-surface-variant: #d6c2c6;
+
+  --color-outline: #9f8c90;
+  --color-outline-variant: #514347;
+  --color-inverse-surface: #e9e1e2;
+  --color-inverse-on-surface: #352f30;
+  --color-inverse-primary: #c2185b;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #2f282a;
+  --color-card-focus: #3e3538;
+  --color-card-border: rgba(81, 67, 71, 0.4);
+  --color-card-border-hover: rgba(255, 176, 209, 0.25);
+}
+
+/* ================================== */
+/* TEAL PALETTE                       */
+/* ================================== */
+:root[data-palette='teal'] {
+  --color-primary: #00796b;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #b2dfdb;
+  --color-on-primary-container: #002019;
+
+  --color-secondary: #4a6360;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #cce8e4;
+  --color-on-secondary-container: #05201d;
+
+  --color-tertiary: #456179;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #cde5ff;
+  --color-on-tertiary-container: #001e31;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+
+  --color-surface: #f4fffe;
+  --color-surface-dim: #d5dbda;
+  --color-surface-bright: #f4fffe;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #eef5f4;
+  --color-surface-container: #e8efee;
+  --color-surface-container-high: #e3e9e8;
+  --color-surface-container-highest: #dde3e2;
+  --color-on-surface: #171d1c;
+  --color-on-surface-variant: #3f4947;
+
+  --color-outline: #6f7977;
+  --color-outline-variant: #bec9c7;
+  --color-inverse-surface: #2c3231;
+  --color-inverse-on-surface: #edf2f0;
+  --color-inverse-primary: #7acdc4;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #eef8f7;
+  --color-card-focus: #d5edea;
+  --color-card-border: rgba(190, 201, 199, 0.3);
+  --color-card-border-hover: rgba(0, 121, 107, 0.25);
+}
+
+:root[data-palette='teal'][data-theme='dark'] {
+  --color-primary: #7acdc4;
+  --color-on-primary: #00382f;
+  --color-primary-container: #005048;
+  --color-on-primary-container: #b2dfdb;
+
+  --color-secondary: #b0ccc8;
+  --color-on-secondary: #1b3532;
+  --color-secondary-container: #324b48;
+  --color-on-secondary-container: #cce8e4;
+
+  --color-tertiary: #b0cae8;
+  --color-on-tertiary: #19334a;
+  --color-tertiary-container: #2e4a61;
+  --color-on-tertiary-container: #cde5ff;
+
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  --color-surface: #0e1514;
+  --color-surface-dim: #0e1514;
+  --color-surface-bright: #343b3a;
+  --color-surface-container-lowest: #09100f;
+  --color-surface-container-low: #171d1c;
+  --color-surface-container: #1b2120;
+  --color-surface-container-high: #252b2b;
+  --color-surface-container-highest: #303635;
+  --color-on-surface: #dde3e2;
+  --color-on-surface-variant: #bec9c7;
+
+  --color-outline: #889390;
+  --color-outline-variant: #3f4947;
+  --color-inverse-surface: #dde3e2;
+  --color-inverse-on-surface: #2c3231;
+  --color-inverse-primary: #00796b;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #252b2b;
+  --color-card-focus: #323a39;
+  --color-card-border: rgba(63, 73, 71, 0.4);
+  --color-card-border-hover: rgba(122, 205, 196, 0.25);
+}
+
+/* ================================== */
+/* AMBER PALETTE                      */
+/* ================================== */
+:root[data-palette='amber'] {
+  --color-primary: #f59e0b;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #fef3c7;
+  --color-on-primary-container: #451a03;
+
+  --color-secondary: #78716c;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #f5f5f4;
+  --color-on-secondary-container: #1c1917;
+
+  --color-tertiary: #b45309;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #fed7aa;
+  --color-on-tertiary-container: #431407;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+
+  --color-surface: #fefbf6;
+  --color-surface-dim: #e8e4df;
+  --color-surface-bright: #fefbf6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f9f6f1;
+  --color-surface-container: #f3f0eb;
+  --color-surface-container-high: #edebe6;
+  --color-surface-container-highest: #e8e5e0;
+  --color-on-surface: #1c1917;
+  --color-on-surface-variant: #44403c;
+
+  --color-outline: #78716c;
+  --color-outline-variant: #d6d3ce;
+  --color-inverse-surface: #313029;
+  --color-inverse-on-surface: #f5f5f0;
+  --color-inverse-primary: #fbbf24;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #fefaf5;
+  --color-card-focus: #fef3c7;
+  --color-card-border: rgba(214, 211, 206, 0.3);
+  --color-card-border-hover: rgba(245, 158, 11, 0.25);
+}
+
+:root[data-palette='amber'][data-theme='dark'] {
+  --color-primary: #fbbf24;
+  --color-on-primary: #422006;
+  --color-primary-container: #78350f;
+  --color-on-primary-container: #fef3c7;
+
+  --color-secondary: #d6d3cd;
+  --color-on-secondary: #363330;
+  --color-secondary-container: #4d4a47;
+  --color-on-secondary-container: #f2efea;
+
+  --color-tertiary: #fcd34d;
+  --color-on-tertiary: #431407;
+  --color-tertiary-container: #92400e;
+  --color-on-tertiary-container: #fed7aa;
+
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  --color-surface: #141211;
+  --color-surface-dim: #141211;
+  --color-surface-bright: #3b3935;
+  --color-surface-container-lowest: #0e0d0c;
+  --color-surface-container-low: #1c1a18;
+  --color-surface-container: #201e1c;
+  --color-surface-container-high: #2b2926;
+  --color-surface-container-highest: #363331;
+  --color-on-surface: #e8e5e0;
+  --color-on-surface-variant: #d6d3cd;
+
+  --color-outline: #9f9a94;
+  --color-outline-variant: #4a4743;
+  --color-inverse-surface: #e8e5e0;
+  --color-inverse-on-surface: #313029;
+  --color-inverse-primary: #f59e0b;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #2b2926;
+  --color-card-focus: #3a3733;
+  --color-card-border: rgba(74, 71, 67, 0.4);
+  --color-card-border-hover: rgba(251, 191, 36, 0.25);
+}
+
+/* ================================== */
+/* INDIGO PALETTE                     */
+/* ================================== */
+:root[data-palette='indigo'] {
+  --color-primary: #4f46e5;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #e0e7ff;
+  --color-on-primary-container: #1e1b4b;
+
+  --color-secondary: #64748b;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #e2e8f0;
+  --color-on-secondary-container: #1e293b;
+
+  --color-tertiary: #7c3aed;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #ede9fe;
+  --color-on-tertiary-container: #2e1065;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+
+  --color-surface: #f8fafc;
+  --color-surface-dim: #e2e8f0;
+  --color-surface-bright: #f8fafc;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f1f5f9;
+  --color-surface-container: #e2e8f0;
+  --color-surface-container-high: #cbd5e1;
+  --color-surface-container-highest: #94a3b8;
+  --color-on-surface: #0f172a;
+  --color-on-surface-variant: #334155;
+
+  --color-outline: #64748b;
+  --color-outline-variant: #cbd5e1;
+  --color-inverse-surface: #1e293b;
+  --color-inverse-on-surface: #f1f5f9;
+  --color-inverse-primary: #a5b4fc;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #f5f7ff;
+  --color-card-focus: #e0e7ff;
+  --color-card-border: rgba(203, 213, 225, 0.3);
+  --color-card-border-hover: rgba(79, 70, 229, 0.25);
+}
+
+:root[data-palette='indigo'][data-theme='dark'] {
+  --color-primary: #a5b4fc;
+  --color-on-primary: #1e1b4b;
+  --color-primary-container: #3730a3;
+  --color-on-primary-container: #e0e7ff;
+
+  --color-secondary: #cbd5e1;
+  --color-on-secondary: #1e293b;
+  --color-secondary-container: #334155;
+  --color-on-secondary-container: #e2e8f0;
+
+  --color-tertiary: #c4b5fd;
+  --color-on-tertiary: #2e1065;
+  --color-tertiary-container: #5b21b6;
+  --color-on-tertiary-container: #ede9fe;
+
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  --color-surface: #0f172a;
+  --color-surface-dim: #0f172a;
+  --color-surface-bright: #334155;
+  --color-surface-container-lowest: #020617;
+  --color-surface-container-low: #1e293b;
+  --color-surface-container: #1e293b;
+  --color-surface-container-high: #334155;
+  --color-surface-container-highest: #475569;
+  --color-on-surface: #e2e8f0;
+  --color-on-surface-variant: #cbd5e1;
+
+  --color-outline: #64748b;
+  --color-outline-variant: #334155;
+  --color-inverse-surface: #e2e8f0;
+  --color-inverse-on-surface: #1e293b;
+  --color-inverse-primary: #4f46e5;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #1e293b;
+  --color-card-focus: #2d3a50;
+  --color-card-border: rgba(51, 65, 85, 0.4);
+  --color-card-border-hover: rgba(165, 180, 252, 0.25);
+}
+
+/* Coral - Warm coral/salmon palette */
+:root[data-palette='coral'] {
+  --color-primary: #f97316;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #ffedd5;
+  --color-on-primary-container: #7c2d12;
+
+  --color-secondary: #78716c;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #e7e5e4;
+  --color-on-secondary-container: #292524;
+
+  --color-tertiary: #fb923c;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #fed7aa;
+  --color-on-tertiary-container: #9a3412;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+
+  --color-surface: #fafaf9;
+  --color-surface-dim: #e7e5e4;
+  --color-surface-bright: #fafaf9;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f5f4;
+  --color-surface-container: #e7e5e4;
+  --color-surface-container-high: #d6d3d1;
+  --color-surface-container-highest: #a8a29e;
+  --color-on-surface: #1c1917;
+  --color-on-surface-variant: #44403c;
+
+  --color-outline: #78716c;
+  --color-outline-variant: #d6d3d1;
+  --color-inverse-surface: #292524;
+  --color-inverse-on-surface: #f5f5f4;
+  --color-inverse-primary: #fdba74;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #fffbf7;
+  --color-card-focus: #ffedd5;
+  --color-card-border: rgba(214, 211, 209, 0.3);
+  --color-card-border-hover: rgba(249, 115, 22, 0.25);
+}
+
+:root[data-palette='coral'][data-theme='dark'] {
+  --color-primary: #fdba74;
+  --color-on-primary: #7c2d12;
+  --color-primary-container: #c2410c;
+  --color-on-primary-container: #ffedd5;
+
+  --color-secondary: #d6d3d1;
+  --color-on-secondary: #292524;
+  --color-secondary-container: #44403c;
+  --color-on-secondary-container: #e7e5e4;
+
+  --color-tertiary: #fed7aa;
+  --color-on-tertiary: #9a3412;
+  --color-tertiary-container: #ea580c;
+  --color-on-tertiary-container: #ffedd5;
+
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  --color-surface: #1c1917;
+  --color-surface-dim: #1c1917;
+  --color-surface-bright: #44403c;
+  --color-surface-container-lowest: #0c0a09;
+  --color-surface-container-low: #292524;
+  --color-surface-container: #292524;
+  --color-surface-container-high: #44403c;
+  --color-surface-container-highest: #57534e;
+  --color-on-surface: #e7e5e4;
+  --color-on-surface-variant: #d6d3d1;
+
+  --color-outline: #78716c;
+  --color-outline-variant: #44403c;
+  --color-inverse-surface: #e7e5e4;
+  --color-inverse-on-surface: #292524;
+  --color-inverse-primary: #f97316;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #292524;
+  --color-card-focus: #3d3835;
+  --color-card-border: rgba(68, 64, 60, 0.4);
+  --color-card-border-hover: rgba(253, 186, 116, 0.25);
+}
+
+/* Midnight - Deep navy/dark blue palette */
+:root[data-palette='midnight'] {
+  --color-primary: #1e3a5f;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #dbeafe;
+  --color-on-primary-container: #0c1929;
+
+  --color-secondary: #64748b;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #e2e8f0;
+  --color-on-secondary-container: #1e293b;
+
+  --color-tertiary: #3b82f6;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #bfdbfe;
+  --color-on-tertiary-container: #1e3a8a;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+
+  --color-surface: #f8fafc;
+  --color-surface-dim: #e2e8f0;
+  --color-surface-bright: #f8fafc;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f1f5f9;
+  --color-surface-container: #e2e8f0;
+  --color-surface-container-high: #cbd5e1;
+  --color-surface-container-highest: #94a3b8;
+  --color-on-surface: #0f172a;
+  --color-on-surface-variant: #334155;
+
+  --color-outline: #64748b;
+  --color-outline-variant: #cbd5e1;
+  --color-inverse-surface: #1e293b;
+  --color-inverse-on-surface: #f1f5f9;
+  --color-inverse-primary: #93c5fd;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #f8fafc;
+  --color-card-focus: #dbeafe;
+  --color-card-border: rgba(203, 213, 225, 0.3);
+  --color-card-border-hover: rgba(30, 58, 95, 0.25);
+}
+
+:root[data-palette='midnight'][data-theme='dark'] {
+  --color-primary: #93c5fd;
+  --color-on-primary: #0c1929;
+  --color-primary-container: #1e3a5f;
+  --color-on-primary-container: #dbeafe;
+
+  --color-secondary: #cbd5e1;
+  --color-on-secondary: #1e293b;
+  --color-secondary-container: #334155;
+  --color-on-secondary-container: #e2e8f0;
+
+  --color-tertiary: #93c5fd;
+  --color-on-tertiary: #1e3a8a;
+  --color-tertiary-container: #1d4ed8;
+  --color-on-tertiary-container: #bfdbfe;
+
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  --color-surface: #0f172a;
+  --color-surface-dim: #0f172a;
+  --color-surface-bright: #334155;
+  --color-surface-container-lowest: #020617;
+  --color-surface-container-low: #1e293b;
+  --color-surface-container: #1e293b;
+  --color-surface-container-high: #334155;
+  --color-surface-container-highest: #475569;
+  --color-on-surface: #e2e8f0;
+  --color-on-surface-variant: #cbd5e1;
+
+  --color-outline: #64748b;
+  --color-outline-variant: #334155;
+  --color-inverse-surface: #e2e8f0;
+  --color-inverse-on-surface: #1e293b;
+  --color-inverse-primary: #1e3a5f;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #1e293b;
+  --color-card-focus: #2d3a50;
+  --color-card-border: rgba(51, 65, 85, 0.4);
+  --color-card-border-hover: rgba(147, 197, 253, 0.25);
+}
+
+/* ================================== */
+/* MONOCHROME PALETTE (Typeform-like) */
+/* ================================== */
+:root[data-palette='monochrome'] {
+  --color-primary: #191919;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #f5f5f5;
+  --color-on-primary-container: #0a0a0a;
+
+  --color-secondary: #525252;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #e5e5e5;
+  --color-on-secondary-container: #171717;
+
+  --color-tertiary: #737373;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #f5f5f5;
+  --color-on-tertiary-container: #262626;
+
+  --color-error: #dc2626;
+  --color-on-error: #ffffff;
+  --color-error-container: #fef2f2;
+  --color-on-error-container: #7f1d1d;
+
+  --color-surface: #ffffff;
+  --color-surface-dim: #e5e5e5;
+  --color-surface-bright: #ffffff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #fafafa;
+  --color-surface-container: #f5f5f5;
+  --color-surface-container-high: #f0f0f0;
+  --color-surface-container-highest: #e5e5e5;
+  --color-on-surface: #171717;
+  --color-on-surface-variant: #525252;
+
+  --color-outline: #a3a3a3;
+  --color-outline-variant: #d4d4d4;
+  --color-inverse-surface: #262626;
+  --color-inverse-on-surface: #fafafa;
+  --color-inverse-primary: #e5e5e5;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #fafafa;
+  --color-card-focus: #f0f0f0;
+  --color-card-border: rgba(212, 212, 212, 0.5);
+  --color-card-border-hover: rgba(25, 25, 25, 0.2);
+}
+
+:root[data-palette='monochrome'][data-theme='dark'] {
+  --color-primary: #e5e5e5;
+  --color-on-primary: #0a0a0a;
+  --color-primary-container: #262626;
+  --color-on-primary-container: #f5f5f5;
+
+  --color-secondary: #a3a3a3;
+  --color-on-secondary: #171717;
+  --color-secondary-container: #404040;
+  --color-on-secondary-container: #e5e5e5;
+
+  --color-tertiary: #737373;
+  --color-on-tertiary: #fafafa;
+  --color-tertiary-container: #525252;
+  --color-on-tertiary-container: #d4d4d4;
+
+  --color-error: #fca5a5;
+  --color-on-error: #7f1d1d;
+  --color-error-container: #991b1b;
+  --color-on-error-container: #fef2f2;
+
+  --color-surface: #0a0a0a;
+  --color-surface-dim: #0a0a0a;
+  --color-surface-bright: #404040;
+  --color-surface-container-lowest: #000000;
+  --color-surface-container-low: #171717;
+  --color-surface-container: #1a1a1a;
+  --color-surface-container-high: #262626;
+  --color-surface-container-highest: #333333;
+  --color-on-surface: #f5f5f5;
+  --color-on-surface-variant: #a3a3a3;
+
+  --color-outline: #525252;
+  --color-outline-variant: #404040;
+  --color-inverse-surface: #f5f5f5;
+  --color-inverse-on-surface: #262626;
+  --color-inverse-primary: #191919;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #1a1a1a;
+  --color-card-focus: #262626;
+  --color-card-border: rgba(64, 64, 64, 0.5);
+  --color-card-border-hover: rgba(229, 229, 229, 0.2);
+}
+
+/* ================================== */
+/* SLATE PALETTE (Cool Blue-Gray)     */
+/* ================================== */
+:root[data-palette='slate'] {
+  --color-primary: #475569;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #e2e8f0;
+  --color-on-primary-container: #0f172a;
+
+  --color-secondary: #64748b;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #e2e8f0;
+  --color-on-secondary-container: #1e293b;
+
+  --color-tertiary: #6366f1;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #e0e7ff;
+  --color-on-tertiary-container: #1e1b4b;
+
+  --color-error: #dc2626;
+  --color-on-error: #ffffff;
+  --color-error-container: #fef2f2;
+  --color-on-error-container: #7f1d1d;
+
+  --color-surface: #f8fafc;
+  --color-surface-dim: #e2e8f0;
+  --color-surface-bright: #f8fafc;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f1f5f9;
+  --color-surface-container: #e2e8f0;
+  --color-surface-container-high: #cbd5e1;
+  --color-surface-container-highest: #94a3b8;
+  --color-on-surface: #0f172a;
+  --color-on-surface-variant: #475569;
+
+  --color-outline: #94a3b8;
+  --color-outline-variant: #cbd5e1;
+  --color-inverse-surface: #1e293b;
+  --color-inverse-on-surface: #f1f5f9;
+  --color-inverse-primary: #94a3b8;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #f1f5f9;
+  --color-card-focus: #e2e8f0;
+  --color-card-border: rgba(148, 163, 184, 0.3);
+  --color-card-border-hover: rgba(71, 85, 105, 0.25);
+}
+
+:root[data-palette='slate'][data-theme='dark'] {
+  --color-primary: #94a3b8;
+  --color-on-primary: #0f172a;
+  --color-primary-container: #334155;
+  --color-on-primary-container: #e2e8f0;
+
+  --color-secondary: #cbd5e1;
+  --color-on-secondary: #1e293b;
+  --color-secondary-container: #475569;
+  --color-on-secondary-container: #e2e8f0;
+
+  --color-tertiary: #a5b4fc;
+  --color-on-tertiary: #1e1b4b;
+  --color-tertiary-container: #4338ca;
+  --color-on-tertiary-container: #e0e7ff;
+
+  --color-error: #fca5a5;
+  --color-on-error: #7f1d1d;
+  --color-error-container: #991b1b;
+  --color-on-error-container: #fef2f2;
+
+  --color-surface: #0f172a;
+  --color-surface-dim: #0f172a;
+  --color-surface-bright: #334155;
+  --color-surface-container-lowest: #020617;
+  --color-surface-container-low: #1e293b;
+  --color-surface-container: #1e293b;
+  --color-surface-container-high: #334155;
+  --color-surface-container-highest: #475569;
+  --color-on-surface: #e2e8f0;
+  --color-on-surface-variant: #94a3b8;
+
+  --color-outline: #64748b;
+  --color-outline-variant: #334155;
+  --color-inverse-surface: #e2e8f0;
+  --color-inverse-on-surface: #1e293b;
+  --color-inverse-primary: #475569;
+
+  /* M3 Expressive - Card Colors */
+  --color-card-idle: #1e293b;
+  --color-card-focus: #334155;
+  --color-card-border: rgba(51, 65, 85, 0.5);
+  --color-card-border-hover: rgba(148, 163, 184, 0.25);
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-on-surface font-sans antialiased selection:bg-primary-container selection:text-on-primary-container;
+  }
+}
+
+/* ================================== */
+/* PUBLIC SURVEY THEME OVERRIDES      */
+/* ================================== */
+/* When in survey mode, apply dynamic button border radius from CSS variable */
+:root[data-survey-mode='true'] {
+  /* Define default button radius if not set by theme */
+  --button-border-radius: 9999px;
+  /* Input border radius (capped for pill style) */
+  --input-border-radius: 8px;
+}
+
+/* Override button border radius in survey mode */
+:root[data-survey-mode='true'] button:not([data-radix-menu-content] button):not([role='menuitem']),
+:root[data-survey-mode='true'] [role='button']:not([data-radix-menu-content] [role='button']) {
+  border-radius: var(--button-border-radius) !important;
+}
+
+/* Ensure input fields also respect the theme styling */
+:root[data-survey-mode='true'] input[type='text'],
+:root[data-survey-mode='true'] input[type='email'],
+:root[data-survey-mode='true'] input[type='tel'],
+:root[data-survey-mode='true'] input[type='number'],
+:root[data-survey-mode='true'] textarea,
+:root[data-survey-mode='true'] select {
+  border-radius: var(--input-border-radius) !important;
+}
+
+/* ================================== */
+/* M3 EXPRESSIVE ANIMATIONS           */
+/* NO scale/translate for elevation   */
+/* ================================== */
+
+/* Simple float - gentle movement */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Effects - smooth opacity transitions only */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Simple slide up - opacity + translate for entrance */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, var(--color-primary-container), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Simple slide up animation */
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out both;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out;
+}
+
+/* Simple fade in */
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Toast animations - Gmail-inspired smooth transitions */
+@keyframes toast-in {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+}
+
+@keyframes shrink-width {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.animate-toast-in {
+  animation: toast-in 0.25s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.animate-toast-out {
+  animation: toast-out 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.animate-shrink-width {
+  animation: shrink-width linear forwards;
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:root[data-theme='dark'] .glass {
+  background: rgba(30, 27, 42, 0.7);
+}
+
+/* Custom scrollbar for the log viewer */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-outline-variant/40 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-outline/50;
+}
+
+/* Focus ring styles */
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
+}
+
+/* Clean hover states - border only */
+.hover-border {
+  @apply transition-colors duration-200 hover:border-primary/50;
+}
+
+/* ================================== */
+/* VIEW TRANSITIONS (subtle fade)     */
+/* ================================== */
+@view-transition {
+  navigation: auto;
+}
+
+/* Default cross-fade - subtle and fast */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 150ms;
+  animation-timing-function: ease-out;
+}
+
+/* Reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+/* ================================== */
+/* ACCESSIBILITY STYLES               */
+/* ================================== */
+
+/* High Contrast Mode */
+:root.high-contrast,
+:root[data-high-contrast='true'] {
+  /* Increase all contrast ratios */
+  --primary: oklch(0.45 0.2 240);
+  --on-primary: oklch(1 0 0);
+  --secondary: oklch(0.35 0.15 200);
+  --on-secondary: oklch(1 0 0);
+  --surface: oklch(1 0 0);
+  --on-surface: oklch(0 0 0);
+  --surface-container: oklch(0.97 0 0);
+  --surface-container-low: oklch(0.98 0 0);
+  --surface-container-high: oklch(0.95 0 0);
+  --outline: oklch(0.2 0 0);
+  --outline-variant: oklch(0.4 0 0);
+
+  /* Stronger focus indicators */
+  --ring-offset-width: 3px;
+}
+
+:root.high-contrast[data-theme='dark'],
+:root[data-high-contrast='true'][data-theme='dark'] {
+  --primary: oklch(0.8 0.2 240);
+  --on-primary: oklch(0 0 0);
+  --secondary: oklch(0.75 0.15 200);
+  --on-secondary: oklch(0 0 0);
+  --surface: oklch(0.1 0 0);
+  --on-surface: oklch(1 0 0);
+  --surface-container: oklch(0.15 0 0);
+  --surface-container-low: oklch(0.12 0 0);
+  --surface-container-high: oklch(0.18 0 0);
+  --outline: oklch(0.85 0 0);
+  --outline-variant: oklch(0.7 0 0);
+}
+
+/* High contrast focus states */
+:root.high-contrast *:focus-visible,
+:root[data-high-contrast='true'] *:focus-visible {
+  outline: 3px solid var(--primary) !important;
+  outline-offset: 2px !important;
+}
+
+/* High contrast borders */
+:root.high-contrast [class*='border'],
+:root[data-high-contrast='true'] [class*='border'] {
+  border-color: var(--outline) !important;
+}
+
+/* Reduced Motion Mode */
+:root.reduce-motion,
+:root[data-reduce-motion='true'] {
+  /* Disable all animations and transitions */
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Disable view transitions */
+  &::view-transition-old(*),
+  &::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Dyslexia-Friendly Font (OpenDyslexic-style adjustments) */
+:root.dyslexia-font,
+:root[data-dyslexia-font='true'] {
+  /* Use a more readable font with increased letter spacing */
+  font-family:
+    'OpenSans',
+    system-ui,
+    -apple-system,
+    sans-serif !important;
+  letter-spacing: 0.05em;
+  word-spacing: 0.15em;
+  line-height: 1.8;
+
+  * {
+    font-family: inherit !important;
+    letter-spacing: inherit;
+    word-spacing: inherit;
+  }
+
+  /* Increase line height for readability */
+  p,
+  span,
+  li,
+  td,
+  th,
+  label,
+  input,
+  textarea,
+  select,
+  button {
+    line-height: 1.8 !important;
+  }
+
+  /* Prevent justified text which is harder to read */
+  * {
+    text-align: left !important;
+  }
+
+  /* Exceptions for centered headings and buttons */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  button,
+  [role='button'],
+  .text-center {
+    text-align: inherit !important;
+  }
+}
+
+/* Font Size Scaling */
+:root[data-font-scale='small'] {
+  font-size: 14px;
+}
+
+:root[data-font-scale='normal'] {
+  font-size: 16px;
+}
+
+:root[data-font-scale='large'] {
+  font-size: 18px;
+}
+
+:root[data-font-scale='x-large'] {
+  font-size: 20px;
+}
+
+/* Screen Reader Optimizations - Visual focus enhancements */
+:root.screen-reader-optimized,
+:root[data-screen-reader='true'] {
+  /* Enhance focus visibility */
+  *:focus-visible {
+    outline: 3px solid var(--primary) !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 0 6px rgba(var(--primary), 0.2) !important;
+  }
+
+  /* Add visual skip link styling */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--primary);
+    color: var(--on-primary);
+    padding: 8px 16px;
+    z-index: 9999;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+}
+
+/* Combined accessibility prefers-reduced-motion media query */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    * {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+/* High contrast media query */
+@media (prefers-contrast: more) {
+  :root:not(.high-contrast):not([data-high-contrast='true']) {
+    /* Apply high contrast styles by default when system prefers it */
+    --outline: oklch(0.2 0 0);
+    --outline-variant: oklch(0.4 0 0);
+  }
+
+  :root[data-theme='dark']:not(.high-contrast):not([data-high-contrast='true']) {
+    --outline: oklch(0.85 0 0);
+    --outline-variant: oklch(0.7 0 0);
+  }
+}
