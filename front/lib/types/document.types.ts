@@ -117,6 +117,7 @@ export type ComponentType =
   | 'image'
   | 'paragraph'
   | 'divider'
+  | 'barcode'
   | 'placeholder';
 
 // Placeholder variant types for different visual states
@@ -133,6 +134,7 @@ export type ComponentProperties =
   | ImageProperties
   | ParagraphProperties
   | DividerProperties
+  | BarcodeProperties
   | PlaceholderProperties;
 
 // Font weight values matching QuestPDF (100-1000)
@@ -420,6 +422,89 @@ export interface DividerProperties {
   gradientColors?: string[];
 }
 
+// ============================================================================
+// Barcode Types
+// ============================================================================
+
+/**
+ * Supported barcode types matching ZXing.Net library capabilities.
+ *
+ * 1D Product codes: Best for retail and inventory
+ * - ean-13: European Article Number (13 digits) - most common retail barcode
+ * - ean-8: Compact version (8 digits) for small products
+ * - upc-a: Universal Product Code (12 digits) - US/Canada retail
+ * - upc-e: Compact UPC (6 digits)
+ *
+ * 1D Industrial codes: For logistics and asset tracking
+ * - code-128: Alphanumeric, high density - shipping labels
+ * - code-39: Alphanumeric - military, healthcare
+ * - code-93: Enhanced Code 39 with higher density
+ * - codabar: Libraries, blood banks
+ * - itf: Interleaved 2 of 5 - cartons, shipping
+ *
+ * 2D codes: For high data density
+ * - qr-code: Most versatile - URLs, contact info, etc.
+ * - data-matrix: Small parts marking, electronics
+ * - aztec: Boarding passes, tickets
+ * - pdf-417: IDs, driver licenses, large data
+ */
+export type BarcodeType =
+  // 1D Product codes
+  | 'ean-13'
+  | 'ean-8'
+  | 'upc-a'
+  | 'upc-e'
+  // 1D Industrial codes
+  | 'code-128'
+  | 'code-39'
+  | 'code-93'
+  | 'codabar'
+  | 'itf'
+  // 2D codes
+  | 'qr-code'
+  | 'data-matrix'
+  | 'aztec'
+  | 'pdf-417';
+
+/**
+ * Error correction level for 2D barcodes (QR Code, Aztec, PDF417).
+ * Higher levels provide more redundancy for damaged/dirty codes.
+ */
+export type BarcodeErrorCorrectionLevel = 'low' | 'medium' | 'quartile' | 'high';
+
+/**
+ * Properties for barcode/QR code components.
+ * Uses ZXing.Net library for generation, rendered as SVG for sharp output.
+ */
+export interface BarcodeProperties {
+  /** The data to encode in the barcode */
+  value: string;
+
+  /** Type of barcode to generate */
+  barcodeType: BarcodeType;
+
+  /** Whether to display the value as text below 1D barcodes */
+  showValue: boolean;
+
+  /** Barcode bars/modules color (hex) */
+  foregroundColor: string;
+
+  /** Background color (hex) */
+  backgroundColor: string;
+
+  /** Error correction level for 2D codes (QR, Aztec, PDF417) */
+  errorCorrectionLevel: BarcodeErrorCorrectionLevel;
+
+  /** Quiet zone (margin) around barcode in points */
+  quietZone: number;
+
+  /** Font size for value text display (1D barcodes) */
+  valueFontSize: number;
+
+  /** Font family for value text display */
+  valueFontFamily: string;
+}
+
 /**
  * Properties for placeholder components.
  * Used for unknown component types, missing content states, and prototyping.
@@ -539,6 +624,7 @@ export const DEFAULT_COMPONENT_SIZES: Record<ComponentType, Size> = {
   image: { width: 50, height: 50 },
   paragraph: { width: 170, height: 30 },
   divider: { width: 170, height: 2 },
+  barcode: { width: 40, height: 40 },
   placeholder: { width: 50, height: 30 },
 };
 
@@ -783,6 +869,19 @@ export function getDefaultProperties(type: ComponentType): ComponentProperties {
         dashPattern: undefined, // solid line
         gradientColors: undefined,
       } as DividerProperties;
+
+    case 'barcode':
+      return {
+        value: '',
+        barcodeType: 'qr-code',
+        showValue: true,
+        foregroundColor: '#000000',
+        backgroundColor: '#FFFFFF',
+        errorCorrectionLevel: 'medium',
+        quietZone: 2,
+        valueFontSize: 10,
+        valueFontFamily: 'Inter',
+      } as BarcodeProperties;
 
     case 'placeholder':
       return {

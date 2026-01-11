@@ -1,4 +1,4 @@
-import { Type, FormInput, PenLine, Calendar, CheckSquare, Table, Image, AlignLeft, Minus, type LucideIcon } from 'lucide-react';
+import { Type, FormInput, PenLine, Calendar, CheckSquare, Table, Image, AlignLeft, Minus, QrCode, type LucideIcon } from 'lucide-react';
 import type { ComponentType } from '@/lib/types/document.types';
 
 export interface ComponentTypeConfig {
@@ -26,7 +26,7 @@ export const COMPONENT_CATEGORIES: { name: string; types: ComponentType[] }[] = 
   },
   {
     name: 'Layout',
-    types: ['table', 'image', 'divider'],
+    types: ['table', 'image', 'divider', 'barcode'],
   },
 ];
 
@@ -103,5 +103,13 @@ export const COMPONENT_TYPES: ComponentTypeConfig[] = [
     description: 'Horizontal line',
     iconBg: '#64748b',
     hoverBg: 'rgba(100, 116, 139, 0.08)',
+  },
+  {
+    type: 'barcode',
+    label: 'Barcode / QR',
+    icon: QrCode,
+    description: 'Barcodes & QR codes',
+    iconBg: '#0ea5e9',
+    hoverBg: 'rgba(14, 165, 233, 0.08)',
   },
 ];

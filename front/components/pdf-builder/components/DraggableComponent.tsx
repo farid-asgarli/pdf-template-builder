@@ -16,6 +16,7 @@ import { TableComponent } from './TableComponent';
 import { ImageComponent } from './ImageComponent';
 import { Paragraph } from './Paragraph';
 import { Divider } from './Divider';
+import { BarcodeComponent } from './BarcodeComponent';
 import { PlaceholderComponent, UnknownComponentPlaceholder } from './PlaceholderComponent';
 import { SelectionOverlay, RESIZE_CURSORS, type ResizeDirection } from './SelectionOverlay';
 
@@ -36,6 +37,7 @@ const COMPONENT_RENDERERS: Record<ComponentTypeEnum, React.ComponentType<{ compo
   image: ImageComponent,
   paragraph: Paragraph,
   divider: Divider,
+  barcode: BarcodeComponent,
   placeholder: PlaceholderComponent,
 };
 

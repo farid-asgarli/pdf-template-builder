@@ -1,3 +1,4 @@
+import { BarcodePropertyEditor } from '@/components/pdf-builder/property-panel/components/BarcodePropertyEditor';
 import { CheckboxPropertyEditor } from '@/components/pdf-builder/property-panel/components/CheckboxPropertyEditor';
 import { DateFieldPropertyEditor } from '@/components/pdf-builder/property-panel/components/DateFieldPropertyEditor';
 import { DividerPropertyEditor } from '@/components/pdf-builder/property-panel/components/DividerPropertyEditor';
@@ -9,6 +10,7 @@ import { TablePropertyEditor } from '@/components/pdf-builder/property-panel/com
 import { TextFieldPropertyEditor } from '@/components/pdf-builder/property-panel/components/TextFieldEditor';
 import { TextLabelPropertyEditor } from '@/components/pdf-builder/property-panel/components/TextLabelPropertyEditor';
 import {
+  BarcodeProperties,
   CheckboxProperties,
   Component,
   DateFieldProperties,
@@ -48,6 +50,8 @@ export function TypeSpecificProperties({ component, onChange, onBatchChange }: T
       return <ParagraphPropertyEditor properties={component.properties as ParagraphProperties} onChange={onChange} />;
     case 'divider':
       return <DividerPropertyEditor properties={component.properties as DividerProperties} onChange={onChange} />;
+    case 'barcode':
+      return <BarcodePropertyEditor properties={component.properties as BarcodeProperties} onChange={onChange} />;
     case 'placeholder':
       return <PlaceholderPropertyEditor properties={component.properties as PlaceholderProperties} onChange={onChange} />;
     default:

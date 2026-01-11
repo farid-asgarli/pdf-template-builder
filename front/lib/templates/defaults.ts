@@ -11,6 +11,7 @@ import type {
   ImageProperties,
   ParagraphProperties,
   DividerProperties,
+  BarcodeProperties,
   PlaceholderProperties,
 } from '@/lib/types/document.types';
 
@@ -248,6 +249,26 @@ export const DEFAULT_DIVIDER_PROPERTIES: DividerProperties = {
 
 export function createDividerProperties(overrides: Partial<DividerProperties>): DividerProperties {
   return { ...DEFAULT_DIVIDER_PROPERTIES, ...overrides };
+}
+
+// ============================================================================
+// Default Barcode Properties
+// ============================================================================
+
+export const DEFAULT_BARCODE_PROPERTIES: BarcodeProperties = {
+  value: '',
+  barcodeType: 'qr-code',
+  showValue: true,
+  foregroundColor: '#000000',
+  backgroundColor: '#FFFFFF',
+  errorCorrectionLevel: 'medium',
+  quietZone: 2,
+  valueFontSize: 10,
+  valueFontFamily: 'Inter',
+};
+
+export function createBarcodeProperties(overrides: Partial<BarcodeProperties>): BarcodeProperties {
+  return { ...DEFAULT_BARCODE_PROPERTIES, ...overrides };
 }
 
 // ============================================================================

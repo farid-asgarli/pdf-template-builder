@@ -10,6 +10,7 @@ export { TableComponent } from './TableComponent';
 export { ImageComponent } from './ImageComponent';
 export { Paragraph } from './Paragraph';
 export { Divider } from './Divider';
+export { BarcodeComponent } from './BarcodeComponent';
 export { PlaceholderComponent, UnknownComponentPlaceholder } from './PlaceholderComponent';
 export { DraggableComponent } from './DraggableComponent';
 export { HeaderFooterZone } from './HeaderFooterZone';

@@ -43,6 +43,9 @@ public static class ComponentRenderer
             case "image":
                 ImageRenderer.Render(container, component.Properties);
                 break;
+            case "barcode":
+                BarcodeRenderer.Render(container, component.Properties);
+                break;
             case "placeholder":
                 RenderPlaceholder(container, component.Properties);
                 break;
@@ -182,6 +185,16 @@ public static class ComponentRenderer
                 break;
             case "image":
                 ImageRenderer.Render(container, component.Properties);
+                break;
+            case "barcode":
+                BarcodeRenderer.RenderWithVariables(
+                    container,
+                    component.Properties,
+                    pageNumber,
+                    totalPages,
+                    variables,
+                    complexVariables
+                );
                 break;
             case "placeholder":
                 RenderPlaceholder(container, component.Properties);

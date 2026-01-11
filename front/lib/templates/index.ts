@@ -17,6 +17,7 @@ export {
   DEFAULT_IMAGE_PROPERTIES,
   DEFAULT_PARAGRAPH_PROPERTIES,
   DEFAULT_DIVIDER_PROPERTIES,
+  DEFAULT_BARCODE_PROPERTIES,
   DEFAULT_PLACEHOLDER_PROPERTIES,
   createTextLabelProperties,
   createTextFieldProperties,
@@ -27,6 +28,7 @@ export {
   createImageProperties,
   createParagraphProperties,
   createDividerProperties,
+  createBarcodeProperties,
   createPlaceholderProperties,
 } from './defaults';
 
