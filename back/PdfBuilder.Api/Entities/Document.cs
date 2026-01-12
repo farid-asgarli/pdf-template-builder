@@ -1,5 +1,8 @@
-namespace PdfBuilder.Api.Models;
+namespace PdfBuilder.Api.Entities;
 
+/// <summary>
+/// Represents a PDF document in the system.
+/// </summary>
 public class Document
 {
     public Guid Id { get; set; }

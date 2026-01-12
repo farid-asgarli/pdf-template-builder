@@ -8,7 +8,7 @@ using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using PdfBuilder.Api.Data;
-using PdfBuilder.Api.Models;
+using PdfBuilder.Api.Entities;
 
 namespace PdfBuilder.Api.Services;
 

@@ -1,5 +1,5 @@
 using System.Text.Json;
-using PdfBuilder.Api.Models;
+using PdfBuilder.Api.Entities;
 
 namespace PdfBuilder.Api.Services;
 

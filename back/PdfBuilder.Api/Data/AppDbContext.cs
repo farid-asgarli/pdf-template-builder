@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PdfBuilder.Api.Models;
+using PdfBuilder.Api.Entities;
 
 namespace PdfBuilder.Api.Data;
 

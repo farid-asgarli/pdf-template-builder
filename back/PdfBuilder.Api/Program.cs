@@ -1,20 +1,39 @@
 using Microsoft.EntityFrameworkCore;
-using PdfBuilder.Api.Controllers;
+using PdfBuilder.Api.Contracts;
 using PdfBuilder.Api.Data;
+using PdfBuilder.Api.Data.Repositories;
+using PdfBuilder.Api.Infrastructure;
 using PdfBuilder.Api.Services;
 using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure QuestPDF license
+// ========================
+// QuestPDF Configuration
+// ========================
 QuestPDF.Settings.License = LicenseType.Community;
 
-// Add services to the container
+// ========================
+// Core Services
+// ========================
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc(
+        "v1",
+        new Microsoft.OpenApi.Models.OpenApiInfo
+        {
+            Title = "PDF Template Builder API",
+            Version = "v1",
+            Description = "API for creating and generating PDF documents from templates",
+        }
+    );
+});
 
-// Add CORS for local development
+// ========================
+// CORS Configuration
+// ========================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
@@ -29,26 +48,50 @@ builder.Services.AddCors(options =>
     );
 });
 
-// Add PostgreSQL database context
+// ========================
+// Database Configuration
+// ========================
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-// Add services
-builder.Services.AddScoped<BulkGenerationService>();
+// ========================
+// Repository Registration
+// ========================
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
+builder.Services.AddScoped<IVariableHistoryRepository, VariableHistoryRepository>();
+
+// ========================
+// Service Registration
+// ========================
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<ITemplateService, TemplateService>();
+builder.Services.AddScoped<IPdfGenerationService, PdfGenerationService>();
+builder.Services.AddScoped<IHtmlGenerationService, HtmlGenerationService>();
+builder.Services.AddScoped<IVariableService, VariableServiceWrapper>();
+builder.Services.AddScoped<IVariableHistoryService, VariableHistoryService>();
+builder.Services.AddScoped<IBulkGenerationService, BulkGenerationServiceWrapper>();
+
+// ========================
+// Infrastructure Services
+// ========================
 builder.Services.AddSingleton<BulkJobStore>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
+// ========================
+// HTTP Pipeline Configuration
+// ========================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "PDF Template Builder API v1");
+    });
 }
 
 app.UseCors("AllowFrontend");
-
 app.MapControllers();
-
 app.Run();

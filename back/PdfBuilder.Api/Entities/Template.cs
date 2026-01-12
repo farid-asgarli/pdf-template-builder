@@ -1,5 +1,8 @@
-namespace PdfBuilder.Api.Models;
+namespace PdfBuilder.Api.Entities;
 
+/// <summary>
+/// Represents a reusable document template.
+/// </summary>
 public class Template
 {
     public Guid Id { get; set; }

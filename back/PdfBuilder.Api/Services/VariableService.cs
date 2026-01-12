@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using PdfBuilder.Api.DTOs;
-using PdfBuilder.Api.Models;
+using PdfBuilder.Api.DTOs.Variables;
+using PdfBuilder.Api.Entities;
 
 namespace PdfBuilder.Api.Services;
 
