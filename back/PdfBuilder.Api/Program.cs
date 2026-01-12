@@ -81,6 +81,15 @@ builder.Services.AddSingleton<BulkJobStore>();
 var app = builder.Build();
 
 // ========================
+// Database Migration
+// ========================
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
+}
+
+// ========================
 // HTTP Pipeline Configuration
 // ========================
 if (app.Environment.IsDevelopment())

@@ -1,15 +1,10 @@
 import { Input, Checkbox, NumberStepper, Select, ColorPicker } from '@/app/ui/primitives';
-import { FieldRow } from '@/components/pdf-builder/property-panel/components/FieldRow';
+import { FieldRow } from '@/components/pdf-builder/property-panel/components';
 import { FONT_WEIGHT_OPTIONS, FONT_OPTIONS } from '@/components/pdf-builder/property-panel/constants';
-import { TextFieldProperties } from '@/lib/types/document.types';
+import type { TextFieldProperties } from '@/lib/types/document.types';
+import type { PropertyEditorProps } from '@/components/pdf-builder/property-panel/types';
 
-export function TextFieldPropertyEditor({
-  properties,
-  onChange,
-}: {
-  properties: TextFieldProperties;
-  onChange: (name: string, value: unknown) => void;
-}) {
+export function TextFieldPropertyEditor({ properties, onChange }: PropertyEditorProps<TextFieldProperties>) {
   // Support both new and legacy padding properties
   const paddingVertical = properties.inputPaddingVertical ?? properties.inputPadding ?? 4;
   const paddingHorizontal = properties.inputPaddingHorizontal ?? properties.inputPadding ?? 6;

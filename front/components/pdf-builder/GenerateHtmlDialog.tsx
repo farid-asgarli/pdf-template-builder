@@ -22,7 +22,7 @@ import { toast } from '@/app/ui/primitives/feedback/Toast';
 import { Download, FileCode, Loader2, Copy, Eye, Variable, ExternalLink } from 'lucide-react';
 import { VariableInputForm } from './VariableInputForm';
 import type { VariableDefinition, VariableValidationError } from '@/lib/types/variable.types';
-import { fetchDocumentVariables, generateHtml, downloadHtml, ApiError } from '@/lib/utils/api';
+import { fetchDocumentVariables, generateHtml, downloadHtml, ApiError } from '@/lib/api';
 
 interface GenerateHtmlDialogProps {
   /** Whether the dialog is open */

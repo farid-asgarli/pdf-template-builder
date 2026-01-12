@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardTitle, Button, Input, Badge, Pa
 import { ThemeSelector } from '@/components/ThemeSelector';
 import type { Template, TemplateCategory } from '@/lib/types/document.types';
 import { BUILT_IN_TEMPLATES, TEMPLATE_CATEGORIES, cloneTemplateContent } from '@/lib/templates';
-import { fetchTemplates, parseTemplateResponse, createDocument, updateDocument } from '@/lib/utils/api';
+import { fetchTemplates, parseTemplateResponse, createDocument, updateDocument } from '@/lib/api';
 
 // Map category to Lucide icon component
 const CATEGORY_ICONS: Record<TemplateCategory, typeof FileText> = {

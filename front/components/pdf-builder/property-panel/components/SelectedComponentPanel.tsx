@@ -1,12 +1,8 @@
 import { NumberStepper } from '@/app/ui/primitives';
 import { COMPONENT_TYPES } from '@/components/pdf-builder/constants';
-import { FieldRow } from '@/components/pdf-builder/property-panel/components/FieldRow';
-import { QuickActions } from '@/components/pdf-builder/property-panel/components/QuickActions';
-import { Section } from '@/components/pdf-builder/property-panel/components/Section';
-import { StyleEditor } from '@/components/pdf-builder/property-panel/components/StyleEditor';
-import { TypeSpecificProperties } from '@/components/pdf-builder/property-panel/components/TypeSpecificProperties';
+import { FieldRow, QuickActions, Section, StyleEditor, TypeSpecificProperties } from '@/components/pdf-builder/property-panel/components';
 import { useDocumentStore } from '@/lib/store/documentStore';
-import { Component, ComponentStyle } from '@/lib/types/document.types';
+import type { Component, ComponentStyle } from '@/lib/types/document.types';
 import { A4_WIDTH_MM, A4_HEIGHT_MM } from '@/lib/utils/coordinates';
 import { FileText, Move, Maximize2, Settings2, Paintbrush } from 'lucide-react';
 import { useCallback } from 'react';

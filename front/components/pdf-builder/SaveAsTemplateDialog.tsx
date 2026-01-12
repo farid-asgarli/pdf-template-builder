@@ -16,7 +16,7 @@ import {
 } from '@/app/ui/primitives';
 import type { TemplateCategory, Document } from '@/lib/types/document.types';
 import { TEMPLATE_CATEGORIES } from '@/lib/templates';
-import { createTemplate } from '@/lib/utils/api';
+import { createTemplate } from '@/lib/api';
 
 interface SaveAsTemplateDialogProps {
   open: boolean;

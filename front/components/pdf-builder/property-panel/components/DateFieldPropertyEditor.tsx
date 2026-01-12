@@ -1,15 +1,10 @@
 import { Input, Select, Checkbox, NumberStepper, ColorPicker } from '@/app/ui/primitives';
-import { FieldRow } from '@/components/pdf-builder/property-panel/components/FieldRow';
+import { FieldRow } from '@/components/pdf-builder/property-panel/components';
 import { FONT_WEIGHT_OPTIONS } from '@/components/pdf-builder/property-panel/constants';
-import { DateFieldProperties } from '@/lib/types/document.types';
+import type { DateFieldProperties } from '@/lib/types/document.types';
+import type { PropertyEditorProps } from '@/components/pdf-builder/property-panel/types';
 
-export function DateFieldPropertyEditor({
-  properties,
-  onChange,
-}: {
-  properties: DateFieldProperties;
-  onChange: (name: string, value: unknown) => void;
-}) {
+export function DateFieldPropertyEditor({ properties, onChange }: PropertyEditorProps<DateFieldProperties>) {
   const formatOptions = [
     { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY' },
     { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY' },

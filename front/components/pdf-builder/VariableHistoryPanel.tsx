@@ -18,7 +18,7 @@ import {
 import { toast } from '@/app/ui/primitives/feedback/Toast';
 import { History, Download, Trash2, ChevronLeft, ChevronRight, User, FileText, Hash, Eye, Loader2, X } from 'lucide-react';
 import type { VariableHistoryRecord } from '@/lib/types/variable.types';
-import { fetchDocumentHistory, regenerateFromHistory, deleteHistoryVersion, downloadBlob, ApiError } from '@/lib/utils/api';
+import { fetchDocumentHistory, regenerateFromHistory, deleteHistoryVersion, downloadBlob, ApiError } from '@/lib/api';
 
 interface VariableHistoryPanelProps {
   /** Document ID */
@@ -52,7 +52,7 @@ export function VariableHistoryPanel({ documentId, documentTitle, onClose }: Var
     const loadHistory = async () => {
       setIsLoading(true);
       try {
-        const response = await fetchDocumentHistory(documentId, page, pageSize);
+        const response = await fetchDocumentHistory(documentId, { page, pageSize });
         setRecords(response.records);
         setTotalCount(response.totalCount);
       } catch (err) {
@@ -69,7 +69,7 @@ export function VariableHistoryPanel({ documentId, documentTitle, onClose }: Var
   const loadHistory = async () => {
     setIsLoading(true);
     try {
-      const response = await fetchDocumentHistory(documentId, page, pageSize);
+      const response = await fetchDocumentHistory(documentId, { page, pageSize });
       setRecords(response.records);
       setTotalCount(response.totalCount);
     } catch (err) {

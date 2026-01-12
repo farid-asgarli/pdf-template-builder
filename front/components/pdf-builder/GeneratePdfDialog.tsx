@@ -23,7 +23,7 @@ import { toast } from '@/app/ui/primitives/feedback/Toast';
 import { Download, FileText, History, AlertTriangle, Loader2, Info, Variable } from 'lucide-react';
 import { VariableInputForm } from './VariableInputForm';
 import type { VariableDefinition, VariableValidationError } from '@/lib/types/variable.types';
-import { fetchDocumentVariables, validateDocumentVariables, generatePdfWithVariables, downloadBlob, ApiError } from '@/lib/utils/api';
+import { fetchDocumentVariables, validateDocumentVariables, generatePdfWithVariables, downloadBlob, ApiError } from '@/lib/api';
 
 interface GeneratePdfDialogProps {
   /** Whether the dialog is open */

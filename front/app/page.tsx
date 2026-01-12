@@ -25,7 +25,7 @@ import {
 } from '@/app/ui/primitives';
 import { ThemeSelector } from '@/components/ThemeSelector';
 import type { DocumentResponse } from '@/lib/types/document.types';
-import { fetchDocuments, deleteDocument } from '@/lib/utils/api';
+import { fetchDocuments, deleteDocument } from '@/lib/api';
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);

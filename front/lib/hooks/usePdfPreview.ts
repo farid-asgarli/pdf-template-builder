@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useDocumentStore } from '@/lib/store/documentStore';
-import { generatePdfPreview, serializeDocumentContent, ApiError } from '@/lib/utils/api';
+import { generatePdfPreview, serializeDocumentContent, ApiError } from '@/lib/api';
 import { toast } from '@/app/ui/primitives';
 
 /** Preview display modes */

@@ -29,7 +29,7 @@ const decorationLineMap: Record<TextDecoration, string> = {
 };
 
 // Maps decoration style to CSS text-decoration-style value
-const decorationStyleMap: Record<TextDecorationStyle, string> = {
+const decorationStyleMap: Record<TextDecorationStyle, CSSProperties['textDecorationStyle']> = {
   solid: 'solid',
   double: 'double',
   wavy: 'wavy',

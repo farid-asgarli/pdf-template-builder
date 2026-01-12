@@ -1,5 +1,5 @@
 import { NumberStepper, Select, Checkbox, ColorPicker } from '@/app/ui/primitives';
-import { FieldRow } from '@/components/pdf-builder/property-panel/components/FieldRow';
+import { FieldRow } from '@/components/pdf-builder/property-panel/components';
 import { VariableTextEditor } from '@/components/pdf-builder/VariableTextEditor';
 import {
   FONT_OPTIONS,
@@ -8,15 +8,10 @@ import {
   TEXT_DECORATION_OPTIONS,
   TEXT_DECORATION_STYLE_OPTIONS,
 } from '@/components/pdf-builder/property-panel/constants';
-import { TextLabelProperties } from '@/lib/types/document.types';
+import type { TextLabelProperties } from '@/lib/types/document.types';
+import type { PropertyEditorProps } from '@/components/pdf-builder/property-panel/types';
 
-export function TextLabelPropertyEditor({
-  properties,
-  onChange,
-}: {
-  properties: TextLabelProperties;
-  onChange: (name: string, value: unknown) => void;
-}) {
+export function TextLabelPropertyEditor({ properties, onChange }: PropertyEditorProps<TextLabelProperties>) {
   const showDecorationOptions = properties.decoration && properties.decoration !== 'none';
 
   return (

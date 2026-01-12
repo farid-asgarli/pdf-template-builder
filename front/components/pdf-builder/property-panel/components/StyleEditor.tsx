@@ -2,7 +2,7 @@
 
 import { RotateCcw } from 'lucide-react';
 import { NumberStepper, ColorPicker, Button } from '@/app/ui/primitives';
-import { FieldRow } from './FieldRow';
+import { FieldRow } from '@/components/pdf-builder/property-panel/components';
 import type { ComponentStyle } from '@/lib/types/document.types';
 
 interface StyleEditorProps {

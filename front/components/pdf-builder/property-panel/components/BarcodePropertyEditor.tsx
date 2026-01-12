@@ -1,7 +1,7 @@
 import { Input, Select, NumberStepper, Checkbox, ColorPicker } from '@/app/ui/primitives';
-import { FieldRow } from '@/components/pdf-builder/property-panel/components/FieldRow';
-import { Section } from '@/components/pdf-builder/property-panel/components/Section';
+import { FieldRow, Section } from '@/components/pdf-builder/property-panel/components';
 import type { BarcodeProperties, BarcodeType, BarcodeErrorCorrectionLevel } from '@/lib/types/document.types';
+import type { PropertyEditorProps } from '@/components/pdf-builder/property-panel/types';
 
 // Barcode type options grouped by category
 const BARCODE_TYPE_OPTIONS: { value: BarcodeType; label: string; group: string }[] = [
@@ -72,12 +72,7 @@ function getValueHint(type: BarcodeType): string {
   return hints[type] || '';
 }
 
-interface BarcodePropertyEditorProps {
-  properties: BarcodeProperties;
-  onChange: (name: string, value: unknown) => void;
-}
-
-export function BarcodePropertyEditor({ properties, onChange }: BarcodePropertyEditorProps) {
+export function BarcodePropertyEditor({ properties, onChange }: PropertyEditorProps<BarcodeProperties>) {
   const is1D = is1DBarcode(properties.barcodeType);
   const supports2D = supports2DErrorCorrection(properties.barcodeType);
   const valueHint = getValueHint(properties.barcodeType);

@@ -1,17 +1,12 @@
 import { Input, Checkbox, Select, ColorPicker, NumberStepper } from '@/app/ui/primitives';
-import { FieldRow } from '@/components/pdf-builder/property-panel/components/FieldRow';
+import { FieldRow } from '@/components/pdf-builder/property-panel/components';
 import { FONT_WEIGHT_OPTIONS } from '@/components/pdf-builder/property-panel/constants';
-import { CheckboxProperties } from '@/lib/types/document.types';
+import type { CheckboxProperties } from '@/lib/types/document.types';
+import type { PropertyEditorProps } from '@/components/pdf-builder/property-panel/types';
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
-export function CheckboxPropertyEditor({
-  properties,
-  onChange,
-}: {
-  properties: CheckboxProperties;
-  onChange: (name: string, value: unknown) => void;
-}) {
+export function CheckboxPropertyEditor({ properties, onChange }: PropertyEditorProps<CheckboxProperties>) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     content: true,
     appearance: true,

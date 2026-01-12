@@ -1,6 +1,7 @@
 import { Select, NumberStepper, ColorPicker, Input, Switch } from '@/app/ui/primitives';
-import { FieldRow } from '@/components/pdf-builder/property-panel/components/FieldRow';
-import { DividerProperties } from '@/lib/types/document.types';
+import { FieldRow } from '@/components/pdf-builder/property-panel/components';
+import type { DividerProperties } from '@/lib/types/document.types';
+import type { PropertyEditorProps } from '@/components/pdf-builder/property-panel/types';
 import { useState, useCallback } from 'react';
 
 // Predefined dash patterns for common line styles
@@ -44,7 +45,7 @@ function stringToPattern(str: string): number[] | undefined {
   return parts;
 }
 
-export function DividerPropertyEditor({ properties, onChange }: { properties: DividerProperties; onChange: (name: string, value: unknown) => void }) {
+export function DividerPropertyEditor({ properties, onChange }: PropertyEditorProps<DividerProperties>) {
   const orientationOptions = [
     { value: 'horizontal', label: 'Horizontal' },
     { value: 'vertical', label: 'Vertical' },

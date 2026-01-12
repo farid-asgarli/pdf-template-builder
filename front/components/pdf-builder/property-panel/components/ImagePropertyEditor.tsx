@@ -1,6 +1,7 @@
 import { Input, Select, NumberStepper, Checkbox } from '@/app/ui/primitives';
-import { FieldRow } from '@/components/pdf-builder/property-panel/components/FieldRow';
-import { ImageProperties } from '@/lib/types/document.types';
+import { FieldRow } from '@/components/pdf-builder/property-panel/components';
+import type { ImageProperties } from '@/lib/types/document.types';
+import type { PropertyEditorProps } from '@/components/pdf-builder/property-panel/types';
 
 const IMAGE_TYPE_OPTIONS = [
   { value: 'raster', label: 'Raster (JPEG, PNG, etc.)' },
@@ -23,7 +24,7 @@ const COMPRESSION_QUALITY_OPTIONS = [
   { value: 'veryLow', label: 'Very Low (10%)' },
 ];
 
-export function ImagePropertyEditor({ properties, onChange }: { properties: ImageProperties; onChange: (name: string, value: unknown) => void }) {
+export function ImagePropertyEditor({ properties, onChange }: PropertyEditorProps<ImageProperties>) {
   const isRasterImage = properties.imageType !== 'svg';
   const showCompressionSettings = isRasterImage && !properties.useOriginalImage;
 

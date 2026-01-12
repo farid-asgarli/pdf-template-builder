@@ -15,6 +15,8 @@ import { TableComponent } from './components/TableComponent';
 import { ImageComponent } from './components/ImageComponent';
 import { Paragraph } from './components/Paragraph';
 import { Divider } from './components/Divider';
+import { BarcodeComponent } from './components/BarcodeComponent';
+import { PlaceholderComponent } from './components/PlaceholderComponent';
 
 interface DragOverlayContentProps {
   activeDrag: {
@@ -124,6 +126,8 @@ const COMPONENT_RENDERERS: Record<ComponentType, React.ComponentType<{ component
   image: ImageComponent,
   paragraph: Paragraph,
   divider: Divider,
+  barcode: BarcodeComponent,
+  placeholder: PlaceholderComponent,
 };
 
 function ComponentRenderer({ component }: { component: Component }) {

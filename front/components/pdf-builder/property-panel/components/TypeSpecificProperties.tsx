@@ -1,15 +1,17 @@
-import { BarcodePropertyEditor } from '@/components/pdf-builder/property-panel/components/BarcodePropertyEditor';
-import { CheckboxPropertyEditor } from '@/components/pdf-builder/property-panel/components/CheckboxPropertyEditor';
-import { DateFieldPropertyEditor } from '@/components/pdf-builder/property-panel/components/DateFieldPropertyEditor';
-import { DividerPropertyEditor } from '@/components/pdf-builder/property-panel/components/DividerPropertyEditor';
-import { ImagePropertyEditor } from '@/components/pdf-builder/property-panel/components/ImagePropertyEditor';
-import { ParagraphPropertyEditor } from '@/components/pdf-builder/property-panel/components/ParagraphPropertyEditor';
-import { PlaceholderPropertyEditor } from '@/components/pdf-builder/property-panel/components/PlaceholderPropertyEditor';
-import { SignatureBoxPropertyEditor } from '@/components/pdf-builder/property-panel/components/SignatureBoxPropertyEditor';
-import { TablePropertyEditor } from '@/components/pdf-builder/property-panel/components/TablePropertyEditor';
-import { TextFieldPropertyEditor } from '@/components/pdf-builder/property-panel/components/TextFieldEditor';
-import { TextLabelPropertyEditor } from '@/components/pdf-builder/property-panel/components/TextLabelPropertyEditor';
 import {
+  BarcodePropertyEditor,
+  CheckboxPropertyEditor,
+  DateFieldPropertyEditor,
+  DividerPropertyEditor,
+  ImagePropertyEditor,
+  ParagraphPropertyEditor,
+  PlaceholderPropertyEditor,
+  SignatureBoxPropertyEditor,
+  TablePropertyEditor,
+  TextFieldPropertyEditor,
+  TextLabelPropertyEditor,
+} from '@/components/pdf-builder/property-panel/components';
+import type {
   BarcodeProperties,
   CheckboxProperties,
   Component,
@@ -23,11 +25,12 @@ import {
   TextFieldProperties,
   TextLabelProperties,
 } from '@/lib/types/document.types';
+import type { PropertyEditorWithBatchProps } from '@/components/pdf-builder/property-panel/types';
 
 interface TypeSpecificPropertiesProps {
   component: Component;
-  onChange: (propertyName: string, value: unknown) => void;
-  onBatchChange: (updates: Record<string, unknown>) => void;
+  onChange: PropertyEditorWithBatchProps<unknown>['onChange'];
+  onBatchChange: PropertyEditorWithBatchProps<unknown>['onBatchChange'];
 }
 
 export function TypeSpecificProperties({ component, onChange, onBatchChange }: TypeSpecificPropertiesProps) {

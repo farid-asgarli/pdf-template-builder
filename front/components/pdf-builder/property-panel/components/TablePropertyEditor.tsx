@@ -1,18 +1,11 @@
 import { NumberStepper, Select, Checkbox, Input, ColorPicker } from '@/app/ui/primitives';
-import { TableColumnDefinition, TableProperties, TableBorderStyle, VerticalAlign, FontWeight } from '@/lib/types/document.types';
+import type { TableColumnDefinition, TableProperties, TableBorderStyle, VerticalAlign, FontWeight } from '@/lib/types/document.types';
+import type { PropertyEditorWithBatchProps } from '@/components/pdf-builder/property-panel/types';
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
 // Table Properties
-export function TablePropertyEditor({
-  properties,
-  onChange,
-  onBatchChange,
-}: {
-  properties: TableProperties;
-  onChange: (name: string, value: unknown) => void;
-  onBatchChange: (updates: Record<string, unknown>) => void;
-}) {
+export function TablePropertyEditor({ properties, onChange, onBatchChange }: PropertyEditorWithBatchProps<TableProperties>) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     structure: true,
     headers: false,

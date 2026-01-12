@@ -1,12 +1,7 @@
 import { Input, Select } from '@/app/ui/primitives';
-import { FieldRow } from '@/components/pdf-builder/property-panel/components/FieldRow';
-import { Section } from '@/components/pdf-builder/property-panel/components/Section';
+import { FieldRow, Section } from '@/components/pdf-builder/property-panel/components';
 import type { PlaceholderProperties, PlaceholderVariant } from '@/lib/types/document.types';
-
-interface PlaceholderPropertyEditorProps {
-  properties: PlaceholderProperties;
-  onChange: (name: string, value: unknown) => void;
-}
+import type { PropertyEditorProps } from '@/components/pdf-builder/property-panel/types';
 
 const VARIANT_OPTIONS: { value: PlaceholderVariant; label: string }[] = [
   { value: 'default', label: 'Default' },
@@ -19,7 +14,7 @@ const VARIANT_OPTIONS: { value: PlaceholderVariant; label: string }[] = [
  * Property editor for placeholder components.
  * Allows configuration of label text and visual variant.
  */
-export function PlaceholderPropertyEditor({ properties, onChange }: PlaceholderPropertyEditorProps) {
+export function PlaceholderPropertyEditor({ properties, onChange }: PropertyEditorProps<PlaceholderProperties>) {
   return (
     <Section title="Placeholder Settings">
       <div className="space-y-4">

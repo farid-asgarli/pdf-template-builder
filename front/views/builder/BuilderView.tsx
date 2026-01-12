@@ -30,7 +30,7 @@ import {
   parseDocumentResponse,
   downloadBlob,
   ApiError,
-} from '@/lib/utils/api';
+} from '@/lib/api';
 import { useAutoSave, usePdfPreview, type PreviewMode } from '@/lib/hooks';
 import type { ComponentType, Component } from '@/lib/types/document.types';
 

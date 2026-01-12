@@ -1,15 +1,10 @@
 import { Input, Checkbox, NumberStepper, ColorPicker, Select } from '@/app/ui/primitives';
-import { FieldRow } from '@/components/pdf-builder/property-panel/components/FieldRow';
+import { FieldRow } from '@/components/pdf-builder/property-panel/components';
 import { FONT_WEIGHT_OPTIONS } from '@/components/pdf-builder/property-panel/constants';
-import { SignatureBoxProperties } from '@/lib/types/document.types';
+import type { SignatureBoxProperties } from '@/lib/types/document.types';
+import type { PropertyEditorProps } from '@/components/pdf-builder/property-panel/types';
 
-export function SignatureBoxPropertyEditor({
-  properties,
-  onChange,
-}: {
-  properties: SignatureBoxProperties;
-  onChange: (name: string, value: unknown) => void;
-}) {
+export function SignatureBoxPropertyEditor({ properties, onChange }: PropertyEditorProps<SignatureBoxProperties>) {
   return (
     <div className="space-y-4">
       {/* Signer Information Section */}

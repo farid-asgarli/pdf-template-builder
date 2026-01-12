@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { useDocumentStore } from '@/lib/store/documentStore';
-import { updateDocument, serializeDocumentContent, ApiError } from '@/lib/utils/api';
+import { updateDocument, serializeDocumentContent, ApiError } from '@/lib/api';
 import { toast } from '@/app/ui/primitives';
 
 interface UseAutoSaveOptions {
