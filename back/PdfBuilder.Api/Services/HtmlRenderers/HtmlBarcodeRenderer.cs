@@ -4,7 +4,6 @@ using System.Web;
 using PdfBuilder.Api.Services.Renderers;
 using ZXing;
 using ZXing.Common;
-using ZXing.Rendering;
 
 namespace PdfBuilder.Api.Services.HtmlRenderers;
 

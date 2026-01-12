@@ -1,5 +1,4 @@
 using PdfBuilder.Api.DTOs.BulkGeneration;
-using PdfBuilder.Api.Entities;
 
 namespace PdfBuilder.Api.Contracts;
 

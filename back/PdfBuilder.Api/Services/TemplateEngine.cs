@@ -169,7 +169,7 @@ public static partial class TemplateEngine
             // Try to find the root in complex variables
             if (complexVariables?.TryGetValue(rootName, out var rootElement) == true)
             {
-                var nestedValue = ResolveNestedProperty(rootElement, parts.Skip(1).ToArray());
+                var nestedValue = ResolveNestedProperty(rootElement, [.. parts.Skip(1)]);
                 return nestedValue.HasValue && IsTruthy(nestedValue.Value);
             }
 

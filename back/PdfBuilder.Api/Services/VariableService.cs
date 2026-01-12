@@ -590,7 +590,7 @@ public static class VariableService
     /// </summary>
     public static List<VariableDefinitionDto> ToDtos(List<VariableDefinition> definitions)
     {
-        return definitions.Select(ToDto).ToList();
+        return [.. definitions.Select(ToDto)];
     }
 
     /// <summary>
@@ -631,7 +631,7 @@ public static class VariableService
             placeholders.Add(rootName);
         }
 
-        return placeholders.ToList();
+        return [.. placeholders];
     }
 
     /// <summary>

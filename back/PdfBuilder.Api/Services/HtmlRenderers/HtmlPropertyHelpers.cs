@@ -136,7 +136,7 @@ public static class HtmlPropertyHelpers
                     result.Add((float)item.GetDouble());
                 }
             }
-            return result.ToArray();
+            return [.. result];
         }
         return null;
     }

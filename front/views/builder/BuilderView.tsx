@@ -21,16 +21,7 @@ import {
   VariableManagerPanel,
 } from '@/components/pdf-builder';
 import { pxToMm, snapToGrid, CANVAS_WIDTH_PX, CANVAS_HEIGHT_PX } from '@/lib/utils/coordinates';
-import {
-  fetchDocument,
-  createDocument,
-  updateDocument,
-  generatePdf,
-  serializeDocumentContent,
-  parseDocumentResponse,
-  downloadBlob,
-  ApiError,
-} from '@/lib/api';
+import { fetchDocument, createDocument, updateDocument, generatePdf, serializeDocumentContent, parseDocumentResponse, downloadBlob, ApiError } from '@/lib/api';
 import { useAutoSave, usePdfPreview, type PreviewMode } from '@/lib/hooks';
 import type { ComponentType, Component } from '@/lib/types/document.types';
 
@@ -114,6 +105,12 @@ export function BuilderView({ documentId }: BuilderViewProps) {
 
   // Grid visibility state
   const [showGrid, setShowGrid] = useState(true);
+
+  // Zoom state
+  const [zoom, setZoom] = useState(100);
+
+  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 10, 200));
+  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 10, 50));
 
   // Track if document was created (new) vs loaded (existing)
   const isNewDocumentRef = useRef(false);
@@ -235,8 +232,7 @@ export function BuilderView({ documentId }: BuilderViewProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't handle shortcuts if user is typing in an input
       const activeElement = window.document.activeElement;
-      const isInputActive =
-        activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA' || (activeElement as HTMLElement)?.isContentEditable;
+      const isInputActive = activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA' || (activeElement as HTMLElement)?.isContentEditable;
 
       // Undo: Ctrl+Z / Cmd+Z
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
@@ -352,18 +348,18 @@ export function BuilderView({ documentId }: BuilderViewProps) {
 
   if (isLoading || !document) {
     return (
-      <div className="flex h-screen items-center justify-center bg-surface">
-        <PageLoading message="Loading document..." />
+      <div className='flex h-screen items-center justify-center bg-surface'>
+        <PageLoading message='Loading document...' />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-surface">
-        <div className="text-error text-lg font-medium">Failed to load document</div>
-        <div className="text-on-surface-variant">{error}</div>
-        <button onClick={() => window.location.reload()} className="rounded-lg bg-primary px-4 py-2 text-on-primary hover:bg-primary/90">
+      <div className='flex h-screen flex-col items-center justify-center gap-4 bg-surface'>
+        <div className='text-error text-lg font-medium'>Failed to load document</div>
+        <div className='text-on-surface-variant'>{error}</div>
+        <button onClick={() => window.location.reload()} className='rounded-lg bg-primary px-4 py-2 text-on-primary hover:bg-primary/90'>
           Try Again
         </button>
       </div>
@@ -433,7 +429,7 @@ export function BuilderView({ documentId }: BuilderViewProps) {
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="flex h-screen flex-col bg-surface-container-lowest">
+      <div className='flex h-screen flex-col bg-surface-container-lowest'>
         <Toolbar
           documentTitle={document.title}
           isDirty={isDirty}
@@ -444,6 +440,7 @@ export function BuilderView({ documentId }: BuilderViewProps) {
           isVariableManagerVisible={isVariableManagerVisible}
           previewMode={previewMode}
           showGrid={showGrid}
+          zoom={zoom}
           variableCount={document.variableDefinitions?.length || 0}
           onSave={handleSave}
           onGeneratePdf={handleGeneratePdf}
@@ -454,6 +451,8 @@ export function BuilderView({ documentId }: BuilderViewProps) {
           onToggleVariableManager={() => setIsVariableManagerVisible(!isVariableManagerVisible)}
           onPreviewModeChange={setPreviewMode}
           onToggleGrid={() => setShowGrid(!showGrid)}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
           onEditHeader={handleEditHeader}
           onEditFooter={handleEditFooter}
           onSaveAsTemplate={handleSaveAsTemplate}
@@ -463,7 +462,7 @@ export function BuilderView({ documentId }: BuilderViewProps) {
           canRedo={canRedo}
         />
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className='flex flex-1 overflow-hidden'>
           {/* Page Thumbnails - Left sidebar */}
           <PageThumbnails onAddPage={handleAddPage} isCollapsed={isPagesCollapsed} onToggleCollapse={() => setIsPagesCollapsed(!isPagesCollapsed)} />
 
@@ -476,6 +475,7 @@ export function BuilderView({ documentId }: BuilderViewProps) {
             currentPageId={currentPageId}
             selectedComponentId={selectedComponentId}
             showGrid={showGrid}
+            zoom={zoom}
             onAddPage={handleAddPage}
             onEditHeader={handleEditHeader}
             onEditFooter={handleEditFooter}
@@ -485,9 +485,7 @@ export function BuilderView({ documentId }: BuilderViewProps) {
           <PropertyPanel selectedComponent={selectedComponent} onClose={() => selectComponent(null)} />
 
           {/* Variable History Panel - Right sidebar */}
-          {isHistoryVisible && (
-            <VariableHistoryPanel documentId={document.id} documentTitle={document.title} onClose={() => setIsHistoryVisible(false)} />
-          )}
+          {isHistoryVisible && <VariableHistoryPanel documentId={document.id} documentTitle={document.title} onClose={() => setIsHistoryVisible(false)} />}
 
           {/* PDF Preview Panel - Side-by-side mode */}
           {isPreviewVisible && (
@@ -507,20 +505,10 @@ export function BuilderView({ documentId }: BuilderViewProps) {
       />
 
       {/* Generate PDF Dialog - With variables */}
-      <GeneratePdfDialog
-        open={generatePdfDialogOpen}
-        onOpenChange={setGeneratePdfDialogOpen}
-        documentId={document.id}
-        documentTitle={document.title}
-      />
+      <GeneratePdfDialog open={generatePdfDialogOpen} onOpenChange={setGeneratePdfDialogOpen} documentId={document.id} documentTitle={document.title} />
 
       {/* Generate HTML Dialog - With variables */}
-      <GenerateHtmlDialog
-        open={generateHtmlDialogOpen}
-        onOpenChange={setGenerateHtmlDialogOpen}
-        documentId={document.id}
-        documentTitle={document.title}
-      />
+      <GenerateHtmlDialog open={generateHtmlDialogOpen} onOpenChange={setGenerateHtmlDialogOpen} documentId={document.id} documentTitle={document.title} />
 
       {/* Header/Footer Editor Dialog */}
       <HeaderFooterEditor
@@ -530,12 +518,7 @@ export function BuilderView({ documentId }: BuilderViewProps) {
       />
 
       {/* Save as Template Dialog */}
-      <SaveAsTemplateDialog
-        open={saveAsTemplateOpen}
-        onOpenChange={setSaveAsTemplateOpen}
-        document={document}
-        onSuccess={handleSaveAsTemplateSuccess}
-      />
+      <SaveAsTemplateDialog open={saveAsTemplateOpen} onOpenChange={setSaveAsTemplateOpen} document={document} onSuccess={handleSaveAsTemplateSuccess} />
 
       {/* Variable Manager Panel */}
       <VariableManagerPanel open={isVariableManagerVisible} onClose={() => setIsVariableManagerVisible(false)} />

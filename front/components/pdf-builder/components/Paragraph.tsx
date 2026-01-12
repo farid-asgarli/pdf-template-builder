@@ -1,10 +1,17 @@
 'use client';
 
 import type { Component, ParagraphProperties, TextDecoration, TextDecorationStyle } from '@/lib/types/document.types';
-import { CSSProperties, useMemo } from 'react';
+import { CSSProperties, useMemo, useCallback } from 'react';
+import { InlineTextEditor } from './InlineTextEditor';
 
 interface ParagraphProps {
   component: Component;
+  /** Whether the component is in inline edit mode */
+  isEditing?: boolean;
+  /** Callback when text is saved from inline editing */
+  onTextSave?: (value: string) => void;
+  /** Callback when inline editing is cancelled */
+  onEditCancel?: () => void;
 }
 
 // Maps our font weight values to CSS font weight values
@@ -37,7 +44,7 @@ const decorationStyleMap: Record<TextDecorationStyle, string> = {
   dashed: 'dashed',
 };
 
-export function Paragraph({ component }: ParagraphProps) {
+export function Paragraph({ component, isEditing, onTextSave, onEditCancel }: ParagraphProps) {
   const props = component.properties as ParagraphProperties;
 
   const containerStyle = useMemo<CSSProperties>(() => {
@@ -77,11 +84,62 @@ export function Paragraph({ component }: ParagraphProps) {
     return baseStyle;
   }, [props]);
 
+  // Handle text save from inline editor
+  const handleTextSave = useCallback(
+    (value: string) => {
+      onTextSave?.(value);
+    },
+    [onTextSave]
+  );
+
+  // Handle edit cancel
+  const handleEditCancel = useCallback(() => {
+    onEditCancel?.();
+  }, [onEditCancel]);
+
+  // If in editing mode, show the inline editor
+  if (isEditing && onTextSave && onEditCancel) {
+    return (
+      <div
+        className='h-full w-full overflow-visible'
+        style={{
+          ...containerStyle,
+          // Remove overflow hidden for editing
+          overflow: 'visible',
+        }}
+        data-paragraph-spacing={props.paragraphSpacing}
+      >
+        <InlineTextEditor
+          value={props.content || ''}
+          onSave={handleTextSave}
+          onCancel={handleEditCancel}
+          multiline={true}
+          placeholder='Enter your paragraph text here...'
+          style={{
+            width: '100%',
+            height: '100%',
+            fontFamily: 'inherit',
+            fontSize: 'inherit',
+            fontWeight: 'inherit',
+            fontStyle: 'inherit',
+            color: 'inherit',
+            letterSpacing: 'inherit',
+            lineHeight: 'inherit',
+            textAlign: 'inherit',
+            textDecorationLine: 'inherit',
+            textDecorationStyle: 'inherit',
+            textDecorationColor: 'inherit',
+          }}
+        />
+      </div>
+    );
+  }
+
   // We can't perfectly represent paragraphSpacing in CSS for a single paragraph,
   // but we can show it via a custom data attribute for awareness
   return (
-    <div className="pointer-events-none h-full w-full overflow-hidden" style={containerStyle} data-paragraph-spacing={props.paragraphSpacing}>
-      <p className="whitespace-pre-wrap m-0">{props.content || 'Enter your paragraph text here...'}</p>
+    <div className='pointer-events-none h-full w-full overflow-hidden' style={containerStyle} data-paragraph-spacing={props.paragraphSpacing}>
+      <p className='whitespace-pre-wrap m-0'>{props.content || 'Enter your paragraph text here...'}</p>
     </div>
   );
 }

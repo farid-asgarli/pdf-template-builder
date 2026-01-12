@@ -9,18 +9,13 @@ namespace PdfBuilder.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api")]
-public class BulkGenerationController : ControllerBase
+public class BulkGenerationController(
+    IBulkGenerationService bulkService,
+    IDocumentService documentService
+) : ControllerBase
 {
-    private readonly IBulkGenerationService _bulkService;
-    private readonly IDocumentService _documentService;
-
-    public BulkGenerationController(
-        IBulkGenerationService bulkService,
-        IDocumentService documentService)
-    {
-        _bulkService = bulkService;
-        _documentService = documentService;
-    }
+    private readonly IBulkGenerationService _bulkService = bulkService;
+    private readonly IDocumentService _documentService = documentService;
 
     /// <summary>
     /// Create a bulk generation job from CSV/Excel file.
@@ -30,7 +25,11 @@ public class BulkGenerationController : ControllerBase
     [ProducesResponseType(typeof(BulkGenerationJobResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateBulkGenerationJob(Guid id, IFormFile file, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateBulkGenerationJob(
+        Guid id,
+        IFormFile file,
+        CancellationToken cancellationToken
+    )
     {
         var document = await _documentService.GetByIdAsync(id, cancellationToken);
         if (document is null)
@@ -41,12 +40,19 @@ public class BulkGenerationController : ControllerBase
 
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (extension is not ".csv" and not ".xlsx" and not ".xls")
-            return BadRequest(new { error = "Invalid file type. Only CSV and Excel files are supported." });
+            return BadRequest(
+                new { error = "Invalid file type. Only CSV and Excel files are supported." }
+            );
 
         try
         {
             using var stream = file.OpenReadStream();
-            var job = await _bulkService.CreateJobAsync(id, stream, file.FileName, cancellationToken);
+            var job = await _bulkService.CreateJobAsync(
+                id,
+                stream,
+                file.FileName,
+                cancellationToken
+            );
             return Ok(job);
         }
         catch (Exception ex)
@@ -62,7 +68,10 @@ public class BulkGenerationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> StartBulkGenerationJob(int jobId, CancellationToken cancellationToken)
+    public async Task<IActionResult> StartBulkGenerationJob(
+        int jobId,
+        CancellationToken cancellationToken
+    )
     {
         var job = _bulkService.GetJob(jobId);
         if (job is null)

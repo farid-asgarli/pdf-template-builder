@@ -1,6 +1,7 @@
 import { useState, useLayoutEffect, useEffect, useRef, useCallback, type ReactNode, type HTMLAttributes, type Ref } from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '@/app/ui';
+import { ChevronRight } from 'lucide-react';
 
 interface MenuProps {
   trigger: ReactNode;
@@ -21,6 +22,13 @@ interface MenuItemProps extends HTMLAttributes<HTMLButtonElement> {
 
 interface MenuSeparatorProps extends HTMLAttributes<HTMLDivElement> {
   ref?: Ref<HTMLDivElement>;
+}
+
+interface SubMenuProps {
+  trigger: ReactNode;
+  icon?: ReactNode;
+  children: ReactNode;
+  disabled?: boolean;
 }
 
 function Menu({ trigger, children, align = 'start', side = 'bottom', className, maxHeight }: MenuProps) {
@@ -162,7 +170,7 @@ function Menu({ trigger, children, align = 'start', side = 'bottom', className, 
 
   return (
     <>
-      <div ref={triggerRef} onClick={handleToggle} className="inline-flex cursor-pointer">
+      <div ref={triggerRef} onClick={handleToggle} className='inline-flex cursor-pointer'>
         {trigger}
       </div>
 
@@ -206,7 +214,7 @@ function Menu({ trigger, children, align = 'start', side = 'bottom', className, 
 function MenuItem({ className, icon, destructive = false, disabled = false, ref, children, ...props }: MenuItemProps) {
   return (
     <button
-      type="button"
+      type='button'
       ref={ref}
       disabled={disabled}
       className={cn(
@@ -219,8 +227,8 @@ function MenuItem({ className, icon, destructive = false, disabled = false, ref,
       style={{ width: 'calc(100% - 12px)' }}
       {...props}
     >
-      {icon && <span className="shrink-0 w-5 h-5 [&>svg]:w-5 [&>svg]:h-5">{icon}</span>}
-      <span className="flex-1 font-medium">{children}</span>
+      {icon && <span className='shrink-0 w-5 h-5 [&>svg]:w-5 [&>svg]:h-5'>{icon}</span>}
+      <span className='flex-1 font-medium'>{children}</span>
     </button>
   );
 }
@@ -229,4 +237,128 @@ function MenuSeparator({ className, ref, ...props }: MenuSeparatorProps) {
   return <div ref={ref} className={cn('my-2 h-px bg-outline-variant/30 mx-3', className)} {...props} />;
 }
 
-export { Menu, MenuItem, MenuSeparator };
+function SubMenu({ trigger, icon, children, disabled = false }: SubMenuProps) {
+  const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const submenuRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const calculatePosition = useCallback(() => {
+    if (!triggerRef.current) return null;
+
+    const rect = triggerRef.current.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const gap = 4;
+    const submenuWidth = 200;
+
+    // Default: open to the right
+    let left = rect.right + gap;
+    let top = rect.top - 8; // Align with some offset for visual balance
+
+    // If not enough space on the right, open to the left
+    if (left + submenuWidth > viewportWidth) {
+      left = rect.left - submenuWidth - gap;
+    }
+
+    // Ensure it doesn't go off-screen vertically
+    if (submenuRef.current) {
+      const submenuHeight = submenuRef.current.offsetHeight;
+      if (top + submenuHeight > viewportHeight) {
+        top = viewportHeight - submenuHeight - gap;
+      }
+    }
+
+    if (top < gap) {
+      top = gap;
+    }
+
+    return { top, left };
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (disabled) return;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setOpen(true);
+    // Calculate position after a brief delay to ensure the submenu is rendered
+    setTimeout(() => {
+      setPosition(calculatePosition());
+    }, 0);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setOpen(false);
+      setPosition(null);
+    }, 150);
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Update position after submenu renders
+  useLayoutEffect(() => {
+    if (open && submenuRef.current) {
+      setPosition(calculatePosition());
+    }
+  }, [open, calculatePosition]);
+
+  return (
+    <div ref={triggerRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className='relative'>
+      {/* Trigger - styled like MenuItem but with chevron */}
+      <div
+        className={cn(
+          'w-full flex items-center gap-3 px-4 py-3 mx-1.5 text-sm text-left transition-colors rounded-xl cursor-pointer',
+          'text-on-surface hover:bg-surface-container-high',
+          disabled && 'opacity-50 cursor-not-allowed',
+          open && 'bg-surface-container-high'
+        )}
+        style={{ width: 'calc(100% - 12px)' }}
+      >
+        {icon && <span className='shrink-0 w-5 h-5 [&>svg]:w-5 [&>svg]:h-5'>{icon}</span>}
+        <span className='flex-1 font-medium'>{trigger}</span>
+        <ChevronRight className='h-4 w-4 text-on-surface-variant' />
+      </div>
+
+      {/* Submenu */}
+      {open &&
+        position &&
+        createPortal(
+          <div
+            ref={submenuRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className={cn(
+              'fixed z-51 min-w-48 py-2 rounded-2xl',
+              'bg-surface-container-lowest border border-outline-variant/20',
+              'shadow-xl shadow-scrim/15',
+              'animate-in fade-in slide-in-from-left-2 duration-150'
+            )}
+            style={{
+              top: position.top,
+              left: position.left,
+            }}
+          >
+            {children}
+          </div>,
+          document.body
+        )}
+    </div>
+  );
+}
+
+function MenuLabel({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn('px-4 py-2 text-xs text-on-surface-variant/70 font-medium uppercase tracking-wider', className)}>{children}</div>;
+}
+
+export { Menu, MenuItem, MenuSeparator, SubMenu, MenuLabel };

@@ -7,14 +7,9 @@ namespace PdfBuilder.Api.Data.Repositories;
 /// <summary>
 /// Repository implementation for Template entities.
 /// </summary>
-public class TemplateRepository : ITemplateRepository
+public class TemplateRepository(AppDbContext context) : ITemplateRepository
 {
-    private readonly AppDbContext _context;
-
-    public TemplateRepository(AppDbContext context)
-    {
-        _context = context;
-    }
+    private readonly AppDbContext _context = context;
 
     public async Task<IEnumerable<Template>> GetAllAsync(
         CancellationToken cancellationToken = default

@@ -138,7 +138,7 @@ public static class PropertyHelpers
                     result.Add((float)item.GetDouble());
                 }
             }
-            return result.Count > 0 ? result.ToArray() : null;
+            return result.Count > 0 ? [.. result] : null;
         }
         return null;
     }

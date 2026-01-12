@@ -339,7 +339,7 @@ public class BulkGenerationService
             headers.Add(worksheet.Cells[startRow, col].Text ?? $"Column{col}");
         }
 
-        var mappings = BuildColumnMappings(headers.ToArray(), definitions, columnMappings);
+        var mappings = BuildColumnMappings([.. headers], definitions, columnMappings);
 
         // Read data rows
         for (int row = startRow + 1; row <= endRow; row++)
@@ -446,7 +446,7 @@ public class BulkGenerationService
         return result;
     }
 
-    private string GetPdfFileName(Dictionary<string, string> variables, int index)
+    private static string GetPdfFileName(Dictionary<string, string> variables, int index)
     {
         // Try common naming variables
         string[] namingVariables =
@@ -489,7 +489,7 @@ public class BulkGenerationService
         return sanitized.ToString().Trim();
     }
 
-    private List<ColumnMapping> BuildColumnMappings(
+    private static List<ColumnMapping> BuildColumnMappings(
         string[] headers,
         List<VariableDefinition> definitions,
         Dictionary<string, string>? customMappings
@@ -571,7 +571,7 @@ public class BulkGenerationService
         };
     }
 
-    private void CreateZipArchive(List<string> files, string zipPath)
+    private static void CreateZipArchive(List<string> files, string zipPath)
     {
         using var zip = ZipFile.Open(zipPath, ZipArchiveMode.Create);
         foreach (var file in files)

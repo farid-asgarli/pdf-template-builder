@@ -72,6 +72,7 @@ builder.Services.AddScoped<IHtmlGenerationService, HtmlGenerationService>();
 builder.Services.AddScoped<IVariableService, VariableServiceWrapper>();
 builder.Services.AddScoped<IVariableHistoryService, VariableHistoryService>();
 builder.Services.AddScoped<IBulkGenerationService, BulkGenerationServiceWrapper>();
+builder.Services.AddScoped<IDocxImportService, DocxImportService>();
 
 // ========================
 // Infrastructure Services

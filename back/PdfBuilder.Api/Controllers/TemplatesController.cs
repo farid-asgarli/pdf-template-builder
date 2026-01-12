@@ -10,28 +10,24 @@ namespace PdfBuilder.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/templates")]
-public class TemplatesController : ControllerBase
+public class TemplatesController(
+    ITemplateService templateService,
+    IPdfGenerationService pdfGenerationService,
+    IVariableService variableService
+) : ControllerBase
 {
-    private readonly ITemplateService _templateService;
-    private readonly IPdfGenerationService _pdfGenerationService;
-    private readonly IVariableService _variableService;
-
-    public TemplatesController(
-        ITemplateService templateService,
-        IPdfGenerationService pdfGenerationService,
-        IVariableService variableService)
-    {
-        _templateService = templateService;
-        _pdfGenerationService = pdfGenerationService;
-        _variableService = variableService;
-    }
+    private readonly ITemplateService _templateService = templateService;
+    private readonly IPdfGenerationService _pdfGenerationService = pdfGenerationService;
+    private readonly IVariableService _variableService = variableService;
 
     /// <summary>
     /// Get all templates.
     /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<TemplateResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<TemplateResponse>>> GetTemplates(CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<TemplateResponse>>> GetTemplates(
+        CancellationToken cancellationToken
+    )
     {
         var templates = await _templateService.GetAllAsync(cancellationToken);
         return Ok(templates);
@@ -43,7 +39,10 @@ public class TemplatesController : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(TemplateResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TemplateResponse>> GetTemplate(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<TemplateResponse>> GetTemplate(
+        Guid id,
+        CancellationToken cancellationToken
+    )
     {
         var template = await _templateService.GetByIdAsync(id, cancellationToken);
         if (template is null)
@@ -57,7 +56,10 @@ public class TemplatesController : ControllerBase
     /// </summary>
     [HttpPost]
     [ProducesResponseType(typeof(TemplateResponse), StatusCodes.Status201Created)]
-    public async Task<ActionResult<TemplateResponse>> CreateTemplate(CreateTemplateRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<TemplateResponse>> CreateTemplate(
+        CreateTemplateRequest request,
+        CancellationToken cancellationToken
+    )
     {
         var template = await _templateService.CreateAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetTemplate), new { id = template.Id }, template);
@@ -70,7 +72,11 @@ public class TemplatesController : ControllerBase
     [ProducesResponseType(typeof(TemplateResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<TemplateResponse>> UpdateTemplate(Guid id, UpdateTemplateRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<TemplateResponse>> UpdateTemplate(
+        Guid id,
+        UpdateTemplateRequest request,
+        CancellationToken cancellationToken
+    )
     {
         var existingTemplate = await _templateService.GetByIdAsync(id, cancellationToken);
         if (existingTemplate is null)
@@ -110,14 +116,28 @@ public class TemplatesController : ControllerBase
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GeneratePdf(Guid id, GeneratePdfWithVariablesRequest? request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GeneratePdf(
+        Guid id,
+        GeneratePdfWithVariablesRequest? request,
+        CancellationToken cancellationToken
+    )
     {
-        var result = await _pdfGenerationService.GenerateForTemplateAsync(id, request, cancellationToken);
+        var result = await _pdfGenerationService.GenerateForTemplateAsync(
+            id,
+            request,
+            cancellationToken
+        );
 
         if (!result.Success)
         {
             if (result.ValidationErrors is not null)
-                return BadRequest(new { error = "Variable validation failed", validationErrors = result.ValidationErrors });
+                return BadRequest(
+                    new
+                    {
+                        error = "Variable validation failed",
+                        validationErrors = result.ValidationErrors,
+                    }
+                );
 
             return result.ErrorMessage?.Contains("not found") == true
                 ? NotFound(new { error = result.ErrorMessage })
@@ -133,7 +153,10 @@ public class TemplatesController : ControllerBase
     [HttpGet("{id:guid}/variables")]
     [ProducesResponseType(typeof(VariableDefinitionsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<VariableDefinitionsResponse>> GetVariables(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<VariableDefinitionsResponse>> GetVariables(
+        Guid id,
+        CancellationToken cancellationToken
+    )
     {
         var response = await _variableService.GetTemplateVariablesAsync(id, cancellationToken);
         if (response is null)
@@ -148,7 +171,10 @@ public class TemplatesController : ControllerBase
     [HttpGet("{id:guid}/variables/analyze")]
     [ProducesResponseType(typeof(VariableAnalysisResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<VariableAnalysisResult>> AnalyzeVariables(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<VariableAnalysisResult>> AnalyzeVariables(
+        Guid id,
+        CancellationToken cancellationToken
+    )
     {
         var template = await _templateService.GetByIdAsync(id, cancellationToken);
         if (template is null)
@@ -164,7 +190,11 @@ public class TemplatesController : ControllerBase
     [HttpPost("{id:guid}/validate-variables")]
     [ProducesResponseType(typeof(VariableValidationResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<VariableValidationResult>> ValidateVariables(Guid id, GeneratePdfWithVariablesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<VariableValidationResult>> ValidateVariables(
+        Guid id,
+        GeneratePdfWithVariablesRequest request,
+        CancellationToken cancellationToken
+    )
     {
         var template = await _templateService.GetByIdAsync(id, cancellationToken);
         if (template is null)

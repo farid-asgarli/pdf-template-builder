@@ -3,7 +3,6 @@ using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using ZXing;
 using ZXing.Aztec;
-using ZXing.Common;
 using ZXing.Datamatrix;
 using ZXing.OneD;
 using ZXing.PDF417;

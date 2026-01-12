@@ -3,11 +3,8 @@ using PdfBuilder.Api.Entities;
 
 namespace PdfBuilder.Api.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options)
-        : base(options) { }
-
     public DbSet<Document> Documents { get; set; }
     public DbSet<Template> Templates { get; set; }
     public DbSet<VariableHistory> VariableHistories { get; set; }
