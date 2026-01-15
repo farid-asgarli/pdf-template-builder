@@ -72,6 +72,41 @@ public class EditorComponent
 
     [JsonPropertyName("properties")]
     public Dictionary<string, object> Properties { get; set; } = [];
+
+    [JsonPropertyName("condition")]
+    public EditorConditionalConfig? Condition { get; set; }
+}
+
+/// <summary>
+/// Conditional rendering configuration for a component.
+/// Maps to frontend ConditionalConfig interface.
+/// </summary>
+public class EditorConditionalConfig
+{
+    [JsonPropertyName("enabled")]
+    public bool Enabled { get; set; } = true;
+
+    [JsonPropertyName("logic")]
+    public string Logic { get; set; } = "all";
+
+    [JsonPropertyName("rules")]
+    public List<EditorConditionalRule> Rules { get; set; } = [];
+}
+
+/// <summary>
+/// Single condition rule for conditional rendering.
+/// Maps to frontend ConditionalRule interface.
+/// </summary>
+public class EditorConditionalRule
+{
+    [JsonPropertyName("variable")]
+    public string Variable { get; set; } = string.Empty;
+
+    [JsonPropertyName("operator")]
+    public string Operator { get; set; } = "equals";
+
+    [JsonPropertyName("value")]
+    public string? Value { get; set; }
 }
 
 /// <summary>

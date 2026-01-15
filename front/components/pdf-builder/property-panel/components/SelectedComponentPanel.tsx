@@ -1,10 +1,10 @@
 import { NumberStepper } from '@/app/ui/primitives';
 import { COMPONENT_TYPES } from '@/components/pdf-builder/constants';
-import { FieldRow, QuickActions, Section, StyleEditor, TypeSpecificProperties } from '@/components/pdf-builder/property-panel/components';
+import { FieldRow, QuickActions, Section, StyleEditor, TypeSpecificProperties, ConditionalSettings } from '@/components/pdf-builder/property-panel/components';
 import { useDocumentStore } from '@/lib/store/documentStore';
 import type { Component, ComponentStyle } from '@/lib/types/document.types';
 import { A4_WIDTH_MM, A4_HEIGHT_MM } from '@/lib/utils/coordinates';
-import { FileText, Move, Maximize2, Settings2, Paintbrush } from 'lucide-react';
+import { FileText, Move, Maximize2, Settings2, Paintbrush, Eye } from 'lucide-react';
 import { useCallback } from 'react';
 
 export function SelectedComponentPanel({ component }: { component: Component }) {
@@ -149,6 +149,11 @@ export function SelectedComponentPanel({ component }: { component: Component }) 
       {/* Style Section */}
       <Section title='Style' icon={<Paintbrush className='h-4 w-4' />} defaultOpen={false}>
         <StyleEditor style={component.style} onChange={handleStyleChange} />
+      </Section>
+
+      {/* Conditional Rendering Section */}
+      <Section title='Visibility' icon={<Eye className='h-4 w-4' />} defaultOpen={false}>
+        <ConditionalSettings component={component} />
       </Section>
     </div>
   );

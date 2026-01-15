@@ -88,6 +88,49 @@ export interface PageSettings {
   margins?: PageMargins;
 }
 
+/**
+ * Comparison operator for conditional rendering.
+ */
+export type ConditionalOperator =
+  | 'equals'
+  | 'not_equals'
+  | 'contains'
+  | 'not_contains'
+  | 'starts_with'
+  | 'ends_with'
+  | 'greater_than'
+  | 'less_than'
+  | 'greater_than_or_equals'
+  | 'less_than_or_equals'
+  | 'is_empty'
+  | 'is_not_empty'
+  | 'is_true'
+  | 'is_false';
+
+/**
+ * Single condition for conditional rendering.
+ */
+export interface ConditionalRule {
+  /** Variable name to check (e.g., "customerType", "hasDiscount") */
+  variable: string;
+  /** Comparison operator */
+  operator: ConditionalOperator;
+  /** Value to compare against (not needed for is_empty, is_not_empty, is_true, is_false) */
+  value?: string;
+}
+
+/**
+ * Conditional rendering configuration for a component.
+ */
+export interface ConditionalConfig {
+  /** Whether conditional rendering is enabled for this component */
+  enabled: boolean;
+  /** How to combine multiple rules: 'all' = AND, 'any' = OR */
+  logic: 'all' | 'any';
+  /** List of conditions to evaluate */
+  rules: ConditionalRule[];
+}
+
 export interface Component {
   id: string;
   type: ComponentType;
@@ -95,6 +138,8 @@ export interface Component {
   size: Size;
   properties: ComponentProperties;
   style?: ComponentStyle;
+  /** Conditional rendering configuration - show/hide based on variable values */
+  condition?: ConditionalConfig;
 }
 
 export interface Position {

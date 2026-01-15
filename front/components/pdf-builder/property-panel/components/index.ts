@@ -12,6 +12,7 @@ export { SelectedComponentPanel } from './SelectedComponentPanel';
 export { TypeSpecificProperties } from './TypeSpecificProperties';
 export { StyleEditor } from './StyleEditor';
 export { QuickActions } from './QuickActions';
+export { ConditionalSettings } from './ConditionalSettings';
 
 // Property editors by component type
 export { BarcodePropertyEditor } from './BarcodePropertyEditor';

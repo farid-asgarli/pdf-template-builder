@@ -223,7 +223,7 @@ public partial class DocxImportService
     }
 
     /// <summary>
-    /// Extracts plain text from a paragraph, including hyperlink text.
+    /// Extracts plain text from a paragraph, including hyperlink text, SDT elements, and field codes.
     /// </summary>
     private static string GetParagraphText(Paragraph paragraph)
     {
@@ -239,10 +239,46 @@ public partial class DocxImportService
                 case Hyperlink hyperlink:
                     AppendHyperlinkText(hyperlink, sb);
                     break;
+                case SdtRun sdtRun:
+                    // Structured Document Tag (content control) inline
+                    AppendSdtRunText(sdtRun, sb);
+                    break;
+                case BookmarkStart:
+                case BookmarkEnd:
+                    // Skip bookmark markers
+                    break;
+                case ProofError:
+                    // Skip spell check markers
+                    break;
             }
         }
 
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// Appends text from an SDT Run element (inline content control).
+    /// </summary>
+    private static void AppendSdtRunText(SdtRun sdtRun, StringBuilder sb)
+    {
+        // Get content from the SDT content area
+        var sdtContent = sdtRun.GetFirstChild<SdtContentRun>();
+        if (sdtContent != null)
+        {
+            foreach (var run in sdtContent.Elements<Run>())
+            {
+                AppendRunText(run, sb);
+            }
+        }
+        else
+        {
+            // Fallback to inner text
+            var innerText = sdtRun.InnerText;
+            if (!string.IsNullOrEmpty(innerText))
+            {
+                sb.Append(innerText);
+            }
+        }
     }
 
     /// <summary>

@@ -42,10 +42,11 @@ public partial class DocxImportService
             var tableRow = ParseTableRow(row, mainPart);
             parsed.TableRows.Add(tableRow);
 
-            // Update column count from actual cell count
-            if (parsed.ColumnCount == 0)
+            // Update column count - use the maximum across all rows
+            var rowColumnCount = tableRow.Cells.Sum(c => c.ColumnSpan);
+            if (rowColumnCount > parsed.ColumnCount)
             {
-                parsed.ColumnCount = tableRow.Cells.Sum(c => c.ColumnSpan);
+                parsed.ColumnCount = rowColumnCount;
             }
 
             // Determine header row
@@ -54,6 +55,12 @@ public partial class DocxImportService
                 parsed.HasHeaderRow = IsHeaderRow(tableRow);
                 isFirstRow = false;
             }
+        }
+
+        // Use column definitions count if it's more accurate (from table grid)
+        if (parsed.ColumnDefinitions.Count > parsed.ColumnCount)
+        {
+            parsed.ColumnCount = parsed.ColumnDefinitions.Count;
         }
 
         // Build simplified headers and rows arrays for editor compatibility
@@ -121,7 +128,7 @@ public partial class DocxImportService
         for (var i = 0; i < parsed.TableRows.Count; i++)
         {
             var row = parsed.TableRows[i];
-            var cellTexts = row.Cells.Select(c => c.Text).ToList();
+            var cellTexts = BuildRowCellTexts(row, parsed.ColumnCount);
 
             if (i == 0 && parsed.HasHeaderRow)
             {
@@ -132,6 +139,51 @@ public partial class DocxImportService
                 parsed.Rows.Add(cellTexts);
             }
         }
+    }
+
+    /// <summary>
+    /// Builds the cell text array for a row, accounting for column spans and merged cells.
+    /// </summary>
+    private static List<string> BuildRowCellTexts(DocxTableRow row, int expectedColumnCount)
+    {
+        var cellTexts = new List<string>();
+
+        foreach (var cell in row.Cells)
+        {
+            // Skip cells that are continuations of vertical merges (already counted above)
+            if (cell.IsMergedContinuation)
+            {
+                // Add empty strings for each column this cell spans
+                for (int j = 0; j < cell.ColumnSpan; j++)
+                {
+                    cellTexts.Add("");
+                }
+                continue;
+            }
+
+            // Add the cell text
+            cellTexts.Add(cell.Text);
+
+            // If this cell spans multiple columns, add empty strings for the extra columns
+            for (int j = 1; j < cell.ColumnSpan; j++)
+            {
+                cellTexts.Add(""); // Spanned columns get empty text
+            }
+        }
+
+        // Pad with empty strings if we don't have enough columns
+        while (cellTexts.Count < expectedColumnCount)
+        {
+            cellTexts.Add("");
+        }
+
+        // Trim if we have too many (shouldn't happen but safety check)
+        if (cellTexts.Count > expectedColumnCount && expectedColumnCount > 0)
+        {
+            cellTexts = cellTexts.Take(expectedColumnCount).ToList();
+        }
+
+        return cellTexts;
     }
 
     /// <summary>
@@ -295,7 +347,7 @@ public partial class DocxImportService
     }
 
     /// <summary>
-    /// Parses text runs from all paragraphs in a cell.
+    /// Parses text runs from all paragraphs in a cell, including SDT (content controls) and hyperlinks.
     /// </summary>
     private void ParseCellContent(
         TableCell cell,
@@ -303,24 +355,110 @@ public partial class DocxImportService
         DocxTableCell tableCell
     )
     {
-        foreach (var para in cell.Elements<Paragraph>())
+        // Handle SDT cells (content controls at cell level)
+        foreach (var sdtCell in cell.Elements<SdtCell>())
         {
-            var paragraphStyle = GetParagraphTextStyle(para);
-            foreach (var run in para.Elements<Run>())
+            var sdtContent = sdtCell.GetFirstChild<SdtContentCell>();
+            if (sdtContent != null)
             {
-                var runText = run.InnerText;
-                if (!string.IsNullOrEmpty(runText))
+                foreach (var para in sdtContent.Elements<Paragraph>())
                 {
-                    tableCell.Runs.Add(
-                        new ParsedDocxTextRun
-                        {
-                            Text = runText,
-                            Style = GetRunStyle(run, paragraphStyle),
-                        }
-                    );
+                    ParseParagraphInCell(para, tableCell);
                 }
             }
         }
+
+        // Handle regular paragraphs
+        foreach (var para in cell.Elements<Paragraph>())
+        {
+            ParseParagraphInCell(para, tableCell);
+        }
+
+        // Handle SDT blocks within the cell
+        foreach (var sdtBlock in cell.Descendants<SdtBlock>())
+        {
+            var sdtContent = sdtBlock.GetFirstChild<SdtContentBlock>();
+            if (sdtContent != null)
+            {
+                foreach (var para in sdtContent.Elements<Paragraph>())
+                {
+                    ParseParagraphInCell(para, tableCell);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Parses a single paragraph within a table cell, extracting all text content.
+    /// </summary>
+    private void ParseParagraphInCell(Paragraph para, DocxTableCell tableCell)
+    {
+        var paragraphStyle = GetParagraphTextStyle(para);
+
+        foreach (var child in para.ChildElements)
+        {
+            switch (child)
+            {
+                case Run run:
+                    var runText = run.InnerText;
+                    if (!string.IsNullOrEmpty(runText))
+                    {
+                        tableCell.Runs.Add(
+                            new ParsedDocxTextRun
+                            {
+                                Text = runText,
+                                Style = GetRunStyle(run, paragraphStyle),
+                            }
+                        );
+                    }
+                    break;
+
+                case Hyperlink hyperlink:
+                    var hyperlinkText = hyperlink.InnerText;
+                    if (!string.IsNullOrEmpty(hyperlinkText))
+                    {
+                        var style = CloneTextStyle(paragraphStyle);
+                        ApplyHyperlinkStyle(style);
+                        tableCell.Runs.Add(
+                            new ParsedDocxTextRun
+                            {
+                                Text = hyperlinkText,
+                                Style = style,
+                                HyperlinkUrl = ResolveHyperlinkUrl(hyperlink),
+                            }
+                        );
+                    }
+                    break;
+
+                case SdtRun sdtRun:
+                    // Content control inline - extract inner text
+                    var sdtRunText = sdtRun.InnerText;
+                    if (!string.IsNullOrEmpty(sdtRunText))
+                    {
+                        tableCell.Runs.Add(
+                            new ParsedDocxTextRun
+                            {
+                                Text = sdtRunText,
+                                Style = CloneTextStyle(paragraphStyle),
+                            }
+                        );
+                    }
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Resolves a hyperlink URL from a Hyperlink element.
+    /// </summary>
+    private static string? ResolveHyperlinkUrl(Hyperlink hyperlink)
+    {
+        // For internal anchors
+        if (!string.IsNullOrEmpty(hyperlink.Anchor?.Value))
+        {
+            return $"#{hyperlink.Anchor.Value}";
+        }
+        return null; // External links need MainDocumentPart to resolve
     }
 
     private DocxCellStyle GetCellStyle(TableCell cell)
@@ -453,12 +591,55 @@ public partial class DocxImportService
     private string GetCellText(TableCell cell)
     {
         var sb = new StringBuilder();
+
+        // Handle SDT cells (content controls at cell level)
+        foreach (var sdtCell in cell.Elements<SdtCell>())
+        {
+            var sdtContent = sdtCell.GetFirstChild<SdtContentCell>();
+            if (sdtContent != null)
+            {
+                foreach (var para in sdtContent.Elements<Paragraph>())
+                {
+                    if (sb.Length > 0)
+                        sb.Append('\n');
+                    sb.Append(GetParagraphText(para));
+                }
+            }
+        }
+
+        // Handle regular paragraphs
         foreach (var para in cell.Elements<Paragraph>())
         {
             if (sb.Length > 0)
                 sb.Append('\n');
             sb.Append(GetParagraphText(para));
         }
+
+        // Handle SDT blocks within the cell
+        foreach (var sdtBlock in cell.Descendants<SdtBlock>())
+        {
+            var sdtContent = sdtBlock.GetFirstChild<SdtContentBlock>();
+            if (sdtContent != null)
+            {
+                foreach (var para in sdtContent.Elements<Paragraph>())
+                {
+                    if (sb.Length > 0)
+                        sb.Append('\n');
+                    sb.Append(GetParagraphText(para));
+                }
+            }
+        }
+
+        // Fallback: if nothing found yet, try to get all inner text
+        if (sb.Length == 0)
+        {
+            var innerText = cell.InnerText?.Trim();
+            if (!string.IsNullOrEmpty(innerText))
+            {
+                sb.Append(innerText);
+            }
+        }
+
         return sb.ToString().Trim();
     }
 

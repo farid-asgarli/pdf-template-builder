@@ -117,6 +117,7 @@ public static class ComponentRenderer
     /// Variables like {{variableName}} are replaced with their values.
     /// Built-in variables: {{pageNumber}}, {{totalPages}}, {{date}}, {{year}}
     /// Supports: conditionals ({{#if}}), loops ({{#each}}), inline formatting ({{var:format}})
+    /// Also evaluates conditional rendering configuration before rendering.
     /// </summary>
     public static void RenderWithVariables(
         IContainer container,
@@ -127,6 +128,13 @@ public static class ComponentRenderer
         Dictionary<string, JsonElement>? complexVariables
     )
     {
+        // Check conditional rendering - skip if conditions are not met
+        if (!ConditionEvaluator.ShouldRender(component.Condition, variables, complexVariables))
+        {
+            // Render nothing for hidden components
+            return;
+        }
+
         switch (component.Type.ToLowerInvariant())
         {
             case "text-label":
