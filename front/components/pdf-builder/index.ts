@@ -8,9 +8,9 @@ export { PageThumbnails } from './PageThumbnails';
 export { HeaderFooterEditor } from './HeaderFooterEditor';
 export { PageSettingsPanel } from './PageSettingsPanel';
 export { SaveAsTemplateDialog } from './SaveAsTemplateDialog';
-export { ImportDocxDialog } from './ImportDocxDialog';
 export { PdfPreviewPanel } from './PdfPreviewPanel';
 export { PdfPreviewDialog } from './PdfPreviewDialog';
+export { ContentEditorDialog } from './ContentEditorDialog';
 
 // Variable System Components
 export { VariableInputForm } from './VariableInputForm';

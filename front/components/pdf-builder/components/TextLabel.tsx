@@ -1,8 +1,10 @@
 'use client';
 
 import type { Component, TextLabelProperties, TextDecoration, TextDecorationStyle, TextAlign } from '@/lib/types/document.types';
+import type { VariableDefinition } from '@/lib/types/variable.types';
 import { CSSProperties, useMemo, useCallback } from 'react';
 import { InlineTextEditor } from './InlineTextEditor';
+import { tokenizeTemplate, tokensToHtml, hasTemplateSyntax } from '@/lib/utils/templateHighlighter';
 
 interface TextLabelProps {
   component: Component;
@@ -12,6 +14,8 @@ interface TextLabelProps {
   onTextSave?: (value: string) => void;
   /** Callback when inline editing is cancelled */
   onEditCancel?: () => void;
+  /** Variable definitions for syntax highlighting validation */
+  variables?: VariableDefinition[];
 }
 
 // Maps our font weight values to CSS font weight values
@@ -52,7 +56,7 @@ const alignmentJustifyMap: Record<TextAlign, string> = {
   justify: 'flex-start', // justify uses text-align: justify instead
 };
 
-export function TextLabel({ component, isEditing, onTextSave, onEditCancel }: TextLabelProps) {
+export function TextLabel({ component, isEditing, onTextSave, onEditCancel, variables = [] }: TextLabelProps) {
   const props = component.properties as TextLabelProperties;
 
   const containerStyle = useMemo<CSSProperties>(() => {
@@ -90,11 +94,19 @@ export function TextLabel({ component, isEditing, onTextSave, onEditCancel }: Te
     onEditCancel?.();
   }, [onEditCancel]);
 
+  // Generate highlighted HTML for display mode
+  const content = props.content || 'Text Label';
+  const highlightedHtml = useMemo(() => {
+    if (!hasTemplateSyntax(content)) return null;
+    const tokens = tokenizeTemplate(content, variables);
+    return tokensToHtml(tokens, false);
+  }, [content, variables]);
+
   // If in editing mode, show the inline editor
   if (isEditing && onTextSave && onEditCancel) {
     return (
       <div
-        className='flex h-full w-full items-center overflow-visible'
+        className="flex h-full w-full items-center overflow-visible"
         style={{
           ...containerStyle,
           // Remove pointer-events-none for editing
@@ -105,7 +117,8 @@ export function TextLabel({ component, isEditing, onTextSave, onEditCancel }: Te
           onSave={handleTextSave}
           onCancel={handleEditCancel}
           multiline={false}
-          placeholder='Text Label'
+          placeholder="Text Label"
+          variables={variables}
           style={{
             width: '100%',
             fontFamily: 'inherit',
@@ -125,8 +138,12 @@ export function TextLabel({ component, isEditing, onTextSave, onEditCancel }: Te
   }
 
   return (
-    <div className='pointer-events-none flex h-full w-full items-center overflow-hidden' style={containerStyle}>
-      <span className='truncate'>{props.content || 'Text Label'}</span>
+    <div className="pointer-events-none flex h-full w-full items-center overflow-hidden" style={containerStyle}>
+      {highlightedHtml ? (
+        <span className="truncate" dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
+      ) : (
+        <span className="truncate">{content}</span>
+      )}
     </div>
   );
 }

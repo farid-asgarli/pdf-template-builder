@@ -53,10 +53,6 @@ export {
   deleteDocument,
   createDocumentFromTemplate,
 
-  // DOCX Import
-  importFromDocx,
-  isValidDocxFile,
-
   // PDF Generation
   generatePdf,
 
@@ -64,9 +60,6 @@ export {
   serializeDocumentContent,
   parseDocumentResponse,
 } from './documents';
-
-// Types
-export type { DocxImportResponse, DocxImportMetadata } from './documents';
 
 // =============================================================================
 // Templates API

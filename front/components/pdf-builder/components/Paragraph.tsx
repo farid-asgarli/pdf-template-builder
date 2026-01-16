@@ -1,8 +1,10 @@
 'use client';
 
 import type { Component, ParagraphProperties, TextDecoration, TextDecorationStyle } from '@/lib/types/document.types';
+import type { VariableDefinition } from '@/lib/types/variable.types';
 import { CSSProperties, useMemo, useCallback } from 'react';
 import { InlineTextEditor } from './InlineTextEditor';
+import { tokenizeTemplate, tokensToHtml, hasTemplateSyntax } from '@/lib/utils/templateHighlighter';
 
 interface ParagraphProps {
   component: Component;
@@ -12,6 +14,8 @@ interface ParagraphProps {
   onTextSave?: (value: string) => void;
   /** Callback when inline editing is cancelled */
   onEditCancel?: () => void;
+  /** Variable definitions for syntax highlighting validation */
+  variables?: VariableDefinition[];
 }
 
 // Maps our font weight values to CSS font weight values
@@ -44,7 +48,7 @@ const decorationStyleMap: Record<TextDecorationStyle, string> = {
   dashed: 'dashed',
 };
 
-export function Paragraph({ component, isEditing, onTextSave, onEditCancel }: ParagraphProps) {
+export function Paragraph({ component, isEditing, onTextSave, onEditCancel, variables = [] }: ParagraphProps) {
   const props = component.properties as ParagraphProperties;
 
   const containerStyle = useMemo<CSSProperties>(() => {
@@ -97,11 +101,19 @@ export function Paragraph({ component, isEditing, onTextSave, onEditCancel }: Pa
     onEditCancel?.();
   }, [onEditCancel]);
 
+  // Generate highlighted HTML for display mode
+  const content = props.content || 'Enter your paragraph text here...';
+  const highlightedHtml = useMemo(() => {
+    if (!hasTemplateSyntax(content)) return null;
+    const tokens = tokenizeTemplate(content, variables);
+    return tokensToHtml(tokens, false);
+  }, [content, variables]);
+
   // If in editing mode, show the inline editor
   if (isEditing && onTextSave && onEditCancel) {
     return (
       <div
-        className='h-full w-full overflow-visible'
+        className="h-full w-full overflow-visible"
         style={{
           ...containerStyle,
           // Remove overflow hidden for editing
@@ -114,7 +126,8 @@ export function Paragraph({ component, isEditing, onTextSave, onEditCancel }: Pa
           onSave={handleTextSave}
           onCancel={handleEditCancel}
           multiline={true}
-          placeholder='Enter your paragraph text here...'
+          placeholder="Enter your paragraph text here..."
+          variables={variables}
           style={{
             width: '100%',
             height: '100%',
@@ -138,8 +151,12 @@ export function Paragraph({ component, isEditing, onTextSave, onEditCancel }: Pa
   // We can't perfectly represent paragraphSpacing in CSS for a single paragraph,
   // but we can show it via a custom data attribute for awareness
   return (
-    <div className='pointer-events-none h-full w-full overflow-hidden' style={containerStyle} data-paragraph-spacing={props.paragraphSpacing}>
-      <p className='whitespace-pre-wrap m-0'>{props.content || 'Enter your paragraph text here...'}</p>
+    <div className="pointer-events-none h-full w-full overflow-hidden" style={containerStyle} data-paragraph-spacing={props.paragraphSpacing}>
+      {highlightedHtml ? (
+        <p className="whitespace-pre-wrap m-0" dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
+      ) : (
+        <p className="whitespace-pre-wrap m-0">{content}</p>
+      )}
     </div>
   );
 }

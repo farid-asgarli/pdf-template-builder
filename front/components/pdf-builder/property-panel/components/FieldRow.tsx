@@ -7,8 +7,8 @@ interface FieldRowProps {
 export function FieldRow({ label, children, className }: FieldRowProps) {
   return (
     <div className={`flex items-center justify-between gap-4 ${className || ''}`}>
-      <span className='shrink-0 text-sm font-medium text-on-surface'>{label}</span>
-      <div className='w-32'>{children}</div>
+      <span className="shrink-0 text-sm font-medium text-on-surface">{label}</span>
+      <div className="w-42">{children}</div>
     </div>
   );
 }

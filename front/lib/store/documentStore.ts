@@ -13,7 +13,9 @@ import {
   HeaderFooterType,
   GlobalDocumentSettings,
   PageSettings,
+  LayoutConfig,
   getDefaultProperties,
+  getDefaultLayoutConfig,
   DEFAULT_COMPONENT_SIZES,
 } from '@/lib/types/document.types';
 import type { VariableDefinition } from '@/lib/types/variable.types';
@@ -53,7 +55,10 @@ interface DocumentStoreActions {
   // Component actions
   selectComponent: (componentId: string | null) => void;
   addComponent: (type: ComponentType, position: Position) => void;
-  updateComponent: (componentId: string, updates: Partial<Pick<Component, 'position' | 'size' | 'properties' | 'style' | 'condition'>>) => void;
+  updateComponent: (
+    componentId: string,
+    updates: Partial<Pick<Component, 'position' | 'size' | 'properties' | 'style' | 'condition' | 'layout'>>
+  ) => void;
   deleteComponent: (componentId: string) => void;
   duplicateComponent: (componentId: string) => void;
 
@@ -253,6 +258,8 @@ export const useDocumentStore = create<DocumentStore>()(
               size: { ...comp.size },
               properties: { ...comp.properties },
               style: comp.style ? { ...comp.style } : undefined,
+              condition: comp.condition ? { ...comp.condition, rules: [...comp.condition.rules] } : undefined,
+              layout: comp.layout ? { ...comp.layout } : undefined,
             }));
 
             const newPage: Page = {
@@ -373,6 +380,7 @@ export const useDocumentStore = create<DocumentStore>()(
               position,
               size: { ...DEFAULT_COMPONENT_SIZES[type] },
               properties: getDefaultProperties(type),
+              layout: getDefaultLayoutConfig(type),
             };
 
             const updatedPages = state.document.pages.map((page) => {
@@ -413,6 +421,7 @@ export const useDocumentStore = create<DocumentStore>()(
                         properties: updates.properties ? { ...comp.properties, ...updates.properties } : comp.properties,
                         style: updates.style ? { ...comp.style, ...updates.style } : comp.style,
                         condition: updates.condition !== undefined ? updates.condition : comp.condition,
+                        layout: updates.layout !== undefined ? updates.layout : comp.layout,
                       };
                     }
                     return comp;
@@ -477,6 +486,10 @@ export const useDocumentStore = create<DocumentStore>()(
               size: { ...componentToDuplicate.size },
               properties: { ...componentToDuplicate.properties },
               style: componentToDuplicate.style ? { ...componentToDuplicate.style } : undefined,
+              condition: componentToDuplicate.condition
+                ? { ...componentToDuplicate.condition, rules: [...componentToDuplicate.condition.rules] }
+                : undefined,
+              layout: componentToDuplicate.layout ? { ...componentToDuplicate.layout } : undefined,
             };
 
             const updatedPages = state.document.pages.map((page) => {

@@ -6,7 +6,7 @@ services:
     container_name: pdfbuilder-postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: admin1234
       POSTGRES_DB: pdfbuilder
     ports:
       - '5432:5432'

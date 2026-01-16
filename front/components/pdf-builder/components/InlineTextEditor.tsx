@@ -1,6 +1,8 @@
 'use client';
 
-import { useRef, useEffect, useCallback, useState, CSSProperties } from 'react';
+import { useRef, useEffect, useCallback, useState, useMemo, CSSProperties } from 'react';
+import { tokenizeTemplate, tokensToHtml, hasTemplateSyntax } from '@/lib/utils/templateHighlighter';
+import type { VariableDefinition } from '@/lib/types/variable.types';
 
 export interface InlineTextEditorProps {
   /** Current text value */
@@ -17,6 +19,10 @@ export interface InlineTextEditorProps {
   style?: CSSProperties;
   /** Additional class names */
   className?: string;
+  /** Variable definitions for syntax highlighting validation */
+  variables?: VariableDefinition[];
+  /** Whether to use dark mode highlighting */
+  darkMode?: boolean;
 }
 
 /**
@@ -29,25 +35,47 @@ export interface InlineTextEditorProps {
  * - Escape to cancel without saving
  * - Maintains cursor position
  * - Supports both single-line and multi-line modes
+ * - Syntax highlighting for template variables (shown on blur)
  */
-export function InlineTextEditor({ value, onSave, onCancel, multiline = false, placeholder = '', style, className = '' }: InlineTextEditorProps) {
+export function InlineTextEditor({
+  value,
+  onSave,
+  onCancel,
+  multiline = false,
+  placeholder = '',
+  style,
+  className = '',
+  variables = [],
+  darkMode = false,
+}: InlineTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [localValue, setLocalValue] = useState(value);
+  const [isFocused, setIsFocused] = useState(true);
   const isComposingRef = useRef(false);
-  const hasChangedRef = useRef(false);
+  const initializedRef = useRef(false);
 
-  // Focus and select all text on mount
+  // Generate highlighted HTML for preview mode (only when not focused)
+  const highlightedHtml = useMemo(() => {
+    if (isFocused || !hasTemplateSyntax(localValue)) {
+      return null;
+    }
+    const tokens = tokenizeTemplate(localValue, variables);
+    return tokensToHtml(tokens, darkMode);
+  }, [localValue, variables, darkMode, isFocused]);
+
+  // Initialize content on mount only
   useEffect(() => {
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+
     const editor = editorRef.current;
     if (!editor) return;
 
     // Set initial content
     editor.textContent = value;
 
-    // Focus the editor
+    // Focus and select all
     editor.focus();
-
-    // Select all text
     const selection = window.getSelection();
     const range = document.createRange();
     range.selectNodeContents(editor);
@@ -59,72 +87,59 @@ export function InlineTextEditor({ value, onSave, onCancel, multiline = false, p
   const handleInput = useCallback(() => {
     const editor = editorRef.current;
     if (!editor) return;
-
-    const newValue = editor.textContent || '';
-    setLocalValue(newValue);
-    hasChangedRef.current = newValue !== value;
-  }, [value]);
+    setLocalValue(editor.textContent || '');
+  }, []);
 
   // Save the current value
   const save = useCallback(() => {
-    const editor = editorRef.current;
-    if (!editor) return;
-
-    const newValue = editor.textContent || '';
-    if (newValue !== value) {
-      onSave(newValue);
+    if (localValue !== value) {
+      onSave(localValue);
     } else {
       onCancel();
     }
-  }, [value, onSave, onCancel]);
-
-  // Cancel editing
-  const cancel = useCallback(() => {
-    onCancel();
-  }, [onCancel]);
+  }, [localValue, value, onSave, onCancel]);
 
   // Handle key events
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      // Escape always cancels
       if (e.key === 'Escape') {
         e.preventDefault();
         e.stopPropagation();
-        cancel();
+        onCancel();
         return;
       }
 
-      // Enter behavior depends on multiline mode
       if (e.key === 'Enter') {
         if (!multiline || (multiline && (e.metaKey || e.ctrlKey))) {
-          // Single-line: Enter saves
-          // Multi-line: Cmd/Ctrl+Enter saves
           e.preventDefault();
           e.stopPropagation();
           save();
           return;
         }
-        // Multi-line: regular Enter adds newline (default behavior)
       }
 
-      // Prevent keyboard shortcuts from propagating during editing
-      if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      // Stop propagation for editing keys
+      if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
         e.stopPropagation();
       }
     },
-    [multiline, save, cancel]
+    [multiline, save, onCancel]
   );
+
+  // Handle focus
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+  }, []);
 
   // Handle blur
   const handleBlur = useCallback(
     (e: React.FocusEvent) => {
-      // Don't save if we're in the middle of IME composition
       if (isComposingRef.current) return;
 
-      // Check if the new focus target is within the editor
       const relatedTarget = e.relatedTarget as HTMLElement | null;
       if (editorRef.current?.contains(relatedTarget)) return;
 
+      setIsFocused(false);
       save();
     },
     [save]
@@ -140,7 +155,7 @@ export function InlineTextEditor({ value, onSave, onCancel, multiline = false, p
     handleInput();
   }, [handleInput]);
 
-  // Prevent drag events during editing
+  // Prevent drag
   const handleDragStart = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -152,19 +167,16 @@ export function InlineTextEditor({ value, onSave, onCancel, multiline = false, p
       e.preventDefault();
       const text = e.clipboardData.getData('text/plain');
 
-      // Insert plain text at cursor position
       const selection = window.getSelection();
       if (!selection?.rangeCount) return;
 
       const range = selection.getRangeAt(0);
       range.deleteContents();
 
-      // For single-line, remove newlines
       const cleanText = multiline ? text : text.replace(/[\r\n]+/g, ' ');
       const textNode = document.createTextNode(cleanText);
       range.insertNode(textNode);
 
-      // Move cursor to end of inserted text
       range.setStartAfter(textNode);
       range.setEndAfter(textNode);
       selection.removeAllRanges();
@@ -175,7 +187,6 @@ export function InlineTextEditor({ value, onSave, onCancel, multiline = false, p
     [multiline, handleInput]
   );
 
-  // Stop click propagation to prevent selection changes
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
   }, []);
@@ -184,31 +195,53 @@ export function InlineTextEditor({ value, onSave, onCancel, multiline = false, p
     e.stopPropagation();
   }, []);
 
+  // Click on preview to focus editor
+  const handlePreviewClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFocused(true);
+    // Focus editor after state update
+    setTimeout(() => {
+      editorRef.current?.focus();
+    }, 0);
+  }, []);
+
   const isEmpty = !localValue;
 
+  const baseStyle: CSSProperties = {
+    ...style,
+    minHeight: '1em',
+    whiteSpace: multiline ? 'pre-wrap' : 'nowrap',
+    wordBreak: 'break-word',
+    ...(isEmpty && placeholder ? { position: 'relative' as const } : {}),
+  };
+
+  // Show highlighted preview when not focused and has template syntax
+  if (highlightedHtml && !isFocused) {
+    return (
+      <div
+        className={`outline-none cursor-text ${className}`}
+        style={baseStyle}
+        onClick={handlePreviewClick}
+        onMouseDown={handleMouseDown}
+        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+      />
+    );
+  }
+
+  // Show plain editor (always when focused, or when no template syntax)
   return (
     <div
       ref={editorRef}
       contentEditable
       suppressContentEditableWarning
-      role='textbox'
+      role="textbox"
       aria-multiline={multiline}
       aria-placeholder={placeholder}
       className={`outline-none cursor-text ${className}`}
-      style={{
-        ...style,
-        minHeight: '1em',
-        whiteSpace: multiline ? 'pre-wrap' : 'nowrap',
-        wordBreak: 'break-word',
-        // Show placeholder via CSS when empty
-        ...(isEmpty && placeholder
-          ? {
-              position: 'relative',
-            }
-          : {}),
-      }}
+      style={baseStyle}
       onInput={handleInput}
       onKeyDown={handleKeyDown}
+      onFocus={handleFocus}
       onBlur={handleBlur}
       onCompositionStart={handleCompositionStart}
       onCompositionEnd={handleCompositionEnd}

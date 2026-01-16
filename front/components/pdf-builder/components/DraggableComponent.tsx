@@ -6,6 +6,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { mmToPx, pxToMm } from '@/lib/utils/coordinates';
 import { useDocumentStore } from '@/lib/store/documentStore';
 import type { Component, ComponentType as ComponentTypeEnum } from '@/lib/types/document.types';
+import { ChevronsUpDown } from 'lucide-react';
 
 import { TextLabel } from './TextLabel';
 import { TextField } from './TextField';
@@ -49,7 +50,8 @@ const MIN_HEIGHT_MM = 5;
 const INLINE_EDITABLE_TYPES: Set<ComponentTypeEnum> = new Set(['text-label', 'paragraph']);
 
 export const DraggableComponent = memo(function DraggableComponent({ component, isSelected, onSelect }: DraggableComponentProps) {
-  const { updateComponent } = useDocumentStore();
+  const { updateComponent, document: storeDocument } = useDocumentStore();
+  const variables = storeDocument?.variableDefinitions ?? [];
 
   // UI states
   const [isHovered, setIsHovered] = useState(false);
@@ -255,12 +257,16 @@ export const DraggableComponent = memo(function DraggableComponent({ component, 
 
   // Render the appropriate component with editing props if supported
   const renderComponent = () => {
-    // For inline editable components, pass editing props
+    // For inline editable components, pass editing props and variables for syntax highlighting
     if (component.type === 'text-label') {
-      return <TextLabel component={component} isEditing={isEditing} onTextSave={handleTextSave} onEditCancel={handleEditCancel} />;
+      return (
+        <TextLabel component={component} isEditing={isEditing} onTextSave={handleTextSave} onEditCancel={handleEditCancel} variables={variables} />
+      );
     }
     if (component.type === 'paragraph') {
-      return <Paragraph component={component} isEditing={isEditing} onTextSave={handleTextSave} onEditCancel={handleEditCancel} />;
+      return (
+        <Paragraph component={component} isEditing={isEditing} onTextSave={handleTextSave} onEditCancel={handleEditCancel} variables={variables} />
+      );
     }
     // For other components, render normally
     const ComponentToRender = Renderer || (() => <UnknownComponentPlaceholder typeName={component.type} />);
@@ -275,12 +281,12 @@ export const DraggableComponent = memo(function DraggableComponent({ component, 
       onDoubleClick={handleDoubleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      data-draggable-component='true'
+      data-draggable-component="true"
       data-editing={isEditing || undefined}
     >
       {/* Draggable area - the component content */}
       <div
-        className='absolute inset-0'
+        className="absolute inset-0"
         style={{
           cursor: isEditing ? 'text' : isDragging ? 'grabbing' : isResizing ? RESIZE_CURSORS[resizeDirection!] : 'grab',
           opacity: isDragging ? 0.9 : 1,
@@ -310,8 +316,18 @@ export const DraggableComponent = memo(function DraggableComponent({ component, 
         />
       )}
 
+      {/* Auto-expand indicator badge */}
+      {component.layout?.autoExpand && !isEditing && (isSelected || isHovered) && (
+        <div
+          className="absolute -top-2 -right-2 z-50 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white shadow-md"
+          title="Auto-expand enabled"
+        >
+          <ChevronsUpDown className="h-3 w-3" />
+        </div>
+      )}
+
       {/* Edit mode indicator */}
-      {isEditing && <div className='absolute inset-0 ring-2 ring-primary ring-offset-1 rounded-sm pointer-events-none' />}
+      {isEditing && <div className="absolute inset-0 ring-2 ring-primary ring-offset-1 rounded-sm pointer-events-none" />}
     </div>
   );
 });

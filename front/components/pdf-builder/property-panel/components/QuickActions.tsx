@@ -21,13 +21,13 @@ export function QuickActions({ componentId }: QuickActionsProps) {
   }, [componentId, deleteComponent]);
 
   return (
-    <div className='flex items-center gap-2 pt-3'>
-      <Button variant='tonal' size='sm' className='flex-1 gap-2' onClick={handleDuplicate}>
-        <Copy className='h-4 w-4' />
+    <div className="flex items-center gap-2 pt-3">
+      <Button variant="tonal" size="sm" className="flex-1 gap-2" onClick={handleDuplicate}>
+        <Copy className="h-4 w-4" />
         Duplicate
       </Button>
-      <Button variant='destructive-outline' size='sm' className='gap-2' onClick={handleDelete}>
-        <Trash2 className='h-4 w-4' />
+      <Button variant="destructive-outline" size="sm" className="gap-2" onClick={handleDelete}>
+        <Trash2 className="h-4 w-4" />
         Delete
       </Button>
     </div>

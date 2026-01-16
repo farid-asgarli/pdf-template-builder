@@ -170,7 +170,11 @@ function ColorPicker({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={cn(swatchVariants({ size, selected: false }), 'relative overflow-hidden', disabled && 'opacity-50 cursor-not-allowed')}
+        className={cn(
+          swatchVariants({ size, selected: false }),
+          'relative overflow-hidden flex shrink-0',
+          disabled && 'opacity-50 cursor-not-allowed'
+        )}
         style={{ backgroundColor: localValue }}
         aria-label={label || 'Select color'}
         aria-expanded={isOpen}
@@ -207,7 +211,7 @@ function ColorPicker({
           placeholder="#000000"
           size={size === 'lg' ? 'default' : 'sm'}
           disabled={disabled}
-          className={cn('font-mono uppercase', size === 'sm' && 'w-20', size === 'default' && 'w-24', size === 'lg' && 'w-28')}
+          className={cn('font-mono uppercase')}
           maxLength={7}
           aria-label={`${label || 'Color'} hex value`}
         />

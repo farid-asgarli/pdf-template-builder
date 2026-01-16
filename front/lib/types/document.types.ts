@@ -131,6 +131,54 @@ export interface ConditionalConfig {
   rules: ConditionalRule[];
 }
 
+/**
+ * Layout configuration for component auto-expansion behavior.
+ */
+export interface LayoutConfig {
+  /**
+   * When true, the component can expand vertically beyond its defined height
+   * to fit its content. The size.height becomes the minimum height.
+   */
+  autoExpand: boolean;
+  /**
+   * When true (and autoExpand is true), components that are positioned
+   * below this component (vertically) and have horizontal overlap
+   * will be pushed down when this component expands.
+   */
+  pushSiblings: boolean;
+}
+
+/**
+ * Component types that support auto-expansion (have variable content height).
+ */
+export const AUTO_EXPANDABLE_TYPES: Set<ComponentType> = new Set(['paragraph', 'text-label', 'table']);
+
+/**
+ * Checks if a component type supports auto-expansion.
+ */
+export function supportsAutoExpand(componentType: ComponentType): boolean {
+  return AUTO_EXPANDABLE_TYPES.has(componentType);
+}
+
+/**
+ * Default layout configuration for auto-expandable component types.
+ */
+export const DEFAULT_LAYOUT_CONFIG: LayoutConfig = {
+  autoExpand: true,
+  pushSiblings: true,
+};
+
+/**
+ * Gets the default layout config for a component type.
+ * Auto-expandable types get auto-expand enabled by default.
+ */
+export function getDefaultLayoutConfig(componentType: ComponentType): LayoutConfig | undefined {
+  if (supportsAutoExpand(componentType)) {
+    return { ...DEFAULT_LAYOUT_CONFIG };
+  }
+  return undefined;
+}
+
 export interface Component {
   id: string;
   type: ComponentType;
@@ -140,6 +188,8 @@ export interface Component {
   style?: ComponentStyle;
   /** Conditional rendering configuration - show/hide based on variable values */
   condition?: ConditionalConfig;
+  /** Layout configuration for auto-expansion behavior */
+  layout?: LayoutConfig;
 }
 
 export interface Position {

@@ -35,44 +35,12 @@ export {
 // Re-export utility functions
 export { generateTemplateId, generateNewId } from './utils';
 
-// Import templates
-import { BLANK_TEMPLATE } from './templates/blank';
-import { AUTO_INSURANCE_BASIC } from './templates/auto-insurance';
-import { NDA_BASIC } from './templates/nda';
-import { INVOICE_BASIC } from './templates/invoice';
-
-// Re-export individual templates
+// Import and export blank template (used for "Start Fresh" option)
 export { BLANK_TEMPLATE } from './templates/blank';
-export { AUTO_INSURANCE_BASIC } from './templates/auto-insurance';
-export { NDA_BASIC } from './templates/nda';
-export { INVOICE_BASIC } from './templates/invoice';
 
 // ============================================================================
-// Export all built-in templates
+// Template Utilities
 // ============================================================================
-
-export const BUILT_IN_TEMPLATES: Template[] = [BLANK_TEMPLATE, AUTO_INSURANCE_BASIC, NDA_BASIC, INVOICE_BASIC];
-
-/**
- * Get all templates (built-in + user templates from API)
- */
-export function getBuiltInTemplates(): Template[] {
-  return BUILT_IN_TEMPLATES;
-}
-
-/**
- * Get a specific built-in template by ID
- */
-export function getBuiltInTemplateById(id: string): Template | undefined {
-  return BUILT_IN_TEMPLATES.find((t) => t.id === id);
-}
-
-/**
- * Get templates by category
- */
-export function getTemplatesByCategory(category: TemplateCategory): Template[] {
-  return BUILT_IN_TEMPLATES.filter((t) => t.category === category);
-}
 
 /**
  * Deep clone a template content for creating a new document
@@ -134,5 +102,6 @@ export function cloneTemplateContent(template: Template): Template['content'] {
     pages: clonedPages,
     headerFooter: clonedHeaderFooter,
     variables: { ...template.content.variables },
+    variableDefinitions: template.content.variableDefinitions ? [...template.content.variableDefinitions] : undefined,
   };
 }

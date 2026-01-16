@@ -65,13 +65,13 @@ export function Section({ title, icon, children, defaultOpen = true, variant = '
 
   return (
     <div className={`${rootStyles[variant]} ${className || ''}`}>
-      <button type='button' className={buttonStyles[variant]} onClick={() => setIsOpen(!isOpen)} aria-expanded={isOpen}>
+      <button type="button" className={buttonStyles[variant]} onClick={() => setIsOpen(!isOpen)} aria-expanded={isOpen}>
         {icon && <span className={iconContainerStyles[variant]}>{icon}</span>}
-        <h3 className='flex-1 text-left text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>{title}</h3>
+        <h3 className="flex-1 text-left text-xs font-semibold uppercase tracking-wider text-on-surface-variant">{title}</h3>
         <ChevronDown className={`h-4 w-4 text-on-surface-variant/50 transition-transform duration-200 ${chevronRotation}`} />
       </button>
       <div className={contentWrapperStyles[variant]}>
-        <div className='overflow-hidden'>
+        <div className="overflow-hidden">
           <div className={contentContainerStyles[variant]}>{children}</div>
         </div>
       </div>

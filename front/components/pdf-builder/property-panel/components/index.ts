@@ -13,6 +13,7 @@ export { TypeSpecificProperties } from './TypeSpecificProperties';
 export { StyleEditor } from './StyleEditor';
 export { QuickActions } from './QuickActions';
 export { ConditionalSettings } from './ConditionalSettings';
+export { LayoutSettings } from './LayoutSettings';
 
 // Property editors by component type
 export { BarcodePropertyEditor } from './BarcodePropertyEditor';
