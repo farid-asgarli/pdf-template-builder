@@ -37,7 +37,6 @@ const stepButtonVariants = cva(
     'transition-colors duration-200',
     'disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent',
     'focus:outline-none focus:bg-surface-container-high',
-    'active:scale-95',
   ].join(' '),
   {
     variants: {

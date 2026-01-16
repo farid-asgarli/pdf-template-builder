@@ -136,6 +136,54 @@ public class ComponentData
     public PositionData Position { get; set; } = new();
     public SizeData Size { get; set; } = new();
     public Dictionary<string, JsonElement> Properties { get; set; } = [];
+
+    /// <summary>
+    /// Optional conditional rendering configuration.
+    /// When set and enabled, the component will only render if conditions are met.
+    /// </summary>
+    public ConditionalConfig? Condition { get; set; }
+}
+
+/// <summary>
+/// Conditional rendering configuration for a component.
+/// </summary>
+public class ConditionalConfig
+{
+    /// <summary>
+    /// Whether conditional rendering is enabled for this component.
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// How to combine multiple rules: "all" = AND, "any" = OR.
+    /// </summary>
+    public string Logic { get; set; } = "all";
+
+    /// <summary>
+    /// List of conditions to evaluate.
+    /// </summary>
+    public List<ConditionalRule> Rules { get; set; } = [];
+}
+
+/// <summary>
+/// Single condition rule for conditional rendering.
+/// </summary>
+public class ConditionalRule
+{
+    /// <summary>
+    /// Variable name to check (e.g., "customerType", "hasDiscount").
+    /// </summary>
+    public string Variable { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Comparison operator (equals, not_equals, contains, etc.).
+    /// </summary>
+    public string Operator { get; set; } = "equals";
+
+    /// <summary>
+    /// Value to compare against (not needed for is_empty, is_not_empty, is_true, is_false).
+    /// </summary>
+    public string? Value { get; set; }
 }
 
 public class PositionData

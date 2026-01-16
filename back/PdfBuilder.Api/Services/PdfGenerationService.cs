@@ -7,22 +7,15 @@ namespace PdfBuilder.Api.Services;
 /// <summary>
 /// Service implementation for PDF generation operations.
 /// </summary>
-public class PdfGenerationService : IPdfGenerationService
+public class PdfGenerationService(
+    IDocumentRepository documentRepository,
+    ITemplateRepository templateRepository,
+    IVariableHistoryRepository historyRepository
+) : IPdfGenerationService
 {
-    private readonly IDocumentRepository _documentRepository;
-    private readonly ITemplateRepository _templateRepository;
-    private readonly IVariableHistoryRepository _historyRepository;
-
-    public PdfGenerationService(
-        IDocumentRepository documentRepository,
-        ITemplateRepository templateRepository,
-        IVariableHistoryRepository historyRepository
-    )
-    {
-        _documentRepository = documentRepository;
-        _templateRepository = templateRepository;
-        _historyRepository = historyRepository;
-    }
+    private readonly IDocumentRepository _documentRepository = documentRepository;
+    private readonly ITemplateRepository _templateRepository = templateRepository;
+    private readonly IVariableHistoryRepository _historyRepository = historyRepository;
 
     public byte[] GenerateFromContent(
         string jsonContent,
@@ -138,11 +131,7 @@ public class PdfGenerationService : IPdfGenerationService
         CancellationToken cancellationToken
     )
     {
-        var mergedVars = VariableService.MergeVariables(
-            definitions,
-            new Dictionary<string, string>(),
-            request.Variables
-        );
+        var mergedVars = VariableService.MergeVariables(definitions, [], request.Variables);
 
         var complexVars = VariableService.ExtractComplexVariables(request.Variables);
 

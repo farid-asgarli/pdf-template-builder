@@ -32,11 +32,11 @@ export function PropertyRow({ label, hint, children, className, controlWidth = '
 
   return (
     <div className={`py-1.5 ${className || ''}`}>
-      <div className="flex items-center justify-between gap-4">
-        <span className="shrink-0 text-sm text-on-surface/90">{label}</span>
+      <div className='flex items-center justify-between gap-4'>
+        <span className='shrink-0 text-sm text-on-surface/90'>{label}</span>
         <div className={`shrink-0 ${widthClass}`}>{children}</div>
       </div>
-      {hint && <p className="mt-1 text-xs text-on-surface-variant/60">{hint}</p>}
+      {hint && <p className='mt-1 text-xs text-on-surface-variant/60'>{hint}</p>}
     </div>
   );
 }

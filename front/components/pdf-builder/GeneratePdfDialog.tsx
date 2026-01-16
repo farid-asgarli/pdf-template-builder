@@ -18,6 +18,7 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
+  DialogBody,
 } from '@/app/ui/primitives';
 import { toast } from '@/app/ui/primitives/feedback/Toast';
 import { Download, FileText, History, AlertTriangle, Loader2, Info, Variable } from 'lucide-react';
@@ -158,158 +159,157 @@ export function GeneratePdfDialog({ open, onOpenChange, documentId, documentTitl
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+      <DialogContent className='max-w-2xl max-h-[85vh] flex flex-col'>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
+          <DialogTitle className='flex items-center gap-2'>
+            <FileText className='h-5 w-5 text-primary' />
             Generate PDF
           </DialogTitle>
           <DialogDescription>
             {hasVariables ? 'Fill in the variable values below to generate your PDF.' : 'Generate a PDF from your document.'}
           </DialogDescription>
         </DialogHeader>
+        <DialogBody>
+          {isLoading ? (
+            <div className='flex-1 flex items-center justify-center py-12'>
+              <PageLoading message='Loading variables...' />
+            </div>
+          ) : (
+            <>
+              {hasVariables ? (
+                <Tabs value={activeTab} onValueChange={setActiveTab} className='flex-1 flex flex-col min-h-0'>
+                  <TabsList className='mx-0'>
+                    <TabsTrigger value='variables' className='gap-2'>
+                      <Variable className='h-4 w-4' />
+                      Variables
+                      {Object.keys(errors).length > 0 && (
+                        <Badge variant='error' size='sm'>
+                          {Object.keys(errors).length}
+                        </Badge>
+                      )}
+                    </TabsTrigger>
+                    <TabsTrigger value='options' className='gap-2'>
+                      <History className='h-4 w-4' />
+                      Options
+                    </TabsTrigger>
+                  </TabsList>
 
-        {isLoading ? (
-          <div className="flex-1 flex items-center justify-center py-12">
-            <PageLoading message="Loading variables..." />
-          </div>
-        ) : (
-          <>
-            {hasVariables ? (
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-                <TabsList className="mx-0">
-                  <TabsTrigger value="variables" className="gap-2">
-                    <Variable className="h-4 w-4" />
-                    Variables
-                    {Object.keys(errors).length > 0 && (
-                      <Badge variant="error" size="sm">
-                        {Object.keys(errors).length}
-                      </Badge>
-                    )}
-                  </TabsTrigger>
-                  <TabsTrigger value="options" className="gap-2">
-                    <History className="h-4 w-4" />
-                    Options
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="variables" className="flex-1 overflow-y-auto pr-2 mt-4">
-                  {validationErrors.length > 0 && (
-                    <div className="mb-4 p-3 bg-error/10 border border-error/20 rounded-lg">
-                      <div className="flex items-center gap-2 text-error font-medium mb-2">
-                        <AlertTriangle className="h-4 w-4" />
-                        Validation Errors
-                      </div>
-                      <ul className="text-sm text-error/90 space-y-1">
-                        {validationErrors.map((err, i) => (
-                          <li key={i}>
-                            <strong>{err.variableName}:</strong> {err.message}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  <VariableInputForm
-                    definitions={definitions}
-                    values={values}
-                    onChange={handleValueChange}
-                    errors={errors}
-                    disabled={isGenerating}
-                    showComputed={false}
-                  />
-                </TabsContent>
-
-                <TabsContent value="options" className="flex-1 overflow-y-auto pr-2 mt-4">
-                  <div className="space-y-6">
-                    {/* History Tracking */}
-                    <div className="p-4 border border-outline-variant/30 rounded-lg">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <h4 className="font-medium text-on-surface">Save to History</h4>
-                          <p className="text-sm text-on-surface-variant">Keep a record of this generation for auditing</p>
+                  <TabsContent value='variables' className='flex-1 overflow-y-auto pr-2 mt-4'>
+                    {validationErrors.length > 0 && (
+                      <div className='mb-4 p-3 bg-error/10 border border-error/20 rounded-lg'>
+                        <div className='flex items-center gap-2 text-error font-medium mb-2'>
+                          <AlertTriangle className='h-4 w-4' />
+                          Validation Errors
                         </div>
-                        <Switch checked={saveToHistory} onChange={(e) => setSaveToHistory(e.target.checked)} disabled={isGenerating} />
+                        <ul className='text-sm text-error/90 space-y-1'>
+                          {validationErrors.map((err, i) => (
+                            <li key={i}>
+                              <strong>{err.variableName}:</strong> {err.message}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    <VariableInputForm
+                      definitions={definitions}
+                      values={values}
+                      onChange={handleValueChange}
+                      errors={errors}
+                      disabled={isGenerating}
+                      showComputed={false}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value='options' className='flex-1 overflow-y-auto pr-2 mt-4'>
+                    <div className='space-y-6'>
+                      {/* History Tracking */}
+                      <div className='p-4 border border-outline-variant/30 rounded-lg'>
+                        <div className='flex items-center justify-between mb-4'>
+                          <div>
+                            <h4 className='font-medium text-on-surface'>Save to History</h4>
+                            <p className='text-sm text-on-surface-variant'>Keep a record of this generation for auditing</p>
+                          </div>
+                          <Switch checked={saveToHistory} onChange={(e) => setSaveToHistory(e.target.checked)} disabled={isGenerating} />
+                        </div>
+
+                        {saveToHistory && (
+                          <div className='space-y-4 pt-4 border-t border-outline-variant/20'>
+                            <div>
+                              <label className='block text-sm font-medium text-on-surface mb-1'>Generated By</label>
+                              <Input
+                                value={generatedBy}
+                                onChange={(e) => setGeneratedBy(e.target.value)}
+                                placeholder='Your name or identifier'
+                                disabled={isGenerating}
+                              />
+                            </div>
+                            <div>
+                              <label className='block text-sm font-medium text-on-surface mb-1'>Notes</label>
+                              <Textarea
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                placeholder='Optional notes about this generation'
+                                rows={3}
+                                disabled={isGenerating}
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
 
-                      {saveToHistory && (
-                        <div className="space-y-4 pt-4 border-t border-outline-variant/20">
+                      {/* Info about computed variables */}
+                      {definitions.some((d) => d.isComputed) && (
+                        <div className='flex items-start gap-3 p-4 bg-primary/5 border border-primary/10 rounded-lg'>
+                          <Info className='h-5 w-5 text-primary mt-0.5' />
                           <div>
-                            <label className="block text-sm font-medium text-on-surface mb-1">Generated By</label>
-                            <Input
-                              value={generatedBy}
-                              onChange={(e) => setGeneratedBy(e.target.value)}
-                              placeholder="Your name or identifier"
-                              disabled={isGenerating}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-on-surface mb-1">Notes</label>
-                            <Textarea
-                              value={notes}
-                              onChange={(e) => setNotes(e.target.value)}
-                              placeholder="Optional notes about this generation"
-                              rows={3}
-                              disabled={isGenerating}
-                            />
+                            <h4 className='font-medium text-on-surface'>Computed Variables</h4>
+                            <p className='text-sm text-on-surface-variant'>
+                              Some variables are automatically calculated based on other values. They will be computed during PDF generation.
+                            </p>
                           </div>
                         </div>
                       )}
                     </div>
+                  </TabsContent>
+                </Tabs>
+              ) : (
+                <div className='flex-1 flex flex-col items-center justify-center py-8 text-center'>
+                  <div className='w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4'>
+                    <FileText className='h-8 w-8 text-primary' />
+                  </div>
+                  <h3 className='font-medium text-on-surface mb-2'>Ready to Generate</h3>
+                  <p className='text-sm text-on-surface-variant max-w-sm'>This document has no variable placeholders. Click generate to create your PDF.</p>
 
-                    {/* Info about computed variables */}
-                    {definitions.some((d) => d.isComputed) && (
-                      <div className="flex items-start gap-3 p-4 bg-primary/5 border border-primary/10 rounded-lg">
-                        <Info className="h-5 w-5 text-primary mt-0.5" />
-                        <div>
-                          <h4 className="font-medium text-on-surface">Computed Variables</h4>
-                          <p className="text-sm text-on-surface-variant">
-                            Some variables are automatically calculated based on other values. They will be computed during PDF generation.
-                          </p>
-                        </div>
+                  {/* Show history option even without variables */}
+                  <div className='mt-6 p-4 border border-outline-variant/30 rounded-lg w-full max-w-sm'>
+                    <div className='flex items-center justify-between'>
+                      <div className='text-left'>
+                        <h4 className='font-medium text-on-surface text-sm'>Save to History</h4>
+                        <p className='text-xs text-on-surface-variant'>Track this generation</p>
                       </div>
-                    )}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            ) : (
-              <div className="flex-1 flex flex-col items-center justify-center py-8 text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <FileText className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="font-medium text-on-surface mb-2">Ready to Generate</h3>
-                <p className="text-sm text-on-surface-variant max-w-sm">
-                  This document has no variable placeholders. Click generate to create your PDF.
-                </p>
-
-                {/* Show history option even without variables */}
-                <div className="mt-6 p-4 border border-outline-variant/30 rounded-lg w-full max-w-sm">
-                  <div className="flex items-center justify-between">
-                    <div className="text-left">
-                      <h4 className="font-medium text-on-surface text-sm">Save to History</h4>
-                      <p className="text-xs text-on-surface-variant">Track this generation</p>
+                      <Switch checked={saveToHistory} onChange={(e) => setSaveToHistory(e.target.checked)} disabled={isGenerating} />
                     </div>
-                    <Switch checked={saveToHistory} onChange={(e) => setSaveToHistory(e.target.checked)} disabled={isGenerating} />
                   </div>
                 </div>
-              </div>
-            )}
-          </>
-        )}
+              )}
+            </>
+          )}
+        </DialogBody>
 
         <DialogFooter>
-          <Button variant="text" onClick={() => onOpenChange(false)} disabled={isGenerating}>
+          <Button variant='text' onClick={() => onOpenChange(false)} disabled={isGenerating}>
             Cancel
           </Button>
           <Button onClick={validateAndGenerate} disabled={isLoading || isGenerating}>
             {isGenerating ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <Loader2 className='h-4 w-4 animate-spin mr-2' />
                 Generating...
               </>
             ) : (
               <>
-                <Download className="h-4 w-4 mr-2" />
+                <Download className='h-4 w-4 mr-2' />
                 Generate PDF
               </>
             )}

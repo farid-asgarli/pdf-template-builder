@@ -194,7 +194,7 @@ public class BulkGenerationServiceWrapper : IBulkGenerationService
         _jobStore.UpdateJob(job);
     }
 
-    private Task ParseCsvAsync(
+    private static Task ParseCsvAsync(
         BulkGenerationJob job,
         Stream stream,
         CancellationToken cancellationToken
@@ -215,7 +215,7 @@ public class BulkGenerationServiceWrapper : IBulkGenerationService
         return Task.CompletedTask;
     }
 
-    private Task ParseExcelAsync(
+    private static Task ParseExcelAsync(
         BulkGenerationJob job,
         Stream stream,
         CancellationToken cancellationToken
@@ -249,7 +249,7 @@ public class BulkGenerationServiceWrapper : IBulkGenerationService
         return [];
     }
 
-    private async Task<List<Dictionary<string, string>>> ParseCsvRecordsAsync(string path)
+    private static async Task<List<Dictionary<string, string>>> ParseCsvRecordsAsync(string path)
     {
         using var reader = new StreamReader(path);
         using var csv = new CsvReader(
@@ -275,7 +275,7 @@ public class BulkGenerationServiceWrapper : IBulkGenerationService
         return records;
     }
 
-    private List<Dictionary<string, string>> ParseExcelRecords(string path)
+    private static List<Dictionary<string, string>> ParseExcelRecords(string path)
     {
         using var package = new ExcelPackage(new FileInfo(path));
         var worksheet = package.Workbook.Worksheets.FirstOrDefault();
@@ -306,7 +306,7 @@ public class BulkGenerationServiceWrapper : IBulkGenerationService
         return records;
     }
 
-    private Dictionary<string, object> ConvertRecordToVariables(
+    private static Dictionary<string, object> ConvertRecordToVariables(
         Dictionary<string, string> record,
         List<VariableDefinition> definitions
     )

@@ -7,14 +7,9 @@ namespace PdfBuilder.Api.Data.Repositories;
 /// <summary>
 /// Repository implementation for VariableHistory entities.
 /// </summary>
-public class VariableHistoryRepository : IVariableHistoryRepository
+public class VariableHistoryRepository(AppDbContext context) : IVariableHistoryRepository
 {
-    private readonly AppDbContext _context;
-
-    public VariableHistoryRepository(AppDbContext context)
-    {
-        _context = context;
-    }
+    private readonly AppDbContext _context = context;
 
     public async Task<IEnumerable<VariableHistory>> GetByDocumentIdAsync(
         Guid documentId,

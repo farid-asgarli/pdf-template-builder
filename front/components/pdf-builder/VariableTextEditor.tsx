@@ -2,7 +2,7 @@
 
 import { useRef, useCallback, useState, useEffect, useMemo } from 'react';
 import Editor, { OnMount, Monaco } from '@monaco-editor/react';
-import type { editor, IDisposable, languages } from 'monaco-editor';
+import type * as monacoEditor from 'monaco-editor';
 import { Variable, ChevronDown, Plus, Type, Hash, Calendar, ToggleLeft, DollarSign, List, Braces } from 'lucide-react';
 import { useDocumentStore } from '@/lib/store/documentStore';
 import type { VariableDefinition, VariableType } from '@/lib/types/variable.types';
@@ -119,10 +119,10 @@ function registerVariableLanguage(monaco: Monaco) {
   });
 }
 
-function createCompletionProvider(variables: VariableDefinition[]): languages.CompletionItemProvider {
+function createCompletionProvider(variables: VariableDefinition[]): monacoEditor.languages.CompletionItemProvider {
   return {
     triggerCharacters: ['{', '.'],
-    provideCompletionItems: (model, position) => {
+    provideCompletionItems: (model: monacoEditor.editor.ITextModel, position: monacoEditor.Position) => {
       const textUntilPosition = model.getValueInRange({
         startLineNumber: position.lineNumber,
         startColumn: 1,
@@ -130,7 +130,7 @@ function createCompletionProvider(variables: VariableDefinition[]): languages.Co
         endColumn: position.column,
       });
 
-      const suggestions: languages.CompletionItem[] = [];
+      const suggestions: monacoEditor.languages.CompletionItem[] = [];
       const range = {
         startLineNumber: position.lineNumber,
         endLineNumber: position.lineNumber,
@@ -288,35 +288,35 @@ function VariablePicker({ variables, onSelect, onManageVariables }: VariablePick
   }, [isOpen]);
 
   return (
-    <div ref={dropdownRef} className="relative">
+    <div ref={dropdownRef} className='relative'>
       <button
-        type="button"
+        type='button'
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 rounded-md transition-colors"
+        className='flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 rounded-md transition-colors'
       >
-        <Variable className="h-3.5 w-3.5" />
+        <Variable className='h-3.5 w-3.5' />
         Insert Variable
         <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-outline-variant/20 z-50 overflow-hidden">
+        <div className='absolute top-full right-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-outline-variant/20 z-50 overflow-hidden'>
           {/* Search */}
-          <div className="p-2 border-b border-outline-variant/10">
+          <div className='p-2 border-b border-outline-variant/10'>
             <input
-              type="text"
+              type='text'
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search variables..."
-              className="w-full px-2 py-1.5 text-sm bg-surface-container rounded-md border-none focus:outline-none focus:ring-1 focus:ring-primary"
+              placeholder='Search variables...'
+              className='w-full px-2 py-1.5 text-sm bg-surface-container rounded-md border-none focus:outline-none focus:ring-1 focus:ring-primary'
               autoFocus
             />
           </div>
 
           {/* Variable List */}
-          <div className="max-h-48 overflow-y-auto">
+          <div className='max-h-48 overflow-y-auto'>
             {filteredVariables.length === 0 ? (
-              <div className="px-3 py-4 text-center text-sm text-on-surface-variant">
+              <div className='px-3 py-4 text-center text-sm text-on-surface-variant'>
                 {variables.length === 0 ? 'No variables defined' : 'No matching variables'}
               </div>
             ) : (
@@ -325,18 +325,18 @@ function VariablePicker({ variables, onSelect, onManageVariables }: VariablePick
                 return (
                   <button
                     key={v.name}
-                    type="button"
+                    type='button'
                     onClick={() => {
                       onSelect(v);
                       setIsOpen(false);
                       setSearch('');
                     }}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-surface-container transition-colors"
+                    className='w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-surface-container transition-colors'
                   >
-                    <TypeIcon className="h-4 w-4 shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium text-on-surface truncate">{v.label || v.name}</div>
-                      <div className="text-xs text-on-surface-variant truncate">{`{{${v.name}}}`}</div>
+                    <TypeIcon className='h-4 w-4 shrink-0' />
+                    <div className='min-w-0 flex-1'>
+                      <div className='text-sm font-medium text-on-surface truncate'>{v.label || v.name}</div>
+                      <div className='text-xs text-on-surface-variant truncate'>{`{{${v.name}}}`}</div>
                     </div>
                   </button>
                 );
@@ -345,16 +345,16 @@ function VariablePicker({ variables, onSelect, onManageVariables }: VariablePick
           </div>
 
           {/* Footer */}
-          <div className="p-2 border-t border-outline-variant/10 bg-surface-container/50">
+          <div className='p-2 border-t border-outline-variant/10 bg-surface-container/50'>
             <button
-              type="button"
+              type='button'
               onClick={() => {
                 onManageVariables();
                 setIsOpen(false);
               }}
-              className="w-full flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs font-medium text-primary hover:bg-primary/5 rounded-md transition-colors"
+              className='w-full flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs font-medium text-primary hover:bg-primary/5 rounded-md transition-colors'
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className='h-3.5 w-3.5' />
               Manage Variables
             </button>
           </div>
@@ -378,12 +378,12 @@ export function VariableTextEditor({
   className = '',
   disabled = false,
 }: VariableTextEditorProps) {
-  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const editorRef = useRef<monacoEditor.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
-  const disposablesRef = useRef<IDisposable[]>([]);
+  const disposablesRef = useRef<monacoEditor.IDisposable[]>([]);
   const [isManageVariablesOpen, setIsManageVariablesOpen] = useState(false);
 
-  const variables = useDocumentStore((state) => state.document?.variableDefinitions || []);
+  const variables = useDocumentStore((state) => state.document?.variableDefinitions) ?? [];
 
   // Calculate height based on content
   const calculatedHeight = useMemo(() => {
@@ -506,11 +506,11 @@ export function VariableTextEditor({
   return (
     <div className={`relative ${className}`}>
       {/* Toolbar */}
-      <div className="flex items-center justify-between mb-1.5">
-        <div className="flex items-center gap-1">
+      <div className='flex items-center justify-between mb-1.5'>
+        <div className='flex items-center gap-1'>
           {!singleLine && (
-            <span className="text-xs text-on-surface-variant">
-              Tip: Type <code className="px-1 py-0.5 bg-surface-container rounded text-primary">{'{{'}</code> for variable suggestions
+            <span className='text-xs text-on-surface-variant'>
+              Tip: Type <code className='px-1 py-0.5 bg-surface-container rounded text-primary'>{'{{'}</code> for variable suggestions
             </span>
           )}
         </div>
@@ -529,21 +529,21 @@ export function VariableTextEditor({
         <Editor
           value={value}
           onChange={(v) => onChange(v || '')}
-          language="pdftemplate"
-          theme="pdftemplate-theme"
+          language='pdftemplate'
+          theme='pdftemplate-theme'
           onMount={handleEditorDidMount}
-          loading={<div className="flex items-center justify-center h-full text-sm text-on-surface-variant">Loading editor...</div>}
+          loading={<div className='flex items-center justify-center h-full text-sm text-on-surface-variant'>Loading editor...</div>}
           options={{
             readOnly: disabled,
           }}
         />
 
         {/* Placeholder */}
-        {!value && <div className="absolute top-2 left-3 text-sm text-on-surface-variant/50 pointer-events-none">{placeholder}</div>}
+        {!value && <div className='absolute top-2 left-3 text-sm text-on-surface-variant/50 pointer-events-none'>{placeholder}</div>}
       </div>
 
       {/* Manage Variables Dialog Trigger - We'll handle this in the parent */}
-      {isManageVariablesOpen && <div className="hidden">{/* This will be handled by triggering the parent's variable manager */}</div>}
+      {isManageVariablesOpen && <div className='hidden'>{/* This will be handled by triggering the parent's variable manager */}</div>}
     </div>
   );
 }
@@ -564,7 +564,7 @@ interface VariableInputProps {
 export function VariableInput({ value, onChange, placeholder, label, className = '', disabled = false }: VariableInputProps) {
   return (
     <div className={className}>
-      {label && <label className="block text-sm font-medium text-on-surface mb-1.5">{label}</label>}
+      {label && <label className='block text-sm font-medium text-on-surface mb-1.5'>{label}</label>}
       <VariableTextEditor value={value} onChange={onChange} placeholder={placeholder} singleLine minHeight={32} maxHeight={32} disabled={disabled} />
     </div>
   );

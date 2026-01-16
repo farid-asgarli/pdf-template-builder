@@ -4,12 +4,13 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/app/ui';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2.5 whitespace-nowrap font-semibold ring-offset-surface transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 select-none active:scale-[0.98]',
+  'inline-flex items-center justify-center gap-2.5 whitespace-nowrap font-semibold ring-offset-surface transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 select-none',
   {
     variants: {
       variant: {
         // Filled - solid primary background
-        filled: 'bg-primary text-on-primary border-2 border-primary hover:bg-primary/90 hover:border-primary/90 focus-visible:ring-primary/40',
+        filled:
+          'bg-primary text-on-primary border-2 border-primary hover:bg-primary/90 hover:border-primary/90 focus-visible:ring-primary/40',
         // Tonal - soft container with primary text
         tonal:
           'bg-primary-container/70 text-on-primary-container border-2 border-primary/15 hover:bg-primary-container hover:border-primary/30 focus-visible:ring-primary/30',
@@ -19,10 +20,12 @@ const buttonVariants = cva(
         // Text - minimal, just text
         text: 'text-primary border-2 border-transparent hover:bg-primary/8 focus-visible:ring-primary/30',
         // Elevated - raised appearance
-        elevated: 'bg-surface-container-lowest text-primary border-2 border-outline-variant/50 hover:border-primary/40 focus-visible:ring-primary/30',
+        elevated:
+          'bg-surface-container-lowest text-primary border-2 border-outline-variant/50 hover:border-primary/40 focus-visible:ring-primary/30',
         // Destructive variants
         destructive: 'bg-error text-on-error border-2 border-error hover:bg-error/90 hover:border-error/90 focus-visible:ring-error/40',
-        'destructive-outline': 'border-2 border-error/60 text-error bg-transparent hover:bg-error/8 hover:border-error focus-visible:ring-error/30',
+        'destructive-outline':
+          'border-2 border-error/60 text-error bg-transparent hover:bg-error/8 hover:border-error focus-visible:ring-error/30',
         'destructive-tonal':
           'bg-error-container/70 text-on-error-container border-2 border-error/15 hover:bg-error-container hover:border-error/30 focus-visible:ring-error/30',
       },

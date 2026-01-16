@@ -8,19 +8,13 @@ namespace PdfBuilder.Api.Services;
 /// <summary>
 /// Service implementation for variable history operations.
 /// </summary>
-public class VariableHistoryService : IVariableHistoryService
+public class VariableHistoryService(
+    IDocumentRepository documentRepository,
+    IVariableHistoryRepository historyRepository
+) : IVariableHistoryService
 {
-    private readonly IDocumentRepository _documentRepository;
-    private readonly IVariableHistoryRepository _historyRepository;
-
-    public VariableHistoryService(
-        IDocumentRepository documentRepository,
-        IVariableHistoryRepository historyRepository
-    )
-    {
-        _documentRepository = documentRepository;
-        _historyRepository = historyRepository;
-    }
+    private readonly IDocumentRepository _documentRepository = documentRepository;
+    private readonly IVariableHistoryRepository _historyRepository = historyRepository;
 
     public async Task<VariableHistoryListResponse> GetHistoryAsync(
         Guid documentId,

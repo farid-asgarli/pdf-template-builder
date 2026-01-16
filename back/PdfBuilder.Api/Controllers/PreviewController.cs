@@ -11,19 +11,13 @@ namespace PdfBuilder.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api")]
-public class PreviewController : ControllerBase
+public class PreviewController(
+    IPdfGenerationService pdfGenerationService,
+    IHtmlGenerationService htmlGenerationService
+) : ControllerBase
 {
-    private readonly IPdfGenerationService _pdfGenerationService;
-    private readonly IHtmlGenerationService _htmlGenerationService;
-
-    public PreviewController(
-        IPdfGenerationService pdfGenerationService,
-        IHtmlGenerationService htmlGenerationService
-    )
-    {
-        _pdfGenerationService = pdfGenerationService;
-        _htmlGenerationService = htmlGenerationService;
-    }
+    private readonly IPdfGenerationService _pdfGenerationService = pdfGenerationService;
+    private readonly IHtmlGenerationService _htmlGenerationService = htmlGenerationService;
 
     /// <summary>
     /// Generate PDF preview from JSON content (without saving).

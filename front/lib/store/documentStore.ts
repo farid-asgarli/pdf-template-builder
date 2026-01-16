@@ -53,7 +53,7 @@ interface DocumentStoreActions {
   // Component actions
   selectComponent: (componentId: string | null) => void;
   addComponent: (type: ComponentType, position: Position) => void;
-  updateComponent: (componentId: string, updates: Partial<Pick<Component, 'position' | 'size' | 'properties' | 'style'>>) => void;
+  updateComponent: (componentId: string, updates: Partial<Pick<Component, 'position' | 'size' | 'properties' | 'style' | 'condition'>>) => void;
   deleteComponent: (componentId: string) => void;
   duplicateComponent: (componentId: string) => void;
 
@@ -412,6 +412,7 @@ export const useDocumentStore = create<DocumentStore>()(
                         size: updates.size ?? comp.size,
                         properties: updates.properties ? { ...comp.properties, ...updates.properties } : comp.properties,
                         style: updates.style ? { ...comp.style, ...updates.style } : comp.style,
+                        condition: updates.condition !== undefined ? updates.condition : comp.condition,
                       };
                     }
                     return comp;

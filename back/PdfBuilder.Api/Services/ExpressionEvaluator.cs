@@ -19,13 +19,13 @@ public class ExpressionEvaluator
     )
     {
         _variables = ConvertToObjects(variables);
-        _complexVariables = complexVariables ?? new Dictionary<string, JsonElement>();
+        _complexVariables = complexVariables ?? [];
     }
 
     public ExpressionEvaluator(Dictionary<string, object> variables)
     {
         _variables = variables;
-        _complexVariables = new Dictionary<string, JsonElement>();
+        _complexVariables = [];
     }
 
     /// <summary>
@@ -143,7 +143,7 @@ public class ExpressionEvaluator
         };
     }
 
-    private double AggregateSum(JsonElement array, string? propertyName)
+    private static double AggregateSum(JsonElement array, string? propertyName)
     {
         double sum = 0;
         foreach (var item in array.EnumerateArray())
@@ -161,7 +161,7 @@ public class ExpressionEvaluator
         return AggregateSum(array, propertyName) / count;
     }
 
-    private double AggregateMin(JsonElement array, string? propertyName)
+    private static double AggregateMin(JsonElement array, string? propertyName)
     {
         double? min = null;
         foreach (var item in array.EnumerateArray())
@@ -173,7 +173,7 @@ public class ExpressionEvaluator
         return min ?? 0;
     }
 
-    private double AggregateMax(JsonElement array, string? propertyName)
+    private static double AggregateMax(JsonElement array, string? propertyName)
     {
         double? max = null;
         foreach (var item in array.EnumerateArray())
@@ -185,7 +185,7 @@ public class ExpressionEvaluator
         return max ?? 0;
     }
 
-    private string AggregateJoin(JsonElement array, string? propertyName, string separator)
+    private static string AggregateJoin(JsonElement array, string? propertyName, string separator)
     {
         var values = new List<string>();
         foreach (var item in array.EnumerateArray())
@@ -197,7 +197,7 @@ public class ExpressionEvaluator
         return string.Join(separator, values);
     }
 
-    private object? GetArrayItem(JsonElement array, int index, string? propertyName)
+    private static object? GetArrayItem(JsonElement array, int index, string? propertyName)
     {
         if (index < 0 || index >= array.GetArrayLength())
             return null;
@@ -431,7 +431,7 @@ public class ExpressionEvaluator
         return ToBool(ResolveValue(expression));
     }
 
-    private bool CompareValues(object? left, object? right, string op)
+    private static bool CompareValues(object? left, object? right, string op)
     {
         // Try numeric comparison first
         if (TryGetDouble(left, out var leftNum) && TryGetDouble(right, out var rightNum))
@@ -706,7 +706,7 @@ public class ExpressionEvaluator
         return null;
     }
 
-    private object? NavigateJsonPath(JsonElement element, string[] path)
+    private static object? NavigateJsonPath(JsonElement element, string[] path)
     {
         var current = element;
         foreach (var part in path)

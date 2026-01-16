@@ -7,14 +7,9 @@ namespace PdfBuilder.Api.Data.Repositories;
 /// <summary>
 /// Repository implementation for Document entities.
 /// </summary>
-public class DocumentRepository : IDocumentRepository
+public class DocumentRepository(AppDbContext context) : IDocumentRepository
 {
-    private readonly AppDbContext _context;
-
-    public DocumentRepository(AppDbContext context)
-    {
-        _context = context;
-    }
+    private readonly AppDbContext _context = context;
 
     public async Task<IEnumerable<Document>> GetAllAsync(
         CancellationToken cancellationToken = default

@@ -9,16 +9,10 @@ namespace PdfBuilder.Api.Services;
 /// QuestPDF document implementation that renders from DocumentData.
 /// Follows QuestPDF IDocument pattern for clean document generation.
 /// </summary>
-public class PdfDocument : IDocument
+public class PdfDocument(DocumentData data, PdfGenerationSettings? settings = null) : IDocument
 {
-    private readonly DocumentData _data;
-    private readonly PdfGenerationSettings _settings;
-
-    public PdfDocument(DocumentData data, PdfGenerationSettings? settings = null)
-    {
-        _data = data ?? throw new ArgumentNullException(nameof(data));
-        _settings = settings ?? new PdfGenerationSettings();
-    }
+    private readonly DocumentData _data = data ?? throw new ArgumentNullException(nameof(data));
+    private readonly PdfGenerationSettings _settings = settings ?? new PdfGenerationSettings();
 
     public DocumentMetadata GetMetadata() =>
         new()
@@ -268,7 +262,7 @@ public class PdfDocument : IDocument
 
     #region Content Rendering
 
-    private void RenderContent(
+    private static void RenderContent(
         PageDescriptor page,
         PageData pageData,
         int pageNumber,

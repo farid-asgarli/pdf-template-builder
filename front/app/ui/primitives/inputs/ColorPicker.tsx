@@ -31,9 +31,8 @@ const colorPickerVariants = cva('flex items-center gap-2', {
 const swatchVariants = cva(
   [
     'relative rounded-xl border-2 cursor-pointer transition-all duration-200',
-    'hover:scale-110 hover:rounded-2xl',
+    'hover:rounded-2xl',
     'focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 focus:ring-offset-surface',
-    'active:scale-95',
   ].join(' '),
   {
     variants: {

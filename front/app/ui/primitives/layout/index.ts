@@ -17,7 +17,7 @@ export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
 export { OverlayHeader, type OverlayHeaderVariant } from './HeroHeader';
 
 // Menu
-export { Menu, MenuItem, MenuSeparator } from './Menu';
+export { Menu, MenuItem, MenuSeparator, SubMenu, MenuLabel } from './Menu';
 
 // Selection Card
 export {

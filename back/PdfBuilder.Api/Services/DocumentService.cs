@@ -7,19 +7,13 @@ namespace PdfBuilder.Api.Services;
 /// <summary>
 /// Service implementation for document operations.
 /// </summary>
-public class DocumentService : IDocumentService
+public class DocumentService(
+    IDocumentRepository documentRepository,
+    ITemplateRepository templateRepository
+) : IDocumentService
 {
-    private readonly IDocumentRepository _documentRepository;
-    private readonly ITemplateRepository _templateRepository;
-
-    public DocumentService(
-        IDocumentRepository documentRepository,
-        ITemplateRepository templateRepository
-    )
-    {
-        _documentRepository = documentRepository;
-        _templateRepository = templateRepository;
-    }
+    private readonly IDocumentRepository _documentRepository = documentRepository;
+    private readonly ITemplateRepository _templateRepository = templateRepository;
 
     public async Task<IEnumerable<DocumentResponse>> GetAllAsync(
         CancellationToken cancellationToken = default

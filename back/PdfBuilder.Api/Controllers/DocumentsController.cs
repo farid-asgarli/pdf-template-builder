@@ -11,34 +11,30 @@ namespace PdfBuilder.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/documents")]
-public class DocumentsController : ControllerBase
+public class DocumentsController(
+    IDocumentService documentService,
+    IPdfGenerationService pdfGenerationService,
+    IHtmlGenerationService htmlGenerationService,
+    IVariableService variableService,
+    IVariableHistoryService historyService,
+    IDocxImportService docxImportService
+) : ControllerBase
 {
-    private readonly IDocumentService _documentService;
-    private readonly IPdfGenerationService _pdfGenerationService;
-    private readonly IHtmlGenerationService _htmlGenerationService;
-    private readonly IVariableService _variableService;
-    private readonly IVariableHistoryService _historyService;
-
-    public DocumentsController(
-        IDocumentService documentService,
-        IPdfGenerationService pdfGenerationService,
-        IHtmlGenerationService htmlGenerationService,
-        IVariableService variableService,
-        IVariableHistoryService historyService)
-    {
-        _documentService = documentService;
-        _pdfGenerationService = pdfGenerationService;
-        _htmlGenerationService = htmlGenerationService;
-        _variableService = variableService;
-        _historyService = historyService;
-    }
+    private readonly IDocumentService _documentService = documentService;
+    private readonly IPdfGenerationService _pdfGenerationService = pdfGenerationService;
+    private readonly IHtmlGenerationService _htmlGenerationService = htmlGenerationService;
+    private readonly IVariableService _variableService = variableService;
+    private readonly IVariableHistoryService _historyService = historyService;
+    private readonly IDocxImportService _docxImportService = docxImportService;
 
     /// <summary>
     /// Get all documents.
     /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<DocumentResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<DocumentResponse>>> GetDocuments(CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<DocumentResponse>>> GetDocuments(
+        CancellationToken cancellationToken
+    )
     {
         var documents = await _documentService.GetAllAsync(cancellationToken);
         return Ok(documents);
@@ -50,7 +46,10 @@ public class DocumentsController : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(DocumentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<DocumentResponse>> GetDocument(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<DocumentResponse>> GetDocument(
+        Guid id,
+        CancellationToken cancellationToken
+    )
     {
         var document = await _documentService.GetByIdAsync(id, cancellationToken);
         if (document is null)
@@ -64,7 +63,10 @@ public class DocumentsController : ControllerBase
     /// </summary>
     [HttpPost]
     [ProducesResponseType(typeof(DocumentResponse), StatusCodes.Status201Created)]
-    public async Task<ActionResult<DocumentResponse>> CreateDocument(CreateDocumentRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<DocumentResponse>> CreateDocument(
+        CreateDocumentRequest request,
+        CancellationToken cancellationToken
+    )
     {
         var document = await _documentService.CreateAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetDocument), new { id = document.Id }, document);
@@ -76,7 +78,11 @@ public class DocumentsController : ControllerBase
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(DocumentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<DocumentResponse>> UpdateDocument(Guid id, UpdateDocumentRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<DocumentResponse>> UpdateDocument(
+        Guid id,
+        UpdateDocumentRequest request,
+        CancellationToken cancellationToken
+    )
     {
         var document = await _documentService.UpdateAsync(id, request, cancellationToken);
         if (document is null)
@@ -106,7 +112,10 @@ public class DocumentsController : ControllerBase
     [HttpPost("from-template")]
     [ProducesResponseType(typeof(DocumentResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<DocumentResponse>> CreateFromTemplate(CreateDocumentFromTemplateRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<DocumentResponse>> CreateFromTemplate(
+        CreateDocumentFromTemplateRequest request,
+        CancellationToken cancellationToken
+    )
     {
         var document = await _documentService.CreateFromTemplateAsync(request, cancellationToken);
         if (document is null)
@@ -116,20 +125,81 @@ public class DocumentsController : ControllerBase
     }
 
     /// <summary>
+    /// Import a document from a DOCX/DOC file.
+    /// Converts Word document content to editor-compatible format.
+    /// </summary>
+    [HttpPost("import-docx")]
+    [ProducesResponseType(typeof(DocxImportResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<DocxImportResponse>> ImportFromDocx(
+        IFormFile file,
+        [FromForm] string? title,
+        CancellationToken cancellationToken
+    )
+    {
+        // Validate file
+        if (file is null || file.Length == 0)
+            return BadRequest(new { error = "No file provided" });
+
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (extension != ".docx" && extension != ".doc")
+            return BadRequest(
+                new { error = "Invalid file type. Only .docx and .doc files are supported." }
+            );
+
+        // Note: .doc files are not supported by OpenXML SDK
+        if (extension == ".doc")
+            return BadRequest(
+                new
+                {
+                    error = "Legacy .doc format is not supported. Please convert to .docx format.",
+                }
+            );
+
+        using var stream = file.OpenReadStream();
+        var result = await _docxImportService.ImportAsync(
+            stream,
+            file.FileName,
+            title,
+            cancellationToken
+        );
+
+        if (!result.Success)
+            return BadRequest(new { error = result.ErrorMessage });
+
+        return CreatedAtAction(nameof(GetDocument), new { id = result.Document!.Id }, result);
+    }
+
+    /// <summary>
     /// Generate PDF from a document.
     /// </summary>
     [HttpPost("{id:guid}/generate-pdf")]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GeneratePdf(Guid id, GeneratePdfWithVariablesRequest? request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GeneratePdf(
+        Guid id,
+        GeneratePdfWithVariablesRequest? request,
+        CancellationToken cancellationToken
+    )
     {
-        var result = await _pdfGenerationService.GenerateForDocumentAsync(id, request, cancellationToken);
+        var result = await _pdfGenerationService.GenerateForDocumentAsync(
+            id,
+            request,
+            cancellationToken
+        );
 
         if (!result.Success)
         {
             if (result.ValidationErrors is not null)
-                return BadRequest(new { error = "Variable validation failed", validationErrors = result.ValidationErrors });
+                return BadRequest(
+                    new
+                    {
+                        error = "Variable validation failed",
+                        validationErrors = result.ValidationErrors,
+                    }
+                );
 
             return result.ErrorMessage?.Contains("not found") == true
                 ? NotFound(new { error = result.ErrorMessage })
@@ -146,14 +216,28 @@ public class DocumentsController : ControllerBase
     [ProducesResponseType(typeof(ContentResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GenerateHtml(Guid id, GenerateHtmlWithVariablesRequest? request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GenerateHtml(
+        Guid id,
+        GenerateHtmlWithVariablesRequest? request,
+        CancellationToken cancellationToken
+    )
     {
-        var result = await _htmlGenerationService.GenerateForDocumentAsync(id, request, cancellationToken);
+        var result = await _htmlGenerationService.GenerateForDocumentAsync(
+            id,
+            request,
+            cancellationToken
+        );
 
         if (!result.Success)
         {
             if (result.ValidationErrors is not null)
-                return BadRequest(new { error = "Variable validation failed", validationErrors = result.ValidationErrors });
+                return BadRequest(
+                    new
+                    {
+                        error = "Variable validation failed",
+                        validationErrors = result.ValidationErrors,
+                    }
+                );
 
             return result.ErrorMessage?.Contains("not found") == true
                 ? NotFound(new { error = result.ErrorMessage })
@@ -175,7 +259,10 @@ public class DocumentsController : ControllerBase
     [HttpGet("{id:guid}/variables")]
     [ProducesResponseType(typeof(VariableDefinitionsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<VariableDefinitionsResponse>> GetVariables(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<VariableDefinitionsResponse>> GetVariables(
+        Guid id,
+        CancellationToken cancellationToken
+    )
     {
         var response = await _variableService.GetDocumentVariablesAsync(id, cancellationToken);
         if (response is null)
@@ -190,7 +277,10 @@ public class DocumentsController : ControllerBase
     [HttpGet("{id:guid}/variables/analyze")]
     [ProducesResponseType(typeof(VariableAnalysisResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<VariableAnalysisResult>> AnalyzeVariables(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<VariableAnalysisResult>> AnalyzeVariables(
+        Guid id,
+        CancellationToken cancellationToken
+    )
     {
         var document = await _documentService.GetByIdAsync(id, cancellationToken);
         if (document is null)
@@ -206,7 +296,11 @@ public class DocumentsController : ControllerBase
     [HttpPost("{id:guid}/validate-variables")]
     [ProducesResponseType(typeof(VariableValidationResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<VariableValidationResult>> ValidateVariables(Guid id, GeneratePdfWithVariablesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<VariableValidationResult>> ValidateVariables(
+        Guid id,
+        GeneratePdfWithVariablesRequest request,
+        CancellationToken cancellationToken
+    )
     {
         var document = await _documentService.GetByIdAsync(id, cancellationToken);
         if (document is null)
@@ -223,13 +317,23 @@ public class DocumentsController : ControllerBase
     [HttpGet("{id:guid}/history")]
     [ProducesResponseType(typeof(VariableHistoryListResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetHistory(Guid id, [FromQuery] int? page, [FromQuery] int? pageSize, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetHistory(
+        Guid id,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
+        CancellationToken cancellationToken
+    )
     {
         var document = await _documentService.GetByIdAsync(id, cancellationToken);
         if (document is null)
             return NotFound(new { error = "Document not found" });
 
-        var history = await _historyService.GetHistoryAsync(id, page ?? 1, pageSize ?? 20, cancellationToken);
+        var history = await _historyService.GetHistoryAsync(
+            id,
+            page ?? 1,
+            pageSize ?? 20,
+            cancellationToken
+        );
         return Ok(new { records = history.Records, totalCount = history.TotalCount });
     }
 
@@ -239,9 +343,17 @@ public class DocumentsController : ControllerBase
     [HttpGet("{documentId:guid}/history/{version:int}")]
     [ProducesResponseType(typeof(VariableHistoryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<VariableHistoryResponse>> GetHistoryVersion(Guid documentId, int version, CancellationToken cancellationToken)
+    public async Task<ActionResult<VariableHistoryResponse>> GetHistoryVersion(
+        Guid documentId,
+        int version,
+        CancellationToken cancellationToken
+    )
     {
-        var history = await _historyService.GetHistoryVersionAsync(documentId, version, cancellationToken);
+        var history = await _historyService.GetHistoryVersionAsync(
+            documentId,
+            version,
+            cancellationToken
+        );
         if (history is null)
             return NotFound(new { error = "History version not found" });
 
@@ -254,9 +366,17 @@ public class DocumentsController : ControllerBase
     [HttpPost("{documentId:guid}/history/{version:int}/regenerate")]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RegeneratePdfFromHistory(Guid documentId, int version, CancellationToken cancellationToken)
+    public async Task<IActionResult> RegeneratePdfFromHistory(
+        Guid documentId,
+        int version,
+        CancellationToken cancellationToken
+    )
     {
-        var result = await _historyService.RegeneratePdfFromHistoryAsync(documentId, version, cancellationToken);
+        var result = await _historyService.RegeneratePdfFromHistoryAsync(
+            documentId,
+            version,
+            cancellationToken
+        );
 
         if (!result.Success)
         {
@@ -274,9 +394,17 @@ public class DocumentsController : ControllerBase
     [HttpDelete("{documentId:guid}/history/{version:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteHistoryVersion(Guid documentId, int version, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteHistoryVersion(
+        Guid documentId,
+        int version,
+        CancellationToken cancellationToken
+    )
     {
-        var deleted = await _historyService.DeleteHistoryVersionAsync(documentId, version, cancellationToken);
+        var deleted = await _historyService.DeleteHistoryVersionAsync(
+            documentId,
+            version,
+            cancellationToken
+        );
         if (!deleted)
             return NotFound(new { error = "History version not found" });
 

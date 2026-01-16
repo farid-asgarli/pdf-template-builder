@@ -245,6 +245,12 @@ public static class HtmlGenerator
     {
         foreach (var component in components)
         {
+            // Check conditional rendering - skip if conditions are not met
+            if (!ConditionEvaluator.ShouldRender(component.Condition, variables, complexVariables))
+            {
+                continue;
+            }
+
             var style =
                 $"position: absolute; left: {component.Position.X}mm; top: {component.Position.Y}mm; width: {component.Size.Width}mm; height: {component.Size.Height}mm;";
             sb.AppendLine(
@@ -276,6 +282,12 @@ public static class HtmlGenerator
     {
         foreach (var component in components)
         {
+            // Check conditional rendering - skip if conditions are not met
+            if (!ConditionEvaluator.ShouldRender(component.Condition, variables, complexVariables))
+            {
+                continue;
+            }
+
             var style =
                 $"position: absolute; left: {component.Position.X}mm; top: {component.Position.Y}mm; width: {component.Size.Width}mm; height: {component.Size.Height}mm;";
             sb.AppendLine(

@@ -8,7 +8,7 @@ namespace PdfBuilder.Api.Infrastructure;
 /// </summary>
 public class BulkJobStore
 {
-    private readonly Dictionary<int, BulkGenerationJob> _jobs = new();
+    private readonly Dictionary<int, BulkGenerationJob> _jobs = [];
     private int _jobIdCounter = 0;
     private readonly object _lock = new();
 
@@ -59,7 +59,7 @@ public class BulkJobStore
     {
         lock (_lock)
         {
-            return _jobs.Values.ToList();
+            return [.. _jobs.Values];
         }
     }
 }

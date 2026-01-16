@@ -8,19 +8,13 @@ namespace PdfBuilder.Api.Services;
 /// Service implementation for variable processing and validation.
 /// Wraps the static VariableService methods for dependency injection.
 /// </summary>
-public class VariableServiceWrapper : IVariableService
+public class VariableServiceWrapper(
+    IDocumentRepository documentRepository,
+    ITemplateRepository templateRepository
+) : IVariableService
 {
-    private readonly IDocumentRepository _documentRepository;
-    private readonly ITemplateRepository _templateRepository;
-
-    public VariableServiceWrapper(
-        IDocumentRepository documentRepository,
-        ITemplateRepository templateRepository
-    )
-    {
-        _documentRepository = documentRepository;
-        _templateRepository = templateRepository;
-    }
+    private readonly IDocumentRepository _documentRepository = documentRepository;
+    private readonly ITemplateRepository _templateRepository = templateRepository;
 
     public List<VariableDefinition> GetVariableDefinitions(string jsonContent)
     {

@@ -74,7 +74,7 @@ function Chip({
   return (
     <div
       ref={ref}
-      className={cn(chipVariants({ variant: actualVariant, size, className }), isClickable && 'cursor-pointer active:scale-[0.98]')}
+      className={cn(chipVariants({ variant: actualVariant, size, className }), isClickable && 'cursor-pointer')}
       onClick={onClick}
       tabIndex={isClickable ? 0 : undefined}
       onKeyDown={

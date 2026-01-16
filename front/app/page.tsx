@@ -204,7 +204,7 @@ export default function Home() {
           <h2 className="text-lg font-semibold text-on-surface mb-4">Quick Start</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <Link href="/templates">
-              <Card variant="highlighted" padding="default" className="cursor-pointer hover:scale-[1.02] transition-transform">
+              <Card variant="highlighted" padding="default" className="cursor-pointer">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-2xl bg-primary/10">
                     <Plus className="h-6 w-6 text-primary" />
@@ -218,7 +218,7 @@ export default function Home() {
             </Link>
 
             <Link href="/templates">
-              <Card variant="elevated" padding="default" className="cursor-pointer hover:scale-[1.02] transition-transform">
+              <Card variant="elevated" padding="default" className="cursor-pointer">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-2xl bg-secondary-container">
                     <Files className="h-6 w-6 text-on-secondary-container" />

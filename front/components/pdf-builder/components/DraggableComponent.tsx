@@ -45,6 +45,9 @@ const COMPONENT_RENDERERS: Record<ComponentTypeEnum, React.ComponentType<{ compo
 const MIN_WIDTH_MM = 10;
 const MIN_HEIGHT_MM = 5;
 
+// Component types that support inline text editing
+const INLINE_EDITABLE_TYPES: Set<ComponentTypeEnum> = new Set(['text-label', 'paragraph']);
+
 export const DraggableComponent = memo(function DraggableComponent({ component, isSelected, onSelect }: DraggableComponentProps) {
   const { updateComponent } = useDocumentStore();
 
@@ -52,6 +55,7 @@ export const DraggableComponent = memo(function DraggableComponent({ component, 
   const [isHovered, setIsHovered] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [resizeDirection, setResizeDirection] = useState<ResizeDirection | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Resize data ref for tracking resize operation
   const resizeDataRef = useRef<{
@@ -63,14 +67,14 @@ export const DraggableComponent = memo(function DraggableComponent({ component, 
     startY: number;
   } | null>(null);
 
-  // Draggable hook - disabled when resizing
+  // Draggable hook - disabled when resizing or editing
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: component.id,
     data: {
       type: 'existing-component',
       component,
     },
-    disabled: isResizing,
+    disabled: isResizing || isEditing,
   });
 
   // Start resize operation
@@ -168,6 +172,44 @@ export const DraggableComponent = memo(function DraggableComponent({ component, 
     };
   }, [isResizing, resizeDirection, component.id, updateComponent]);
 
+  // Exit edit mode when component is deselected
+  useEffect(() => {
+    if (!isSelected && isEditing) {
+      setIsEditing(false);
+    }
+  }, [isSelected, isEditing]);
+
+  // Check if this component type supports inline editing
+  const supportsInlineEditing = INLINE_EDITABLE_TYPES.has(component.type);
+
+  // Handle double-click to enter edit mode
+  const handleDoubleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (supportsInlineEditing && isSelected) {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsEditing(true);
+      }
+    },
+    [supportsInlineEditing, isSelected]
+  );
+
+  // Handle text save from inline editor
+  const handleTextSave = useCallback(
+    (value: string) => {
+      updateComponent(component.id, {
+        properties: { ...component.properties, content: value } as typeof component.properties,
+      });
+      setIsEditing(false);
+    },
+    [component.id, component.properties, updateComponent]
+  );
+
+  // Handle edit cancel
+  const handleEditCancel = useCallback(() => {
+    setIsEditing(false);
+  }, []);
+
   const Renderer = COMPONENT_RENDERERS[component.type];
 
   // Fallback for unknown component types - render a placeholder with the type name
@@ -206,9 +248,23 @@ export const DraggableComponent = memo(function DraggableComponent({ component, 
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!isResizing) {
+    if (!isResizing && !isEditing) {
       onSelect(component.id);
     }
+  };
+
+  // Render the appropriate component with editing props if supported
+  const renderComponent = () => {
+    // For inline editable components, pass editing props
+    if (component.type === 'text-label') {
+      return <TextLabel component={component} isEditing={isEditing} onTextSave={handleTextSave} onEditCancel={handleEditCancel} />;
+    }
+    if (component.type === 'paragraph') {
+      return <Paragraph component={component} isEditing={isEditing} onTextSave={handleTextSave} onEditCancel={handleEditCancel} />;
+    }
+    // For other components, render normally
+    const ComponentToRender = Renderer || (() => <UnknownComponentPlaceholder typeName={component.type} />);
+    return <ComponentToRender component={component} />;
   };
 
   return (
@@ -216,36 +272,46 @@ export const DraggableComponent = memo(function DraggableComponent({ component, 
       ref={setNodeRef}
       style={positionStyle}
       onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      data-draggable-component="true"
+      data-draggable-component='true'
+      data-editing={isEditing || undefined}
     >
       {/* Draggable area - the component content */}
       <div
-        className="absolute inset-0"
+        className='absolute inset-0'
         style={{
-          cursor: isDragging ? 'grabbing' : isResizing ? RESIZE_CURSORS[resizeDirection!] : 'grab',
+          cursor: isEditing ? 'text' : isDragging ? 'grabbing' : isResizing ? RESIZE_CURSORS[resizeDirection!] : 'grab',
           opacity: isDragging ? 0.9 : 1,
         }}
-        {...(isResizing ? {} : listeners)}
-        {...(isResizing ? {} : attributes)}
+        {...(isResizing || isEditing ? {} : listeners)}
+        {...(isResizing || isEditing ? {} : attributes)}
       >
         {/* Component content with custom styling */}
-        <div className="relative h-full w-full overflow-hidden pointer-events-none" style={contentStyle}>
-          <ComponentToRender component={component} />
+        <div
+          className={`relative h-full w-full ${isEditing ? 'overflow-visible' : 'overflow-hidden'} ${isEditing ? '' : 'pointer-events-none'}`}
+          style={contentStyle}
+        >
+          {renderComponent()}
         </div>
       </div>
 
-      {/* Selection overlay with resize handles */}
-      <SelectionOverlay
-        isSelected={isSelected}
-        isHovered={isHovered}
-        isDragging={isDragging}
-        isResizing={isResizing}
-        resizeDirection={resizeDirection}
-        size={component.size}
-        onResizeStart={startResize}
-      />
+      {/* Selection overlay with resize handles - hidden during editing */}
+      {!isEditing && (
+        <SelectionOverlay
+          isSelected={isSelected}
+          isHovered={isHovered}
+          isDragging={isDragging}
+          isResizing={isResizing}
+          resizeDirection={resizeDirection}
+          size={component.size}
+          onResizeStart={startResize}
+        />
+      )}
+
+      {/* Edit mode indicator */}
+      {isEditing && <div className='absolute inset-0 ring-2 ring-primary ring-offset-1 rounded-sm pointer-events-none' />}
     </div>
   );
 });

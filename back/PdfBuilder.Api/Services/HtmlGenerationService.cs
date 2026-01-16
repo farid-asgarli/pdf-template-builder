@@ -1,20 +1,14 @@
 using PdfBuilder.Api.Contracts;
 using PdfBuilder.Api.DTOs.Html;
-using PdfBuilder.Api.DTOs.Variables;
 
 namespace PdfBuilder.Api.Services;
 
 /// <summary>
 /// Service implementation for HTML generation operations.
 /// </summary>
-public class HtmlGenerationService : IHtmlGenerationService
+public class HtmlGenerationService(IDocumentRepository documentRepository) : IHtmlGenerationService
 {
-    private readonly IDocumentRepository _documentRepository;
-
-    public HtmlGenerationService(IDocumentRepository documentRepository)
-    {
-        _documentRepository = documentRepository;
-    }
+    private readonly IDocumentRepository _documentRepository = documentRepository;
 
     public string GenerateFromContent(
         string jsonContent,

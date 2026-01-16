@@ -7,14 +7,9 @@ namespace PdfBuilder.Api.Services;
 /// <summary>
 /// Service implementation for template operations.
 /// </summary>
-public class TemplateService : ITemplateService
+public class TemplateService(ITemplateRepository templateRepository) : ITemplateService
 {
-    private readonly ITemplateRepository _templateRepository;
-
-    public TemplateService(ITemplateRepository templateRepository)
-    {
-        _templateRepository = templateRepository;
-    }
+    private readonly ITemplateRepository _templateRepository = templateRepository;
 
     public async Task<IEnumerable<TemplateResponse>> GetAllAsync(
         CancellationToken cancellationToken = default
