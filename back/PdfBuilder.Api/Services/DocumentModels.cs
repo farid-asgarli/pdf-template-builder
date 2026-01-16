@@ -142,6 +142,32 @@ public class ComponentData
     /// When set and enabled, the component will only render if conditions are met.
     /// </summary>
     public ConditionalConfig? Condition { get; set; }
+
+    /// <summary>
+    /// Layout configuration for auto-expansion behavior.
+    /// When enabled, the component can grow vertically based on content
+    /// and push down components that are below it.
+    /// </summary>
+    public LayoutConfig? Layout { get; set; }
+}
+
+/// <summary>
+/// Layout configuration for component auto-expansion behavior.
+/// </summary>
+public class LayoutConfig
+{
+    /// <summary>
+    /// When true, the component can expand vertically beyond its defined height
+    /// to fit its content. The Size.Height becomes the minimum height.
+    /// </summary>
+    public bool AutoExpand { get; set; } = true;
+
+    /// <summary>
+    /// When true (and AutoExpand is true), components that are positioned
+    /// below this component (vertically) and have horizontal overlap
+    /// will be pushed down when this component expands.
+    /// </summary>
+    public bool PushSiblings { get; set; } = true;
 }
 
 /// <summary>

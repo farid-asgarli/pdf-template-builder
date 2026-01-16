@@ -16,8 +16,7 @@ public class DocumentsController(
     IPdfGenerationService pdfGenerationService,
     IHtmlGenerationService htmlGenerationService,
     IVariableService variableService,
-    IVariableHistoryService historyService,
-    IDocxImportService docxImportService
+    IVariableHistoryService historyService
 ) : ControllerBase
 {
     private readonly IDocumentService _documentService = documentService;
@@ -25,7 +24,6 @@ public class DocumentsController(
     private readonly IHtmlGenerationService _htmlGenerationService = htmlGenerationService;
     private readonly IVariableService _variableService = variableService;
     private readonly IVariableHistoryService _historyService = historyService;
-    private readonly IDocxImportService _docxImportService = docxImportService;
 
     /// <summary>
     /// Get all documents.
@@ -122,53 +120,6 @@ public class DocumentsController(
             return NotFound(new { error = "Template not found" });
 
         return CreatedAtAction(nameof(GetDocument), new { id = document.Id }, document);
-    }
-
-    /// <summary>
-    /// Import a document from a DOCX/DOC file.
-    /// Converts Word document content to editor-compatible format.
-    /// </summary>
-    [HttpPost("import-docx")]
-    [ProducesResponseType(typeof(DocxImportResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Consumes("multipart/form-data")]
-    public async Task<ActionResult<DocxImportResponse>> ImportFromDocx(
-        IFormFile file,
-        [FromForm] string? title,
-        CancellationToken cancellationToken
-    )
-    {
-        // Validate file
-        if (file is null || file.Length == 0)
-            return BadRequest(new { error = "No file provided" });
-
-        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-        if (extension != ".docx" && extension != ".doc")
-            return BadRequest(
-                new { error = "Invalid file type. Only .docx and .doc files are supported." }
-            );
-
-        // Note: .doc files are not supported by OpenXML SDK
-        if (extension == ".doc")
-            return BadRequest(
-                new
-                {
-                    error = "Legacy .doc format is not supported. Please convert to .docx format.",
-                }
-            );
-
-        using var stream = file.OpenReadStream();
-        var result = await _docxImportService.ImportAsync(
-            stream,
-            file.FileName,
-            title,
-            cancellationToken
-        );
-
-        if (!result.Success)
-            return BadRequest(new { error = result.ErrorMessage });
-
-        return CreatedAtAction(nameof(GetDocument), new { id = result.Document!.Id }, result);
     }
 
     /// <summary>

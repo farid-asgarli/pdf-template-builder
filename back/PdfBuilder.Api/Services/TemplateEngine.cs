@@ -11,8 +11,8 @@ namespace PdfBuilder.Api.Services;
 /// Syntax supported:
 /// - {{variableName}} - Simple substitution
 /// - {{variableName:format}} - Substitution with format specifier
-/// - {{#if condition}}...{{/if}} - Conditional rendering
-/// - {{#unless condition}}...{{/unless}} - Inverse conditional
+/// - {{#if condition}}...{{/if}} - Conditional rendering (block)
+/// - {{#unless condition}}...{{/unless}} - Inverse conditional (block)
 /// - {{#each arrayName}}...{{/each}} - Loop over array
 /// - {{@index}} - Current index in loop (0-based)
 /// - {{@number}} - Current number in loop (1-based)
@@ -20,6 +20,11 @@ namespace PdfBuilder.Api.Services;
 /// - {{@last}} - True if last item
 /// - {{this}} - Current item in loop (for simple arrays)
 /// - {{this.property}} - Property of current item in loop
+///
+/// Inline conditionals:
+/// - {{condition ? "trueValue" : "falseValue"}} - Ternary conditional
+/// - {{value ?: "default"}} - Elvis operator (use value if truthy, else default)
+/// - {{value ?? "default"}} - Null-coalescing (use value if defined, else default)
 /// </summary>
 public static partial class TemplateEngine
 {
@@ -29,6 +34,11 @@ public static partial class TemplateEngine
     private static readonly Regex EachBlockRegex = GenerateEachBlockRegex();
     private static readonly Regex VariableWithFormatRegex = GenerateVariableWithFormatRegex();
     private static readonly Regex SimpleVariableRegex = GenerateSimpleVariableRegex();
+
+    // Inline conditional patterns
+    private static readonly Regex TernaryRegex = GenerateTernaryRegex();
+    private static readonly Regex ElvisRegex = GenerateElvisRegex();
+    private static readonly Regex NullCoalesceRegex = GenerateNullCoalesceRegex();
 
     // Updated regex patterns to support nested property access (e.g., {{#if item.active}})
     [GeneratedRegex(@"\{\{#if\s+([\w.]+)\s*\}\}(.*?)\{\{/if\}\}", RegexOptions.Singleline)]
@@ -45,6 +55,21 @@ public static partial class TemplateEngine
 
     [GeneratedRegex(@"\{\{(\w+(?:\.\w+)*)\}\}")]
     private static partial Regex GenerateSimpleVariableRegex();
+
+    // Ternary: {{condition ? "trueValue" : "falseValue"}} or {{condition ? trueVar : falseVar}}
+    // Supports both quoted strings and variable references
+    [GeneratedRegex(
+        @"\{\{\s*([\w.]+)\s*\?\s*(?:""([^""]*)""|'([^']*)'|([\w.]+))\s*:\s*(?:""([^""]*)""|'([^']*)'|([\w.]+))\s*\}\}"
+    )]
+    private static partial Regex GenerateTernaryRegex();
+
+    // Elvis: {{value ?: "default"}} or {{value ?: defaultVar}}
+    [GeneratedRegex(@"\{\{\s*([\w.]+)\s*\?:\s*(?:""([^""]*)""|'([^']*)'|([\w.]+))\s*\}\}")]
+    private static partial Regex GenerateElvisRegex();
+
+    // Null-coalesce: {{value ?? "default"}} or {{value ?? defaultVar}}
+    [GeneratedRegex(@"\{\{\s*([\w.]+)\s*\?\?\s*(?:""([^""]*)""|'([^']*)'|([\w.]+))\s*\}\}")]
+    private static partial Regex GenerateNullCoalesceRegex();
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -75,11 +100,14 @@ public static partial class TemplateEngine
         // Process built-in variables first
         result = SubstituteBuiltInVariables(result, pageNumber, totalPages);
 
-        // Process conditionals (must happen before simple substitution)
+        // Process block conditionals (must happen before simple substitution)
         result = ProcessConditionals(result, variables, complexVariables);
 
         // Process loops
         result = ProcessLoops(result, variables, complexVariables);
+
+        // Process inline conditionals (ternary, elvis, null-coalesce)
+        result = ProcessInlineConditionals(result, variables, complexVariables);
 
         // Process variables with format specifiers
         result = ProcessFormattedVariables(result, variables, complexVariables);
@@ -148,6 +176,229 @@ public static partial class TemplateEngine
         );
 
         return result;
+    }
+
+    /// <summary>
+    /// Process inline conditional expressions:
+    /// - Ternary: {{condition ? "trueValue" : "falseValue"}}
+    /// - Elvis: {{value ?: "default"}} (use value if truthy)
+    /// - Null-coalesce: {{value ?? "default"}} (use value if defined)
+    /// </summary>
+    private static string ProcessInlineConditionals(
+        string template,
+        Dictionary<string, string> variables,
+        Dictionary<string, JsonElement>? complexVariables
+    )
+    {
+        var result = template;
+
+        // Process ternary conditionals: {{condition ? "trueValue" : "falseValue"}}
+        result = TernaryRegex.Replace(
+            result,
+            match =>
+            {
+                var condition = match.Groups[1].Value;
+                // True value: quoted string (group 2 or 3) or variable reference (group 4)
+                var trueQuoted =
+                    match.Groups[2].Success ? match.Groups[2].Value
+                    : match.Groups[3].Success ? match.Groups[3].Value
+                    : null;
+                var trueVar = match.Groups[4].Success ? match.Groups[4].Value : null;
+                // False value: quoted string (group 5 or 6) or variable reference (group 7)
+                var falseQuoted =
+                    match.Groups[5].Success ? match.Groups[5].Value
+                    : match.Groups[6].Success ? match.Groups[6].Value
+                    : null;
+                var falseVar = match.Groups[7].Success ? match.Groups[7].Value : null;
+
+                var isTrue = EvaluateCondition(condition, variables, complexVariables);
+
+                if (isTrue)
+                {
+                    return trueQuoted
+                        ?? ResolveVariableValue(trueVar!, variables, complexVariables)
+                        ?? string.Empty;
+                }
+                else
+                {
+                    return falseQuoted
+                        ?? ResolveVariableValue(falseVar!, variables, complexVariables)
+                        ?? string.Empty;
+                }
+            }
+        );
+
+        // Process Elvis operator: {{value ?: "default"}}
+        // Returns the value if it's truthy, otherwise the default
+        result = ElvisRegex.Replace(
+            result,
+            match =>
+            {
+                var variableName = match.Groups[1].Value;
+                var defaultQuoted =
+                    match.Groups[2].Success ? match.Groups[2].Value
+                    : match.Groups[3].Success ? match.Groups[3].Value
+                    : null;
+                var defaultVar = match.Groups[4].Success ? match.Groups[4].Value : null;
+
+                var value = ResolveVariableValue(variableName, variables, complexVariables);
+                var defaultValue =
+                    defaultQuoted
+                    ?? ResolveVariableValue(defaultVar!, variables, complexVariables)
+                    ?? string.Empty;
+
+                // Elvis: return value if truthy, otherwise default
+                if (!string.IsNullOrWhiteSpace(value) && IsTruthy(value))
+                {
+                    return value;
+                }
+                return defaultValue;
+            }
+        );
+
+        // Process null-coalescing: {{value ?? "default"}}
+        // Returns the value if it's defined (not null/empty), otherwise the default
+        result = NullCoalesceRegex.Replace(
+            result,
+            match =>
+            {
+                var variableName = match.Groups[1].Value;
+                var defaultQuoted =
+                    match.Groups[2].Success ? match.Groups[2].Value
+                    : match.Groups[3].Success ? match.Groups[3].Value
+                    : null;
+                var defaultVar = match.Groups[4].Success ? match.Groups[4].Value : null;
+
+                var (isDefined, value) = CheckVariableDefined(
+                    variableName,
+                    variables,
+                    complexVariables
+                );
+                var defaultValue =
+                    defaultQuoted
+                    ?? ResolveVariableValue(defaultVar!, variables, complexVariables)
+                    ?? string.Empty;
+
+                // Null-coalesce: return value if defined (even if empty string), otherwise default
+                if (isDefined && value != null)
+                {
+                    return value;
+                }
+                return defaultValue;
+            }
+        );
+
+        return result;
+    }
+
+    /// <summary>
+    /// Resolve a variable's string value from either simple or complex variables.
+    /// </summary>
+    private static string? ResolveVariableValue(
+        string variableName,
+        Dictionary<string, string> variables,
+        Dictionary<string, JsonElement>? complexVariables
+    )
+    {
+        if (string.IsNullOrEmpty(variableName))
+            return null;
+
+        // Handle nested property access (e.g., "user.name")
+        if (variableName.Contains('.'))
+        {
+            var parts = variableName.Split('.');
+            var rootName = parts[0];
+
+            // Try complex variables first
+            if (complexVariables?.TryGetValue(rootName, out var rootElement) == true)
+            {
+                var nestedValue = ResolveNestedProperty(rootElement, [.. parts.Skip(1)]);
+                if (nestedValue.HasValue)
+                {
+                    return GetJsonElementValue(nestedValue.Value);
+                }
+            }
+
+            // Try simple variables with full path
+            if (variables.TryGetValue(variableName, out var flatValue))
+            {
+                return flatValue;
+            }
+
+            return null;
+        }
+
+        // Check simple variables first
+        if (variables.TryGetValue(variableName, out var value))
+        {
+            return value;
+        }
+
+        // Check complex variables
+        if (complexVariables?.TryGetValue(variableName, out var jsonElement) == true)
+        {
+            return GetJsonElementValue(jsonElement);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Check if a variable is defined and return its value.
+    /// Returns (isDefined, value) tuple.
+    /// </summary>
+    private static (bool isDefined, string? value) CheckVariableDefined(
+        string variableName,
+        Dictionary<string, string> variables,
+        Dictionary<string, JsonElement>? complexVariables
+    )
+    {
+        if (string.IsNullOrEmpty(variableName))
+            return (false, null);
+
+        // Handle nested property access
+        if (variableName.Contains('.'))
+        {
+            var parts = variableName.Split('.');
+            var rootName = parts[0];
+
+            if (complexVariables?.TryGetValue(rootName, out var rootElement) == true)
+            {
+                var nestedValue = ResolveNestedProperty(rootElement, [.. parts.Skip(1)]);
+                if (nestedValue.HasValue)
+                {
+                    return (true, GetJsonElementValue(nestedValue.Value));
+                }
+            }
+
+            if (variables.TryGetValue(variableName, out var flatValue))
+            {
+                return (true, flatValue);
+            }
+
+            return (false, null);
+        }
+
+        // Check simple variables
+        if (variables.TryGetValue(variableName, out var value))
+        {
+            return (true, value);
+        }
+
+        // Check complex variables
+        if (complexVariables?.TryGetValue(variableName, out var jsonElement) == true)
+        {
+            if (
+                jsonElement.ValueKind == JsonValueKind.Null
+                || jsonElement.ValueKind == JsonValueKind.Undefined
+            )
+            {
+                return (true, null); // Defined but null
+            }
+            return (true, GetJsonElementValue(jsonElement));
+        }
+
+        return (false, null);
     }
 
     /// <summary>
@@ -374,9 +625,29 @@ public static partial class TemplateEngine
 
     /// <summary>
     /// Get string value from a JsonElement.
+    /// Handles special cases like money objects: {"value": 100, "currency": "USD"} -> "$100.00"
     /// </summary>
     private static string GetJsonElementValue(JsonElement element)
     {
+        // Handle money/currency objects: { "value": 100, "currency": "USD" }
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            if (
+                element.TryGetProperty("value", out var valueElement)
+                && element.TryGetProperty("currency", out var currencyElement)
+            )
+            {
+                var amount =
+                    valueElement.ValueKind == JsonValueKind.Number ? valueElement.GetDecimal()
+                    : decimal.TryParse(valueElement.GetString(), out var parsed) ? parsed
+                    : 0;
+
+                var currencyCode = currencyElement.GetString() ?? "USD";
+                var symbol = GetCurrencySymbol(currencyCode) ?? "$";
+                return $"{symbol}{amount:N2}";
+            }
+        }
+
         return element.ValueKind switch
         {
             JsonValueKind.String => element.GetString() ?? string.Empty,
@@ -456,7 +727,9 @@ public static partial class TemplateEngine
         {
             try
             {
-                return dateValue.ToString(format);
+                // Normalize common user-friendly formats to .NET format strings
+                var normalizedFormat = NormalizeDateFormat(format);
+                return dateValue.ToString(normalizedFormat);
             }
             catch
             {
@@ -509,6 +782,33 @@ public static partial class TemplateEngine
             "MXN" => "MX$",
             _ => null,
         };
+    }
+
+    /// <summary>
+    /// Normalize user-friendly date format strings to .NET format strings.
+    /// Handles common patterns like MM/DD/YYYY, DD-MM-YYYY, MMMM D, YYYY etc.
+    /// </summary>
+    private static string NormalizeDateFormat(string format)
+    {
+        // Replace common uppercase patterns with .NET equivalents
+        var result = format
+            // Year patterns
+            .Replace("YYYY", "yyyy")
+            .Replace("YY", "yy")
+            // Day patterns (must come before month to avoid DD becoming dd incorrectly)
+            .Replace("DD", "dd")
+            .Replace(" D,", " d,") // "MMMM D," -> "MMMM d,"
+            .Replace(" D ", " d ") // "MMMM D " -> "MMMM d "
+            // Single D at end of string
+            .Replace(",D", ",d");
+
+        // Handle edge case where D is at the end
+        if (result.EndsWith(" D"))
+        {
+            result = result[..^2] + " d";
+        }
+
+        return result;
     }
 
     /// <summary>

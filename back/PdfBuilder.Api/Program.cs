@@ -72,7 +72,6 @@ builder.Services.AddScoped<IHtmlGenerationService, HtmlGenerationService>();
 builder.Services.AddScoped<IVariableService, VariableServiceWrapper>();
 builder.Services.AddScoped<IVariableHistoryService, VariableHistoryService>();
 builder.Services.AddScoped<IBulkGenerationService, BulkGenerationServiceWrapper>();
-builder.Services.AddScoped<IDocxImportService, DocxImportService>();
 
 // ========================
 // Infrastructure Services
@@ -82,12 +81,15 @@ builder.Services.AddSingleton<BulkJobStore>();
 var app = builder.Build();
 
 // ========================
-// Database Migration
+// Database Migration & Seeding
 // ========================
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
+
+    // Seed sample templates with variables and conditions
+    await DbSeeder.SeedAsync(dbContext);
 }
 
 // ========================
