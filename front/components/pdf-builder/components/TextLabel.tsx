@@ -1,10 +1,17 @@
 'use client';
 
 import type { Component, TextLabelProperties, TextDecoration, TextDecorationStyle, TextAlign } from '@/lib/types/document.types';
-import { CSSProperties, useMemo } from 'react';
+import { CSSProperties, useMemo, useCallback } from 'react';
+import { InlineTextEditor } from './InlineTextEditor';
 
 interface TextLabelProps {
   component: Component;
+  /** Whether the component is in inline edit mode */
+  isEditing?: boolean;
+  /** Callback when text is saved from inline editing */
+  onTextSave?: (value: string) => void;
+  /** Callback when inline editing is cancelled */
+  onEditCancel?: () => void;
 }
 
 // Maps our font weight values to CSS font weight values
@@ -45,7 +52,7 @@ const alignmentJustifyMap: Record<TextAlign, string> = {
   justify: 'flex-start', // justify uses text-align: justify instead
 };
 
-export function TextLabel({ component }: TextLabelProps) {
+export function TextLabel({ component, isEditing, onTextSave, onEditCancel }: TextLabelProps) {
   const props = component.properties as TextLabelProperties;
 
   const containerStyle = useMemo<CSSProperties>(() => {
@@ -70,9 +77,56 @@ export function TextLabel({ component }: TextLabelProps) {
     };
   }, [props]);
 
+  // Handle text save from inline editor
+  const handleTextSave = useCallback(
+    (value: string) => {
+      onTextSave?.(value);
+    },
+    [onTextSave]
+  );
+
+  // Handle edit cancel
+  const handleEditCancel = useCallback(() => {
+    onEditCancel?.();
+  }, [onEditCancel]);
+
+  // If in editing mode, show the inline editor
+  if (isEditing && onTextSave && onEditCancel) {
+    return (
+      <div
+        className='flex h-full w-full items-center overflow-visible'
+        style={{
+          ...containerStyle,
+          // Remove pointer-events-none for editing
+        }}
+      >
+        <InlineTextEditor
+          value={props.content || ''}
+          onSave={handleTextSave}
+          onCancel={handleEditCancel}
+          multiline={false}
+          placeholder='Text Label'
+          style={{
+            width: '100%',
+            fontFamily: 'inherit',
+            fontSize: 'inherit',
+            fontWeight: 'inherit',
+            fontStyle: 'inherit',
+            color: 'inherit',
+            letterSpacing: 'inherit',
+            lineHeight: 'inherit',
+            textDecorationLine: 'inherit',
+            textDecorationStyle: 'inherit',
+            textDecorationColor: 'inherit',
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="pointer-events-none flex h-full w-full items-center overflow-hidden" style={containerStyle}>
-      <span className="truncate">{props.content || 'Text Label'}</span>
+    <div className='pointer-events-none flex h-full w-full items-center overflow-hidden' style={containerStyle}>
+      <span className='truncate'>{props.content || 'Text Label'}</span>
     </div>
   );
 }
